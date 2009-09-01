@@ -2,6 +2,8 @@
 use 5.004;
 use CGI qw(-nph);
 
+my $status = 0;
+my @result = qw(0 0 0 0 0 0 0 0);
 sub validate{
 	unless(scalar(@_) == 1){ return -1; }
 	my $expr1 = shift;
@@ -14,14 +16,19 @@ sub validate{
 	unless($expr2[2] > 0){ return -6; }
 	$expr2[1] /= $expr2[2];
 	if($expr2[1] =~ /\./){ return -7; }
-	my $chopped = $expr2[1] - int($expr2[1] / 1000) * 1000;
-	my $chopbonus = 
-	return $chopped;
+	my $chopped = $expr2[1] % 1000;
+	my $chopbonus = int($expr2[1] / 1000);
+	while($chopbonus % 10 == 0){ chop($chopbonus); }
+	$result[1] = $chopbonus;
+	$result[2] = $chopped;
+	$result[3] = $chopped * 3000;
+	$result[0] = $chopbonus + $result[3];
+	return 0;
 }
 
 my $cgi = CGI->new();
 
-my $result = validate($cgi->keywords());
+$status = validate($cgi->keywords());
 print $cgi->header(-content_type => 'text/plain');
-print $result . "\n";
+print $status . ";@result\n";
 __END__
