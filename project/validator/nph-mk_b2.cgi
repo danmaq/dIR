@@ -34,9 +34,9 @@ sub validate{
 }
 
 my $cgi = CGI->new();
-
-$status = validate($cgi->keywords());
-print $cgi->header(-content_type => 'text/plain');
-print $status . ";@result\n";
+$body = sprintf('%s;', validate($cgi->keywords()));
+$body .= "@result\n";
+print $cgi->header(-content_type => 'text/plain', -content_length => length($body));
+print $body;
 
 __END__
