@@ -1,17 +1,25 @@
 #!/usr/local/bin/perl
+#===============================================================================
+#	dIR - danmaq Internet Ranking CGI (Validator Module)
+#		(c)2009 danmaq All rights reserved.
+#===============================================================================
+#	Mk-IIK beta2-2.1ç”¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰æ¤œè¨¼ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã€‚
 use 5.004;
+use strict;
+use warnings;
+use utf8;
 use CGI qw(-nph);
 
 my $status = 0;
 my @result = qw(0 0 0 0 0 0 0 0);
 sub validate{
-	unless(scalar(@_) == 1){ return -1; }					# ƒpƒXƒ[ƒh‚ª‚È‚¢
+	unless(scalar(@_) == 1){ return -1; }					# ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒãªã„
 	my $expr1 = shift;
-	unless($expr1 =~ /^\d{3}\-\d+\-3C\d$/){ return -2; }	# ˆá‚¤ƒpƒXƒ[ƒh
+	unless($expr1 =~ /^\d{3}\-\d+\-3C\d$/){ return -2; }	# é•ã†ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰
 	my @expr2 = split(/[\-C]/, $expr1);
-	if($expr2[1] == 0){ return -3; }						# •Û‘¶‘ÎÛŠO
+	if($expr2[1] == 0){ return -3; }						# ä¿å­˜å¯¾è±¡å¤–
 	my $len = length($expr2[1]);
-	if($len < 10){ return -4; }								# ƒpƒXƒ[ƒh•s³
+	if($len < 10){ return -4; }								# ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ä¸æ­£
 	for(my $i = 3; $i <= 5; $i++){
 		my $maki = substr($expr2[1], 0, $i);
 		if($i < 5 && substr($expr2[1], $i, 1) == 0){ $maki = substr($expr2[1], 0, $i + 1); }
@@ -30,11 +38,11 @@ sub validate{
 			}
 		}
 	}
-	return -5;												# ƒpƒXƒ[ƒh•s³
+	return -5;												# ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ä¸æ­£
 }
 
 my $cgi = CGI->new();
-$body = sprintf('%s;', validate($cgi->keywords()));
+my $body = sprintf('%s;', validate($cgi->keywords()));
 $body .= "@result\n";
 print $cgi->header(-content_type => 'text/plain', -content_length => length($body));
 print $body;

@@ -1,22 +1,30 @@
 #!/usr/local/bin/perl
+#===============================================================================
+#	dIR - danmaq Internet Ranking CGI (Validator Module)
+#		(c)2009 danmaq All rights reserved.
+#===============================================================================
+#	MAKIWARI 2K(Mk-IIK) beta1ç”¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰æ¤œè¨¼ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã€‚
 use 5.004;
+use strict;
+use warnings;
+use utf8;
 use CGI qw(-nph);
 
 my $status = 0;
 my @result = qw(0 0 0 0 0 0 0 0);
 sub validate{
-	unless(scalar(@_) == 1){ return -1; }				# ƒpƒXƒ[ƒh‚ª‚È‚¢H
+	unless(scalar(@_) == 1){ return -1; }				# ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒãªã„ï¼Ÿ
 	my $expr1 = shift;
-	unless($expr1 =~ /^\d+\-\d+$/){ return -2; }		# ˆá‚¤ƒpƒXƒ[ƒh
+	unless($expr1 =~ /^\d+\-\d+$/){ return -2; }		# é•ã†ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰
 	my @expr2 = split( /-/g, $expr1);
-	unless($expr2[0] % $expr2[1] == 0){ return -3; }	# ƒpƒXƒ[ƒh‚ª•s³
+	unless($expr2[0] % $expr2[1] == 0){ return -3; }	# ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒä¸æ­£
 	my $score = $expr2[0] / $expr2[1];
 	$result[0] = $score;
 	return 0;
 }
 
 my $cgi = CGI->new();
-$body = sprintf('%s;', validate($cgi->keywords()));
+my $body = sprintf('%s;', validate($cgi->keywords()));
 $body .= "@result\n";
 print $cgi->header(-content_type => 'text/plain', -content_length => length($body));
 print $body;

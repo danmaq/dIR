@@ -1,5 +1,13 @@
 #!/usr/local/bin/perl
-use 5.004;
+#===============================================================================
+#	dIR - danmaq Internet Ranking CGI (Validator Module)
+#		(c)2009 danmaq All rights reserved.
+#===============================================================================
+#	牛チョップ用パスワード検証モジュール。
+use 5.006;
+use strict;
+use warnings;
+use utf8;
 use CGI qw(-nph);
 
 my $status = 0;
@@ -27,7 +35,7 @@ sub validate{
 }
 
 my $cgi = CGI->new();
-$body = sprintf('%s;', validate($cgi->keywords()));
+my $body = sprintf('%s;', validate($cgi->keywords()));
 $body .= "@result\n";
 print $cgi->header(-content_type => 'text/plain', -content_length => length($body));
 print $body;

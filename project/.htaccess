@@ -1,0 +1,3 @@
+AddHandler server-parsed html hdml xml xsl txt
+
+DirectoryIndex nph-index.cgi index.cgi index.php index.html
