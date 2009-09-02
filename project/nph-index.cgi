@@ -10,6 +10,9 @@ use warnings;
 use utf8;
 use lib qw(. ./lib);
 use CGI qw(-nph);
+use DIR;
+
+require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 my $cgi = CGI->new();
 print $cgi->header(-content_type => 'text/plain');
