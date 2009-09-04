@@ -16,6 +16,7 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 my $cgi = CGI->new();
 print $cgi->header(-content_type => 'text/plain');
-print "TEST\n";
+print DIR::versionShort();
+print "\n";
 
 __END__

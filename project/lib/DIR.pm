@@ -8,10 +8,28 @@ use 5.006;
 use strict;
 use warnings;
 use utf8;
+use DIR::BatchReport;
+use DIR::DB;
+use DIR::Game;
+use DIR::GameAccount;
+use DIR::Publisher;
+use DIR::Score;
+use DIR::Template;
+use DIR::User;
+use DIR::Validate;
 
 $DIR::VERSION_STRING = '0';			# バージョン文字列(短)
 
 $DIR::VERSION =	# バージョン情報
+	$DIR::BatchReport::VERSION +
+	$DIR::DB::VERSION +
+	$DIR::Game::VERSION +
+	$DIR::GameAccount::VERSION +
+	$DIR::Publisher::VERSION +
+	$DIR::Score::VERSION +
+	$DIR::Template::VERSION +
+	$DIR::User::VERSION +
+	$DIR::Validate::VERSION +
 	0.01;
 
 #==========================================================

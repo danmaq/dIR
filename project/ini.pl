@@ -22,13 +22,12 @@ select(STDOUT); $| = 1;
 
 $DIR::VERSION_STRING = '0.0.1';
 
-=pod
-$DIR::DB::NAME = 'prodigy-inc';								# データベース名
-$DIR::DB::HOST = CGI->new()->remote_addr() eq '127.0.0.1' ?	# ホスト名
-	'localhost' : 'mysql207.db.sakura.ne.jp';
-$DIR::DB::USER = 'prodigy-inc';								# ユーザ名
-$DIR::DB::PASS = 'prodiby';									# パスワード
+$DIR::DB::NAME = 'danmaq00001';		# データベース名
+$DIR::DB::HOST = 'localhost';		# ホスト名
+$DIR::DB::USER = 'danmaq00001';		# ユーザ名
+$DIR::DB::PASS = 'zddscc';			# パスワード
 
+=pod
 $DIR::Template::DIR = './template';	# テンプレートファイル格納場所へのパス
 
 $DIR::Output::NPH = 1;	# NPH(Non Parsed Header)を使用するかどうか
