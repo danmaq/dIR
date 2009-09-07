@@ -13,9 +13,10 @@ use utf8;
 use base 'Class::Singleton';
 use Jcode;
 use DBI qw(:sql_types);
-
+use DIR::DB::BatchReport;
 
 $DIR::DB::VERSION =	# バージョン情報
+	$DIR::DB::BatchReport::VERSION +
 	0.01;
 
 ### 設定項目ここから
@@ -31,6 +32,8 @@ my %s_fields = (	# フィールド
 
 #==========================================================
 #==========================================================
+
+# TODO : selectTableLastIDってselectSingleColumnで代用できるんじゃね？
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE

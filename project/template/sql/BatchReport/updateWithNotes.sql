@@ -1,0 +1,5 @@
+UPDATE		DIR_BATCH_REPORT
+	SET		STATUS	= ?,
+			ENDED	= NOW(),
+			NOTES	= ?
+	WHERE	ID = ?;
