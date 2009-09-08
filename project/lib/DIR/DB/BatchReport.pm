@@ -2,7 +2,7 @@
 #	dIR - danmaq Internet Ranking CGI
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
-#	バッチレポート入出力クラス。
+#	バッチ レポート情報のデータベース入出力クラス。
 # ! NOTE : このクラスは、実質CSIM::DBの一部として機能します。
 package DIR::DB::BatchReport;
 use 5.006;
@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
+use DIR::Template;
 use DIR::Validate;
 
 $DIR::DB::BatchReport::VERSION = 0.01;	# バージョン情報
@@ -19,6 +20,7 @@ $DIR::DB::BatchReport::VERSION = 0.01;	# バージョン情報
 @DIR::DB::BatchReport::EXPORT = qw(
 	writeBatchReportStart
 	writeBatchReportEnd
+	readBatchReportFromID
 );
 
 #==========================================================
@@ -26,9 +28,41 @@ $DIR::DB::BatchReport::VERSION = 0.01;	# バージョン情報
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	バッチ開始レポートをデータベースへ格納します。
+#	バッチ レポートIDからデータベース内のバッチ レポート情報を検索します。
+# PARAM NUM バッチ レポートID
+# RETURN \%(NAME STATUS STARTED ENDED NOTES) 名前、終了コード、開始/終了日時、備考
+sub readBatchReportFromID{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		my $sql = $self->_execute(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_FROMID,
+		{ type => SQL_INTEGER, value => $id });
+		if(ref($sql)){
+			my $row = $sql->fetchrow_hashref();
+			if(defined($row)){
+				my $notes = $row->{NOTES};
+				$result = {
+					NAME	=> Jcode->new($row->{NAME}, 'utf8')->ucs2(),
+					STATUS	=> $row->{STATUS},
+					STARTED	=> $row->{STARTED},
+					ENDED	=> $row->{ENDED},
+					NOTES	=> defined($notes) ? Jcode->new($notes, 'utf8')->ucs2() : undef,
+				};
+			}
+			$sql->finish();
+		}
+	}
+	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	バッチ処理開始レポートをデータベースへ格納します。
 # PARAM STRING バッチ名
-# RETURN NUM バッチID。
+# RETURN NUM バッチ レポートID。
 sub writeBatchReportStart{
 	my $self = shift;
 	my $name = shift;
@@ -43,8 +77,8 @@ sub writeBatchReportStart{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	バッチ終了レポートをデータベースへ格納します。
-# PARAM %(id status notes) バッチID、終了ステータスコード、(省略可)詳細メッセージ
+#	バッチ処理終了レポートをデータベースへ格納します。
+# PARAM %(id status notes) バッチ レポートID、終了ステータスコード、(省略可)詳細メッセージ
 sub writeBatchReportEnd{
 	my $self = shift;
 	my %args = @_;
@@ -61,8 +95,6 @@ sub writeBatchReportEnd{
 		}
 	}
 }
-
-sub readBat
 
 1;
 

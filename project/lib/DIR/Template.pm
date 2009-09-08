@@ -14,11 +14,14 @@ use HTML::Template;
 
 use constant FILE_HTT_FRAME	=> 'html/frame.htt';
 
-use constant FILE_SQL_DDL	=> 'sql/table.sql';
+use constant FILE_SQL_DDL								=> 'sql/table.sql';
+use constant FILE_SQL_NOWTIME							=> 'sql/nowTime.sql';
 use constant FILE_SQL_BATCHREPORT_INSERT				=> 'sql/BatchReport/insert.sql';
 use constant FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES		=> 'sql/BatchReport/updateWithNotes.sql';
 use constant FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES	=> 'sql/BatchReport/updateWithoutNotes.sql';
+use constant FILE_SQL_BATCHREPORT_SELECT_FROMID			=> 'sql/BatchReport/selectFromID.sql';
 use constant FILE_SQL_BATCHREPORT_SELECT_LASTID			=> 'sql/BatchReport/selectLastID.sql';
+use constant FILE_SQL_USER_SELECT_FROMID				=> 'sql/User/selectFromID.sql';
 
 $DIR::Template::VERSION = 0.01;	# バージョン情報
 

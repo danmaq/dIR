@@ -15,7 +15,7 @@ use DIR::DB;
 $DIR::BatchReport::VERSION = 0.01;	# バージョン情報
 
 my %s_fields = (	# フィールド
-	id		=> undef,	# バッチID
+	id		=> undef,	# バッチ レポートID
 	name	=> undef,	# バッチ名
 	status	=> 0,		# 終了ステータス
 	started	=> 0,		# 開始日時(UNIX時間)
@@ -23,7 +23,7 @@ my %s_fields = (	# フィールド
 	notes	=> undef,	# 詳細報告
 );
 
-# TODO : new_exist、ALL、名称から検索
+# TODO : ALL、未了、名称から検索
 
 #==========================================================
 #==========================================================
@@ -33,7 +33,7 @@ my %s_fields = (	# フィールド
 #	バッチレポートを新規作成します。
 #	同時に、開始ログを取ります。
 # PARAM STRING バッチ名
-# RETURN \% 定義情報の入ったインスタンス。
+# RETURN \% バッチレポート情報の入ったインスタンス。
 sub new{
 	my $class = shift;
 	my $name = shift;
@@ -44,7 +44,7 @@ sub new{
 			$result = bless({%s_fields}, $class);
 			$result->{name} = $name;
 			$result->{started} = time;
-			$result->commit();
+			$result->__commit();
 		}
 	}
 	return $result;
@@ -54,45 +54,47 @@ sub new{
 # PUBLIC NEW
 #	存在するログからバッチレポートを新規作成します。
 # PARAM NUM ログID
-# RETURN \% 定義情報の入ったインスタンス。
+# RETURN \% バッチレポート情報の入ったインスタンス。存在しない場合、未定義値。
 sub new_exist{
 	my $class = shift;
 	my $id = shift;
 	my $result = undef;
-	if(defined($id) && $id){
+	if(defined($id) and $id){
+		my $params = DIR::DB->instance()->readBatchReportFromID($id);
+		if(defined($params)){
+			$result = bless({%s_fields}, $class);
+			$result->{id} = $params->{ID};
+			$result->{name} = $params->{NAME};
+			$result->{status} = $params->{STATUS};
+			$result->{started} = $params->{STARTED};
+			$result->{ended} = $params->{ENDED};
+			$result->{notes} = $params->{NOTES};
+		}
 	}
 	return $result;
 }
 
-#----------------------------------------------------------
-# PUBLIC INSTANCE
-#	バッチレポートをデータベースへコミットします。
-sub commit{
-	my $self = shift;
-	if($self->temp()){
-		$self->{id} = DIR::DB->instance()->writeBatchReportStart($self->name());
-	}
-	else{
-		my %params = (id => $self->id(), status => $self->status());
-		if(defined($self->notes())){ push(%params, notes => $self->notes()); }
-		DIR::DB->instance()->writeBatchReportEnd(%params);
-	}
-}
+#==========================================================
+#==========================================================
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	バッチの終了ログを取ります。
 # PARAM NUM 終了ステータスコード
 # PARAM STRING (省略可)詳細なメッセージ
+# RETURN BOOLEAN 成功した場合、真値。
 sub end{
 	my $self = shift;
 	my $status = shift;
 	my $notes = shift;
 	my $result = 0;
-	$self->{status} = $status;
-	$self->{notes} = $notes;
-	$self->{ended} = time;
-	$self->commit();
+	if(!$self->isEnded() and defined($status)){
+		$self->{status} = $status;
+		$self->{notes} = $notes;
+		$self->{ended} = time;
+		$self->__commit();
+		$result = 1;
+	}
 	return $result;
 }
 
@@ -145,8 +147,8 @@ sub isEnded{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	バッチIDを取得します。
-# RETURN NUM バッチID。存在しない場合、未定義値。
+#	バッチ レポートIDを取得します。
+# RETURN NUM バッチ レポートID。存在しない場合、未定義値。
 sub id{
 	my $self = shift;
 	return $self->{id};
@@ -159,6 +161,33 @@ sub id{
 sub temp{
 	my $self = shift;
 	return not defined($self->id());
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	詳細報告を取得します。
+# RETURN NUM 詳細報告。存在しない場合、未定義値。
+sub notes{
+	my $self = shift;
+	return $self->{notes};
+}
+
+#==========================================================
+#==========================================================
+
+#----------------------------------------------------------
+# PRIVATE INSTANCE
+#	バッチレポートをデータベースへコミットします。
+sub __commit{
+	my $self = shift;
+	if($self->temp()){
+		$self->{id} = DIR::DB->instance()->writeBatchReportStart($self->name());
+	}
+	else{
+		my %params = (id => $self->id(), status => $self->status());
+		if(defined($self->notes())){ $params{notes} = $self->notes(); }
+		DIR::DB->instance()->writeBatchReportEnd(%params);
+	}
 }
 
 1;

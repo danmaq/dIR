@@ -14,9 +14,11 @@ use base 'Class::Singleton';
 use Jcode;
 use DBI qw(:sql_types);
 use DIR::DB::BatchReport;
+use DIR::DB::User;
 
 $DIR::DB::VERSION =	# バージョン情報
 	$DIR::DB::BatchReport::VERSION +
+	$DIR::DB::User::VERSION +
 	0.01;
 
 ### 設定項目ここから
