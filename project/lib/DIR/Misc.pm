@@ -39,7 +39,7 @@ sub getStrIDFromNumID{
 sub getNumIDFromStrID{
 	my $id = shift;
 	my $result = undef;
-	if(defined($id) and $id =~ /^[0-9A-F]{4}\-[0-9A-F]{4}$/){
+	if(isIDFormat($id)){
 		$id =~ s/\-//;
 		my @keyword = ();
 		for(my $i = 3; $i >= 0; $i--){ push(@keyword, substr($id, $i * 2, 2)); }
@@ -51,7 +51,7 @@ sub getNumIDFromStrID{
 #----------------------------------------------------------
 # PUBLIC STATIC
 #	格納用IDをランダムに生成します。
-# PARAM BOOLEAN IDに極力16進数の0～9を含めないようにするかどうか
+# PARAM BOOLEAN (省略可)IDに極力16進数の0～9を含めないようにするかどうか
 # RETURN NUM 格納用ID
 sub createRandomID{
 	my $af = shift;
@@ -60,6 +60,16 @@ sub createRandomID{
 	do{ $result = int(rand(0xFFFF) * 0x10000 + rand(0xFFFF)); }
 	until((sprintf('%08X', $result) =~ /^[A-F]{8}$/) or (not $af));
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC STATIC
+#	文字列が表示用IDの書式かどうかを取得します。
+# PARAM STRING 文字列
+# RETURN BOOLEAN 表示用IDの書式である場合、真値。
+sub isIDFormat{
+	my $expr = shift;
+	return (defined($expr) and $expr =~ /^[0-9A-F]{4}\-[0-9A-F]{4}$/);
 }
 
 1;

@@ -11,6 +11,8 @@ use warnings;
 use utf8;
 use Jcode;
 use Digest::SHA1;
+use DIR::DB;
+use DIR::Misc;
 use DIR::Validate;
 use DIR::User::EMail;
 
@@ -45,7 +47,7 @@ sub new{
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($password, 4, 40)){
 		my $sha1 = Digest::SHA1->new();
-		$result = bless({%s_fields}, $class);
+		$result = DIR::User->new_guest();
 		$sha1->add($password);
 		$result->{password} = $sha1->b64digest();
 		$result->{login_count} = 1;
@@ -61,12 +63,56 @@ sub new{
 # RETURN \% ゲストユーザ情報の入ったインスタンス。
 sub new_guest{ return bless({%s_fields}, shift); }
 
+#----------------------------------------------------------
+# PUBLIC NEW
+#	既にデータベースへ格納されているユーザのオブジェクトを作成します。
+# (1) PARAM NUM 格納用ユーザ マスター アカウントID
+# (2) PARAM STRING 表示用ユーザ マスター アカウントID
+# RETURN \% ユーザ情報の入ったインスタンス。存在しない場合、未定義値。
+sub new_exist{
+	my $class = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id)){
+		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
+		my $info = DIR::DB->instance()->readUserFromID($id);
+		if(defined($info)){
+			# TODO : EMAIL実装
+			$result = DIR::User->new_guest();
+			$result->{id} = $id;
+			$result->{password}		= $info->{PASSWD};
+			$result->{nickname}		= Jcode->new($info->{NICKNAME},		'utf8')->ucs2();
+			$result->{introduction}	= Jcode->new($info->{INTRODUCTION},	'utf8')->ucs2();
+			$result->{registed}		= $info->{REGIST_TIME};
+			$result->{last_renew}	= $info->{RENEW_TIME};
+			$result->{last_login}	= $info->{LOGIN_TIME};
+			$result->{login_count}	= $info->{LOGIN_COUNT};
+			$result->{notes}		= $info->{NOTES};
+		}
+	}
+	return $result;
+}
+
 #==========================================================
 #==========================================================
 
 sub commit{
 	my $self = shift;
-	# TODO : 作りかけ
+	my $result = undef;
+	if($self->temp()){
+		my $id;
+		my $i = 0;
+		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
+		while(defined(DIR::User->new_exist($id)));
+		$result = DIR::DB->instance()->writeNewUser( id => $id,
+			password => $self->password(), $self->nickname(), $self->introduction());
+		if($result){
+			$self->{id} = $id;
+		}
+	}
+	else{
+	}
+	# TODO : Updateとtimestamp作りかけ
 }
 
 ############################################################
@@ -82,12 +128,29 @@ sub id{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	このインスタンスが一時的なものかどうかを取得します。
+# RETURN BOOL 一時的なものである場合、真値。
+sub temp{
+	my $self = shift;
+	return (not defined($self->id()));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	このインスタンスがゲストユーザかどうかを取得します。
 # RETURN BOOL ゲストユーザである場合、真値。
 sub guest{
 	my $self = shift;
-	my $id = $self->id();
-	return (not defined($id)) or $id == 0;
+	return $self->temp() or $self->id() == 0;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	SHA1でハッシュ化されたパスワードを取得します。
+# RETURN STRING SHA1でハッシュ化されたパスワード。
+sub password{
+	my $self = shift;
+	return $self->{password};
 }
 
 #----------------------------------------------------------

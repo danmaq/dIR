@@ -13,6 +13,7 @@ use utf8;
 use base 'Class::Singleton';
 use Jcode;
 use DBI qw(:sql_types);
+use DIR::Input;
 use DIR::DB::BatchReport;
 use DIR::DB::User;
 
@@ -113,7 +114,7 @@ sub selectAllSingleColumn{
 sub dispose{
 	my $self = shift;
 	if(defined($self->dbi())){
-		CSIM::Input->instance()->dispose();
+		DIR::Input->instance()->dispose();
 		$self->dbi()->commit();
 		$self->dbi()->disconnect();
 		$self->{ dbi } = undef;
@@ -166,7 +167,7 @@ sub _new_instance{
 sub _execute{
 	my $self = shift;
 	my $result = 0;
-	my $sql = $self->dbi()->prepare(CSIM::Template::get(shift));
+	my $sql = $self->dbi()->prepare(DIR::Template::get(shift));
 	if(defined($sql)){
 		$result = 1;
 		my @args = @_;

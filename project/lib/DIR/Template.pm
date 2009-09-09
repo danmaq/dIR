@@ -21,6 +21,7 @@ use constant FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES		=> 'sql/BatchReport/updateW
 use constant FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES	=> 'sql/BatchReport/updateWithoutNotes.sql';
 use constant FILE_SQL_BATCHREPORT_SELECT_FROMID			=> 'sql/BatchReport/selectFromID.sql';
 use constant FILE_SQL_BATCHREPORT_SELECT_LASTID			=> 'sql/BatchReport/selectLastID.sql';
+use constant FILE_SQL_USER_INSERT						=> 'sql/User/insert.sql';
 use constant FILE_SQL_USER_SELECT_FROMID				=> 'sql/User/selectFromID.sql';
 
 $DIR::Template::VERSION = 0.01;	# バージョン情報

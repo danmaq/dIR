@@ -19,4 +19,6 @@ print $cgi->header(-content_type => 'text/plain');
 print DIR::versionShort();
 print "\n";
 
+DIR::DB->instance()->dispose();
+
 __END__

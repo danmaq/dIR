@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
+use Jcode;
 use DIR::Template;
 use DIR::Validate;
 
@@ -18,6 +19,8 @@ $DIR::DB::User::VERSION = 0.01;	# バージョン情報
 
 @DIR::DB::User::ISA = qw(Exporter);
 @DIR::DB::User::EXPORT = qw(
+	readUserFromID
+	writeNewUser
 );
 
 #==========================================================
@@ -54,6 +57,24 @@ sub readUserFromID{
 			}
 			$sql->finish();
 		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウント情報をデータベースへ格納します。
+# PARAM %(id password nickame introduction) ID、パスワード、ニックネーム、自己紹介
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeNewUser{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(CSIM::Validate::isExistParameter(\%args, [qw(id password nickame introduction)], 1)){
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_INSERT), undef,
+			$args{id}, $args{password},
+			Jcode->new($args{nickame},		'ucs2')->utf8(),
+			Jcode->new($args{introduction},	'ucs2')->utf8());
 	}
 	return $result;
 }

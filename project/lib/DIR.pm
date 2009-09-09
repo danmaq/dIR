@@ -12,6 +12,7 @@ use DIR::BatchReport;
 use DIR::DB;
 use DIR::Game;
 use DIR::GameAccount;
+use DIR::Input;
 use DIR::Misc;
 use DIR::Publisher;
 use DIR::Score;
@@ -26,6 +27,7 @@ $DIR::VERSION =	# バージョン情報
 	$DIR::DB::VERSION +
 	$DIR::Game::VERSION +
 	$DIR::GameAccount::VERSION +
+	$DIR::Input::VERSION +
 	$DIR::Misc::VERSION +
 	$DIR::Publisher::VERSION +
 	$DIR::Score::VERSION +

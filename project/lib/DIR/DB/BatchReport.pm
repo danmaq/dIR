@@ -68,9 +68,10 @@ sub writeBatchReportStart{
 	my $name = shift;
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($name, 1, 255)){
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
-			Jcode->new($name, 'ucs2')->utf8());
-		$result = selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID);
+		if($self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
+			Jcode->new($name, 'ucs2')->utf8())){
+				$result = selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID);
+		}
 	}
 	return $result;
 }
@@ -79,17 +80,19 @@ sub writeBatchReportStart{
 # PUBLIC INSTANCE
 #	バッチ処理終了レポートをデータベースへ格納します。
 # PARAM %(id status notes) バッチ レポートID、終了ステータスコード、(省略可)詳細メッセージ
+# RETURN BOOLEAN 成功した場合、真値。
 sub writeBatchReportEnd{
 	my $self = shift;
 	my %args = @_;
+	my $result = undef;
 	if(CSIM::Validate::isExistParameter(\%args, [qw(id status)], 1)){
 		if(exists($args{notes})){
-			$self->dbi()->do(
+			$result = $self->dbi()->do(
 				DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES), undef,
 					$args{status}, Jcode->new($args{notes}, 'ucs2')->utf8(), $args{id});
 		}
 		else{
-			$self->dbi()->do(
+			$result = $self->dbi()->do(
 				DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES), undef,
 					$args{status}, $args{id});
 		}
