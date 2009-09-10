@@ -99,20 +99,26 @@ sub new_exist{
 sub commit{
 	my $self = shift;
 	my $result = undef;
+	my $db = DIR::DB->instance();
+	my $now = $db->selectSingleColumn(DIR::Template::FILE_SQL_NOWTIME, 'NOW');
 	if($self->temp()){
 		my $id;
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
 		while(defined(DIR::User->new_exist($id)));
-		$result = DIR::DB->instance()->writeNewUser( id => $id,
-			password => $self->password(), $self->nickname(), $self->introduction());
+		$result = $db->writeNewUser( id => $id, password => $self->password(),
+			$self->nickname(), $self->introduction());
 		if($result){
 			$self->{id} = $id;
+			$result->{registed}		= $now;
+			$result->{last_renew}	= $now;
+			$result->{last_login}	= $now;
 		}
 	}
 	else{
+		
+		# TODO : Update作りかけ
 	}
-	# TODO : Updateとtimestamp作りかけ
 }
 
 ############################################################
