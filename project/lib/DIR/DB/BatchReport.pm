@@ -85,7 +85,7 @@ sub writeBatchReportEnd{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(CSIM::Validate::isExistParameter(\%args, [qw(id status)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(id status)], 1)){
 		if(exists($args{notes})){
 			$result = $self->dbi()->do(
 				DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES), undef,

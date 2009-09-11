@@ -47,11 +47,11 @@ sub new{
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($password, 4, 40)){
 		my $sha1 = Digest::SHA1->new();
-		$result = DIR::User->new_guest();
 		$sha1->add($password);
-		$result->{password} = $sha1->b64digest();
-		$result->{login_count} = 1;
-		$result->commit();
+		my $obj = DIR::User->new_guest();
+		$obj->{password} = $sha1->b64digest();
+		$obj->{login_count} = 1;
+		if($obj->commit()){ $result = $obj; }
 	}
 	return $result;
 }
@@ -77,9 +77,9 @@ sub new_exist{
 		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
 		my $info = DIR::DB->instance()->readUserFromID($id);
 		if(defined($info)){
-			# TODO : EMAIL実装
+			# ! TODO : EMAIL実装
 			$result = DIR::User->new_guest();
-			$result->{id} = $id;
+			$result->{id}			= $id;
 			$result->{password}		= $info->{PASSWD};
 			$result->{nickname}		= Jcode->new($info->{NICKNAME},		'utf8')->ucs2();
 			$result->{introduction}	= Jcode->new($info->{INTRODUCTION},	'utf8')->ucs2();
@@ -96,29 +96,65 @@ sub new_exist{
 #==========================================================
 #==========================================================
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	このアカウントにログインします。
+# PARAM STRING パスワード(4～40字以内)
+# RETURN BOOLEAN 成功した場合、真値。
+sub login{
+	my $self = shift;
+	my $result = 0;
+	my $password = shift;
+	if(!$self->temp() and DIR::Validate::isLengthInRange($password, 4, 40)){
+		my $sha1 = Digest::SHA1->new();
+		$sha1->add($password);
+		$result = ($self->password() eq $sha1->b64digest());
+		if($result){
+			$result = DIR::DB->instance()->writeUserLogin($self->id());
+			if($result){
+				$result->{last_login}	= time;
+				$result->{login_count}	+= 1;
+			}
+		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトの変更をデータベースへ反映します。
+# RETURN BOOLEAN 成功した場合、真値。
 sub commit{
 	my $self = shift;
-	my $result = undef;
+	my $result = 0;
 	my $db = DIR::DB->instance();
-	my $now = $db->selectSingleColumn(DIR::Template::FILE_SQL_NOWTIME, 'NOW');
 	if($self->temp()){
 		my $id;
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
 		while(defined(DIR::User->new_exist($id)));
-		$result = $db->writeNewUser( id => $id, password => $self->password(),
-			$self->nickname(), $self->introduction());
+		$result = $db->writeUserNew(
+			id				=> $id,
+			password		=> $self->password(),
+			nickame			=> $self->nickname(),
+			introduction	=> $self->introduction());
 		if($result){
 			$self->{id} = $id;
-			$result->{registed}		= $now;
-			$result->{last_renew}	= $now;
-			$result->{last_login}	= $now;
+			$result->{registed}		= time;
+			$result->{last_renew}	= time;
+			$result->{last_login}	= time;
 		}
 	}
 	else{
-		
-		# TODO : Update作りかけ
+		$result = $db->writeUserRenew(
+			id				=> $self->id(),
+			password		=> $self->password(),
+			nickame			=> $self->nickname(),
+			introduction	=> $self->introduction(),
+			notes			=> $self->notes());
+		if($result){ $result->{last_renew} = time; }
 	}
+	return $result;
 }
 
 ############################################################

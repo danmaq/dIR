@@ -1,0 +1,7 @@
+UPDATE		DIR_USER_ACCOUNT
+	SET		PASSWD			= ?,
+			NICKNAME		= ?,
+			INTRODUCTION	= ?,
+			RENEW_TIME		= NOW(),
+			NOTES			= ?
+	WHERE	ID = ?;

@@ -20,7 +20,9 @@ $DIR::DB::User::VERSION = 0.01;	# バージョン情報
 @DIR::DB::User::ISA = qw(Exporter);
 @DIR::DB::User::EXPORT = qw(
 	readUserFromID
-	writeNewUser
+	writeUserNew
+	writeUserRenew
+	writeUserLogin
 );
 
 #==========================================================
@@ -66,15 +68,55 @@ sub readUserFromID{
 #	ユーザ マスター アカウント情報をデータベースへ格納します。
 # PARAM %(id password nickame introduction) ID、パスワード、ニックネーム、自己紹介
 # RETURN BOOLEAN 成功した場合、真値。
-sub writeNewUser{
+sub writeUserNew{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(CSIM::Validate::isExistParameter(\%args, [qw(id password nickame introduction)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(id password nickame introduction)], 1)){
 		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_INSERT), undef,
 			$args{id}, $args{password},
 			Jcode->new($args{nickame},		'ucs2')->utf8(),
 			Jcode->new($args{introduction},	'ucs2')->utf8());
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	データベースのユーザ マスター アカウント情報を更新します。
+# PARAM %(id password nickame introduction notes) ID、パスワード、ニックネーム、自己紹介、備考
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeUserRenew{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id password nickame introduction)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)])
+	){
+		my $notes = $args{notes};
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_UPDATE), undef,
+			$args{password},
+			Jcode->new($args{nickame},				'ucs2')->utf8(),
+			Jcode->new($args{introduction},			'ucs2')->utf8(),
+			defined($notes) ? Jcode->new($notes,	'ucs2')->utf8() : undef,
+			$args{id});
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	データベースのログイン情報を更新します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeUserLogin{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id =~ /^[0-9]+$/){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_USER_UPDATE_LOGIN), undef, $id);
 	}
 	return $result;
 }

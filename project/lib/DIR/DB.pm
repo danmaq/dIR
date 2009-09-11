@@ -15,10 +15,12 @@ use Jcode;
 use DBI qw(:sql_types);
 use DIR::Input;
 use DIR::DB::BatchReport;
+use DIR::DB::EMail;
 use DIR::DB::User;
 
 $DIR::DB::VERSION =	# バージョン情報
 	$DIR::DB::BatchReport::VERSION +
+	$DIR::DB::EMail::VERSION +
 	$DIR::DB::User::VERSION +
 	0.01;
 
