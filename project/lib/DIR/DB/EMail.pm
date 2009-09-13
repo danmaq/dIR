@@ -20,7 +20,9 @@ $DIR::DB::EMail::VERSION = 0.01;	# バージョン情報
 @DIR::DB::EMail::ISA = qw(Exporter);
 @DIR::DB::EMail::EXPORT = qw(
 	readEMailFromEMail
+	readEMailFromUID
 	writeEMailInsert
+	writeEMailUpdate
 );
 
 #==========================================================
@@ -57,17 +59,24 @@ sub readEMailFromEMail{
 	}
 	return $result;
 }
-# FILE_SQL_USER_EMAIL_SELECT_FROM_UID
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウントIDからメールアドレスを検索します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN @STRING メールアドレス
 sub readEMailFromUID{
 	my $self = shift;
 	my $uid = shift;
-	my $result = undef;
-	if(defined($email)){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_URI,
-		{ type => SQL_VARCHAR, value => $email });
+	my @result = ();
+	if(defined($uid) and $uid){
+		@result = $self->selectAllSingleColumn(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID,
+			'EMAIL', $uid);
 	}
-	return $result;
+	return @result;
 }
+
+###########################################################
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
@@ -87,6 +96,8 @@ sub writeEMailInsert{
 	}
 	return $result;
 }
+
+###########################################################
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE

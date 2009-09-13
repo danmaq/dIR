@@ -28,7 +28,10 @@ use constant FILE_SQL_USER_UPDATE_LOGIN					=> 'sql/User/updateLogin.sql';
 use constant FILE_SQL_USER_EMAIL_INSERT					=> 'sql/User/EMail/insert.sql';
 use constant FILE_SQL_USER_EMAIL_UPDATE					=> 'sql/User/EMail/update.sql';
 use constant FILE_SQL_USER_EMAIL_SELECT_FROM_URI		=> 'sql/User/EMail/selectFromEMail.sql';
-use constant FILE_SQL_USER_EMAIL_SELECT_FROM_UID		=> 'sql/User/EMail/selectFromURI.sql';
+use constant FILE_SQL_USER_EMAIL_SELECT_FROM_UID		=> 'sql/User/EMail/selectFromUID.sql';
+use constant FILE_SQL_USER_PUBLISHER_INSERT				=> 'sql/User/Publisher/insert.sql';
+use constant FILE_SQL_USER_PUBLISHER_UPDATE				=> 'sql/User/Publisher/update.sql';
+use constant FILE_SQL_USER_PUBLISHER_SELECT_FROM_UID	=> 'sql/User/Publisher/selectFromUID.sql';
 
 $DIR::Template::VERSION = 0.01;	# バージョン情報
 

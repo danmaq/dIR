@@ -55,7 +55,7 @@ sub new{
 #	存在するログからバッチレポートを新規作成します。
 # PARAM NUM ログID
 # RETURN \% バッチレポート情報の入ったインスタンス。存在しない場合、未定義値。
-sub new_exist{
+sub newExist{
 	my $class = shift;
 	my $id = shift;
 	my $result = undef;

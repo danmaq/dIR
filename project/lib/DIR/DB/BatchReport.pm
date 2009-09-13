@@ -62,19 +62,21 @@ sub readBatchReportFromID{
 # PUBLIC INSTANCE
 #	バッチ処理開始レポートをデータベースへ格納します。
 # PARAM STRING バッチ名
-# RETURN NUM バッチ レポートID。
+# RETURN NUM バッチ レポートID。失敗した場合、未定義値。
 sub writeBatchReportStart{
 	my $self = shift;
 	my $name = shift;
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($name, 1, 255)){
-		if($self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
-			Jcode->new($name, 'ucs2')->utf8())){
-				$result = selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID);
-		}
+		if(
+			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
+				Jcode->new($name, 'ucs2')->utf8())
+		){ $result = selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID); }
 	}
 	return $result;
 }
+
+###########################################################
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE

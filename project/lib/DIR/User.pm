@@ -15,9 +15,11 @@ use DIR::DB;
 use DIR::Misc;
 use DIR::Validate;
 use DIR::User::EMail;
+use DIR::User::Publisher;
 
 $DIR::User::VERSION =	# バージョン情報
 	$DIR::User::EMail::VERSION +
+	$DIR::User::Publisher::VERSION +
 	0.01;
 
 my %s_fields = (	# フィールド
@@ -32,6 +34,8 @@ my %s_fields = (	# フィールド
 	login_count		=> 0,										# ログイン回数
 	notes			=> undef,									# 備考
 );
+
+# ! TODO : メールアドレス追加/削除処理
 
 #==========================================================
 #==========================================================
@@ -69,7 +73,7 @@ sub new_guest{ return bless({%s_fields}, shift); }
 # (1) PARAM NUM 格納用ユーザ マスター アカウントID
 # (2) PARAM STRING 表示用ユーザ マスター アカウントID
 # RETURN \% ユーザ情報の入ったインスタンス。存在しない場合、未定義値。
-sub new_exist{
+sub newExist{
 	my $class = shift;
 	my $id = shift;
 	my $result = undef;
@@ -77,17 +81,17 @@ sub new_exist{
 		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
 		my $info = DIR::DB->instance()->readUserFromID($id);
 		if(defined($info)){
-			# ! TODO : EMAIL実装
 			$result = DIR::User->new_guest();
 			$result->{id}			= $id;
 			$result->{password}		= $info->{PASSWD};
-			$result->{nickname}		= Jcode->new($info->{NICKNAME},		'utf8')->ucs2();
-			$result->{introduction}	= Jcode->new($info->{INTRODUCTION},	'utf8')->ucs2();
+			$result->{nickname}		= $info->{NICKNAME};
+			$result->{introduction}	= $info->{INTRODUCTION};
 			$result->{registed}		= $info->{REGIST_TIME};
 			$result->{last_renew}	= $info->{RENEW_TIME};
 			$result->{last_login}	= $info->{LOGIN_TIME};
 			$result->{login_count}	= $info->{LOGIN_COUNT};
 			$result->{notes}		= $info->{NOTES};
+			$result->{email}		= [DIR::User::EMail::createObjFromUID($result)];
 		}
 	}
 	return $result;
@@ -132,7 +136,7 @@ sub commit{
 		my $id;
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
-		while(defined(DIR::User->new_exist($id)));
+		while(defined(DIR::User->newExist($id)));
 		$result = $db->writeUserNew(
 			id				=> $id,
 			password		=> $self->password(),
@@ -188,11 +192,26 @@ sub guest{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	パブリッシャー権限を持つかどうかを取得します。
+# RETURN BOOL パブリッシャー権限を持つ場合、真値。
+sub isPublisher{ return 0; }
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	SHA1でハッシュ化されたパスワードを取得します。
 # RETURN STRING SHA1でハッシュ化されたパスワード。
 sub password{
 	my $self = shift;
 	return $self->{password};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	メールアドレス一覧を取得します。
+# RETURN @ メールアドレス一覧。
+sub email{
+	my $self = shift;
+	return $self->{email};
 }
 
 #----------------------------------------------------------
@@ -225,7 +244,7 @@ sub introduction{
 # RETURN NUM 登録日時(UNIX時間)。
 sub registed{
 	my $self = shift;
-	return $self->{login_count};
+	return $self->{registed};
 }
 
 #----------------------------------------------------------
@@ -257,13 +276,16 @@ sub loginCount{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	備考を取得します。
+#	備考を取得/設定します。
 # PARAM STRING (省略可)新しい備考
+# PARAM BOOLEAN (省略可)削除フラグ
 # RETURN NUM 備考。存在しない場合、未定義値。
 sub notes{
 	my $self = shift;
 	my $value = shift;
+	my $del = shift;
 	if(defined($value)){ $self->{notes} = $value; }
+	if(defined($del) and $del){ $self->{notes} = undef; }
 	return $self->{notes};
 }
 

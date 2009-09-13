@@ -1,0 +1,6 @@
+UPDATE		DIR_PUBLISHER
+	SET		CO_NAME		= ?
+			HEAD_NAME	= ?
+			URL			= ?
+			COMMISION	= ?
+	WHERE	USER_ID		= ?;

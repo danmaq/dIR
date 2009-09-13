@@ -32,10 +32,27 @@ my %s_fields = (	# フィールド
 #==========================================================
 
 #----------------------------------------------------------
+# PUBLIC STATIC
+#	ユーザ マスター アカウントIDからメールアドレス情報オブジェクト一覧を生成します。
+# PARAM \% ユーザのマスター アカウント オブジェクト
+# RETURN @\% メールアドレス情報の入ったインスタンス一覧。
+sub createObjFromUID{
+	my $user = shift;
+	my @result = ();
+	if(defined($user) and ref($user) eq 'DIR::User' and not $user->guest()){
+		foreach my $email (DIR::DB->instance()->readEMailFromUID($user)){
+			my $obj = DIR::User::EMail->newExistFromURI($email);
+			if(defined($obj)){ push(@result, $obj); }
+		}
+	}
+	return @result;
+}
+
+#----------------------------------------------------------
 # PUBLIC NEW
 #	メールアドレス情報を新規作成します。
 # PARAM %(user email service ads) ユーザのマスターアカウント、メールアドレス、サービス通知フラグ、広告通知フラグ
-# RETURN \% 定義情報の入ったインスタンス。
+# RETURN \% メールアドレス情報の入ったインスタンス。
 sub new{
 	my $class = shift;
 	my %args = @_;
@@ -45,7 +62,7 @@ sub new{
 		DIR::Validate::isExistParameter(\%args, [qw(service ads)], 1) and
 		ref($args{user}) eq 'DIR::User' and not $args{user}->guest() and
 		DIR::Validate::isEMail($args{email}) and
-		not defined(User::EMail->new_exist($args{email}))
+		not defined(User::EMail->newExistFromURI($args{email}))
 	){
 		my $obj = bless({%s_fields}, $class);
 		$obj->{id}				= $args{user}->id(),
@@ -62,8 +79,8 @@ sub new{
 # PUBLIC NEW
 #	既にデータベースへ格納されているメールアドレスのオブジェクトを作成します。
 # PARAM STRING 電子メールアドレス
-# RETURN \% 定義情報の入ったインスタンス。存在しない場合、未定義値。
-sub new_exist{
+# RETURN \% メールアドレス情報の入ったインスタンス。存在しない場合、未定義値。
+sub newExistFromURI{
 	my $class = shift;
 	my $email = shift;
 	my $result = undef;

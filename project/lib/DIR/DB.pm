@@ -16,11 +16,13 @@ use DBI qw(:sql_types);
 use DIR::Input;
 use DIR::DB::BatchReport;
 use DIR::DB::EMail;
+use DIR::DB::Publisher;
 use DIR::DB::User;
 
 $DIR::DB::VERSION =	# バージョン情報
 	$DIR::DB::BatchReport::VERSION +
 	$DIR::DB::EMail::VERSION +
+	$DIR::DB::Publisher::VERSION +
 	$DIR::DB::User::VERSION +
 	0.01;
 
@@ -78,7 +80,7 @@ sub selectAll{
 # PUBLIC INSTANCE
 #	特定カラム名のみ1件検索します。
 # PARAM STRING SQLファイル名
-# PARAM カラム名
+# PARAM STRING カラム名
 # PARAM @ SQLに渡す値
 # RETURN $ 検索結果
 sub selectSingleColumn{
@@ -91,7 +93,7 @@ sub selectSingleColumn{
 # PUBLIC INSTANCE
 #	特定カラム名のみ全件検索します。
 # PARAM STRING SQLファイル名
-# PARAM カラム名
+# PARAM STRING カラム名
 # PARAM @ SQLに渡す値
 # RETURN @ 検索結果一覧
 sub selectAllSingleColumn{
