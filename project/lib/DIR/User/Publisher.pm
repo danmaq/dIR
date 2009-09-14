@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use base qw(DIR::User);
 use DIR::Validate;
+use DIR::DB;
 
 $DIR::User::Publisher::VERSION = 0.01;	# バージョン情報
 
@@ -87,11 +88,18 @@ sub newExistFromUID{
 #==========================================================
 
 #----------------------------------------------------------
-# OVERRIDE INSTANCE
+# PUBLIC INSTANCE
 #	オブジェクトの変更をデータベースへ反映します。
 # PARAM BOOLEAN (省略可=TRUE)ユーザ マスター アカウント情報も同時にコミットするかどうか
 # RETURN BOOLEAN 成功した場合、真値。
-sub commit;	# OVERRIDE;
+sub commit;		# OVERRIDE
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% バッチ レポート オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals;	# OVERRIDE
 
 #==========================================================
 #==========================================================
@@ -177,23 +185,53 @@ sub notes{
 #==========================================================
 #==========================================================
 
-{	# オーバーライド ブロック。
-	my $old_commit = \&DIR::User::commit;
-	my $new_commit = sub{
+{	# commit オーバーライド ブロック。
+	my $fnSuper = \&DIR::User::commit;
+	my $fnSub = sub{
 		my $self = shift;
 		my $super = shift;
 		my $result = 0;
+		my $db = DIR::DB->instance();
+		my %args = (
+			id			=> $self->id(),
+			co_name		=> $self->coName(),
+			head_name	=> $self->headName(),
+			uri			=> $self->uri(),
+		);
 		if($self->{publisher}->{inserted}){
-			# ! TODO : UPDATE
+			$result = $db->writePublisherUpdate(%args,
+				commision => $self->commision());
 		}
 		else{
-			# ! TODO : INSERT
+			$result = $db->writePublisherInsert(%args);
+			if($result){ $self->{publisher}->{inserted} = 1; }
 		}
-		return ($result and (!(defined($super) and $super) or &$old_commit($self)));
+		return ($result and (!(defined($super) and $super) or $fnSuper->($self)));
 	};
 	{
 		no warnings qw(redefine);
-		*DIR::User::Publisher::commit = $new_commit;
+		*DIR::User::Publisher::commit = $fnSub;
+	}
+}
+
+{	# isEquals オーバーライド ブロック。
+	my $fnSuper = \&DIR::User::isEquals;
+	my $fnSub = sub{
+		my $self = shift;
+		my $expr = shift;
+		return ($fnSuper->($self)										and
+			ref($expr)						eq 'DIR::User::Publisher'	and
+			$self->coName()					eq $expr->coName()			and
+			$self->headName()				eq $expr->headName()		and
+			$self->uri()					eq $expr->uri()				and
+			$self->commision()				== $expr->commision()		and
+			$self->registed()				== $expr->registed()		and
+			$self->notes()					eq $expr->notes()			and
+			$self->{publisher}->{inserted}	== $expr->{publisher}->{inserted});
+	};
+	{
+		no warnings qw(redefine);
+		*DIR::User::Publisher::isEquals = $fnSub;
 	}
 }
 

@@ -23,7 +23,7 @@ sub p;
 	my $old = \&Foo::p;
 	my $new = sub{
 		my $self = shift;
-		return ('fuga' . $self->{a}) . (&$old($self));
+		return ('fuga' . $self->{a}) . ($old->($self));
 	};
 	{
 		no warnings qw( redefine );

@@ -98,6 +98,26 @@ sub end{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% バッチ レポート オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals{
+	my $self = shift;
+	my $expr = shift;
+	return (
+		defined($expr)								and
+		ref($expr)			eq 'DIR::BatchReport'	and
+		$self->id()			== $expr->id()			and
+		$self->name()		eq $expr->name()		and
+		$self->status()		== $expr->status()		and
+		$self->started()	== $expr->started()		and
+		$self->ended()		== $expr->ended()		and
+		$self->notes()		eq $expr->notes()
+	);
+}
+
 ############################################################
 
 #----------------------------------------------------------

@@ -3,7 +3,7 @@
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
 #	パブリッシャー情報のデータベース入出力クラス。
-# ! NOTE : このクラスは、実質CSIM::DBの一部として機能します。
+# ! NOTE : このクラスは、実質DIR::DBの一部として機能します。
 package DIR::DB::Publisher;
 use 5.006;
 use strict;
@@ -88,18 +88,19 @@ sub writePublisherInsert{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	パブリッシャー情報をデータベースへ格納します。
-# PARAM %(id co_name head_name uri commision) パブリッシャーID、団体名、代表者名、URL、権限レベル
+# PARAM %(uid co_name head_name uri commision)
+#	ユーザ マスタ アカウントID、団体名、代表者名、URL、権限レベル
 # RETURN BOOLEAN 成功した場合、真値。
 sub writePublisherUpdate{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(DIR::Validate::isExistParameter(\%args, [qw(id co_name head_name uri commision)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(uid co_name head_name uri commision)], 1)){
 		$result = 
 			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_PUBLISHER_UPDATE), undef,
 				Jcode->new($args{co_name},		'ucs2')->utf8(),
 				Jcode->new($args{head_name},	'ucs2')->utf8(),
-				$args{uri}, $args{commision}, $args{id});
+				$args{uri}, $args{commision}, $args{uid});
 	}
 	return $result;
 }

@@ -1,0 +1,8 @@
+INSERT INTO DIR_GAME (
+	PUB_ID,		DEVCODE,		TITLE,
+	VALIDATOR,	REG_BROWSER,	REGIST_TIME
+)
+VALUES(
+	?,			?,				?,
+	?,			?,				NOW()
+);

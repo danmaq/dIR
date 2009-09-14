@@ -127,6 +127,26 @@ sub commit{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% バッチ レポート オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals{
+	my $self = shift;
+	my $expr = shift;
+	return (defined($expr)									and
+		ref($expr)				eq 'DIR::EMail'				and
+		$self->userID()			== $expr->userID()			and
+		$self->uri()			eq $expr->uri()				and
+		$self->validateCode()	eq $expr->validateCode()	and
+		$self->notifyService()	== $expr->notifyService()	and
+		$self->notifyAds()		== $expr->notifyAds()		and
+		$self->undeliverable()	== $expr->undeliverable()	and
+		$self->registed()		== $expr->registed()		and
+		$self->{inserted}		== $expr->{inserted});
+}
+
 ############################################################
 
 #----------------------------------------------------------
@@ -153,7 +173,7 @@ sub isTemp{
 # RETURN BOOL 実在する場合、真値。
 sub isExists{
 	my $self = shift;
-	return (not $self->isTemp() and defined($self->{validate_code}));
+	return (not $self->isTemp() and defined($self->validateCode()));
 }
 
 #----------------------------------------------------------

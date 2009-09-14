@@ -161,6 +161,42 @@ sub commit{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% バッチ レポート オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals{
+	my $self = shift;
+	my $expr = shift;
+	my $result = 0;
+	if(defined($expr) and ref($expr) =~ /^DIR::User/){
+		my @selfMail = $self->email();
+		my @exprMail = $expr->email();
+		my $selfLenth = scalar(@selfMail);
+		my $exprLenth = scalar(@exprMail);
+		if($selfLenth == $exprLenth){
+			my $bEMailEquals = 1;
+			for(my $i = $selfLenth - 1; $i >= 0; $i--){
+				$bEMailEquals = ($bEMailEquals and $selfMail[$i]->isEquals($exprMail[$i]));
+			}
+			$result = ($bEMailEquals								and
+				$self->id()				== $expr->id()				and
+				$self->isPublisher()	== $expr->isPublisher()		and
+				$self->password()		eq $expr->password()		and
+				$self->nickname()		eq $expr->nickname()		and
+				$self->introduction()	eq $expr->introduction()	and
+				$self->registed()		== $expr->registed()		and
+				$self->lastRenew()		== $expr->lastRenew()		and
+				$self->lastLogin()		== $expr->lastLogin()		and
+				$self->loginCount()		== $expr->loginCount()		and
+				$self->notes()			eq $expr->notes());
+		}
+	}
+	
+	return $result;
+}
+
 ############################################################
 
 #----------------------------------------------------------
