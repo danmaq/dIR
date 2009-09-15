@@ -14,16 +14,20 @@ use base 'Class::Singleton';
 use Jcode;
 use DBI qw(:sql_types);
 use DIR::Input;
+use DIR::DB::Access;
 use DIR::DB::BatchReport;
 use DIR::DB::EMail;
 use DIR::DB::Game;
+use DIR::DB::GameAccount;
 use DIR::DB::Publisher;
 use DIR::DB::User;
 
 $DIR::DB::VERSION =	# バージョン情報
+	$DIR::DB::Access::VERSION +
 	$DIR::DB::BatchReport::VERSION +
 	$DIR::DB::EMail::VERSION +
 	$DIR::DB::Game::VERSION +
+	$DIR::DB::GameAccount::VERSION +
 	$DIR::DB::Publisher::VERSION +
 	$DIR::DB::User::VERSION +
 	0.01;
@@ -143,8 +147,8 @@ sub dbi{
 
 #------------------------------------------------------------------------------
 # PRIVATE NEW
-# 	インスタンスを作成します。
-#	インスタンス取得時に1度だけ自動的に呼び出されます。
+# 	オブジェクトを作成します。
+#	オブジェクト取得時に1度だけ自動的に呼び出されます。
 # RETURN \% オブジェクト
 sub _new_instance{
 	my $self = bless({ %s_fields }, shift);

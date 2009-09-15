@@ -3,7 +3,7 @@
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
 #	ユーザの電子メールアドレス管理クラス。
-#	1メールアドレスごとに1インスタンスが割り当てられる。
+#	1メールアドレスごとに1オブジェクトが割り当てられる。
 package DIR::User::EMail;
 use 5.006;
 use strict;
@@ -35,7 +35,7 @@ my %s_fields = (	# フィールド
 # PUBLIC STATIC
 #	ユーザ マスター アカウントIDからメールアドレス情報オブジェクト一覧を生成します。
 # PARAM \% ユーザのマスター アカウント オブジェクト
-# RETURN @\% メールアドレス情報の入ったインスタンス一覧。
+# RETURN @\% メールアドレス情報の入ったオブジェクト一覧。
 sub createObjFromUID{
 	my $user = shift;
 	my @result = ();
@@ -52,7 +52,7 @@ sub createObjFromUID{
 # PUBLIC NEW
 #	メールアドレス情報を新規作成します。
 # PARAM %(user email service ads) ユーザのマスターアカウント、メールアドレス、サービス通知フラグ、広告通知フラグ
-# RETURN \% メールアドレス情報の入ったインスタンス。
+# RETURN \% メールアドレス情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
 	my %args = @_;
@@ -79,7 +79,7 @@ sub new{
 # PUBLIC NEW
 #	既にデータベースへ格納されているメールアドレスのオブジェクトを作成します。
 # PARAM STRING 電子メールアドレス
-# RETURN \% メールアドレス情報の入ったインスタンス。存在しない場合、未定義値。
+# RETURN \% メールアドレス情報の入ったオブジェクト。存在しない場合、未定義値。
 sub newExistFromURI{
 	my $class = shift;
 	my $email = shift;
@@ -160,7 +160,7 @@ sub userID{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	このインスタンスが一時的なものかどうかを取得します。
+#	このオブジェクトが一時的なものかどうかを取得します。
 # RETURN BOOL 一時的なものである場合、真値。
 sub isTemp{
 	my $self = shift;
@@ -169,7 +169,7 @@ sub isTemp{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	このインスタンスに登録されているメールアドレスが実在するかどうかを取得します。
+#	このオブジェクトに登録されているメールアドレスが実在するかどうかを取得します。
 # RETURN BOOL 実在する場合、真値。
 sub isExists{
 	my $self = shift;

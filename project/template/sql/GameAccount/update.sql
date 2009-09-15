@@ -1,0 +1,7 @@
+UPDATE		DIR_GAME_ACCOUNT
+	SET		NICKNAME		= ?,
+			INTRODUCTION	= ?,
+			RENEW_TIME		= ?
+	WHERE	ID				= ?	AND
+			USER_ID			= ?	AND
+			GAME_ID			= ?;

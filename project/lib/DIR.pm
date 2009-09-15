@@ -8,6 +8,7 @@ use 5.006;
 use strict;
 use warnings;
 use utf8;
+use DIR::Access;
 use DIR::BatchReport;
 use DIR::DB;
 use DIR::Game;
@@ -22,6 +23,7 @@ use DIR::Validate;
 $DIR::VERSION_STRING = '0';			# バージョン文字列(短)
 
 $DIR::VERSION =	# バージョン情報
+	$DIR::Access::VERSION +
 	$DIR::BatchReport::VERSION +
 	$DIR::DB::VERSION +
 	$DIR::Game::VERSION +

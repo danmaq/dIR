@@ -3,7 +3,7 @@
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
 #	ゲームパブリッシャーのクラス。
-#	1アカウントごとに1インスタンスが割り当てられる。
+#	1アカウントごとに1オブジェクトが割り当てられる。
 package DIR::User::Publisher;
 use 5.006;
 use strict;
@@ -32,14 +32,14 @@ my %s_fields = (	# フィールド
 # PUBLIC NEW
 #	ゲームパブリッシャーを新規作成します。
 # PARAM %(user_id co_name head_name uri) ユーザ マスター アカウントID、団体名、代表者名、URL
-# RETURN \% 定義情報の入ったインスタンス。
+# RETURN \% 定義情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(user_id co_name head_name uri)], 1)){
 		my $super = DIR::User::Publisher->newExistFromUID($args{user_id});
-		if(defined($super)){
+		if(defined($super) and not $super->guest()){
 			if($super->isPublisher()){ $result = $super; }
 			else{
 				my $obj = bless($super, $class);
@@ -47,7 +47,7 @@ sub new{
 				$obj->{publisher}->{co_name}	= $args{co_name};
 				$obj->{publisher}->{head_name}	= $args{head_name};
 				$obj->{publisher}->{uri}		= $args{uri};
-				$obj->commit();
+				if($obj->commit()){ $result = $obj; }
 			}
 		}
 	}
@@ -59,7 +59,7 @@ sub new{
 #	既にデータベースへ格納されているユーザのオブジェクトを作成します。
 # (1) PARAM NUM 格納用ユーザ マスター アカウントID
 # (2) PARAM STRING 表示用ユーザ マスター アカウントID
-# RETURN \% ユーザ情報の入ったインスタンス。存在しない場合、未定義値。
+# RETURN \% ユーザ情報の入ったオブジェクト。存在しない場合、未定義値。
 sub newExistFromUID{
 	my $class = shift;
 	my $uid = shift;

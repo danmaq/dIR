@@ -2,7 +2,7 @@
 #	dIR - danmaq Internet Ranking CGI
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
-#	ゲーム情報のデータベース入出力クラス。
+#	ゲーム マスター情報のデータベース入出力クラス。
 # ! NOTE : このクラスは、実質DIR::DBの一部として機能します。
 package DIR::DB::Game;
 use 5.006;
@@ -30,8 +30,8 @@ $DIR::DB::Game::VERSION = 0.01;	# バージョン情報
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	ゲームIDからデータベース内のゲーム情報を検索します。
-# PARAM NUM ゲームID
+#	ゲーム マスターIDからデータベース内のゲーム マスター情報を検索します。
+# PARAM NUM ゲーム マスターID
 # RETURN \%(PUB_ID DEVCODE TITLE VALIDATOR REG_BROWSER REGIST_TIME NOTES)
 #	団体名、代表者名、URL、権限レベル、登録日時、備考
 sub readGameFromID{
@@ -63,9 +63,9 @@ sub readGameFromID{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	ユーザ マスター アカウントIDからゲームIDを検索します。
+#	ユーザ マスター アカウントIDからゲーム マスターIDを検索します。
 # PARAM NUM ユーザ マスター アカウントID
-# RETURN @NUM ゲームID
+# RETURN @NUM ゲーム マスターID
 sub readGameFromUID{
 	my $self = shift;
 	my $uid = shift;
@@ -81,10 +81,10 @@ sub readGameFromUID{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	ゲーム情報をデータベースへ格納します。
+#	ゲーム マスター情報をデータベースへ格納します。
 # PARAM %(user_id dev_code title validator_uri registable_on_browser)
 #	ユーザ マスター アカウントID、開発コード、タイトル、検証URL、Webブラウザから登録可能かどうか
-# RETURN NUM ゲームID。失敗した場合、未定義値。
+# RETURN NUM ゲーム マスターID。失敗した場合、未定義値。
 sub writeGameInsert{
 	my $self = shift;
 	my %args = @_;
@@ -102,9 +102,9 @@ sub writeGameInsert{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	ゲーム情報をデータベースへ格納します。
+#	ゲーム マスター情報をデータベースへ格納します。
 # PARAM %(id user_id dev_code title validator_uri registable_on_browser notes)
-#	ゲームID、ユーザ マスター アカウントID、開発コード、タイトル、検証URL、Webブラウザから登録可能かどうか、備考
+#	ゲーム マスターID、ユーザ マスター アカウントID、開発コード、タイトル、検証URL、Webブラウザから登録可能かどうか、備考
 # RETURN BOOLEAN 成功した場合、真値。
 sub writeGameUpdate{
 	my $self = shift;
