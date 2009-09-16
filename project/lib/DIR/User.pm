@@ -50,10 +50,8 @@ sub new{
 	my $password = shift;
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($password, 4, 40)){
-		my $sha1 = Digest::SHA1->new();
-		$sha1->add($password);
 		my $obj = DIR::User->new_guest();
-		$obj->{password} = $sha1->b64digest();
+		$obj->password($password);
 		$obj->{login_count} = 1;
 		if($obj->commit()){ $result = $obj; }
 	}
@@ -77,7 +75,7 @@ sub newExist{
 	my $class = shift;
 	my $id = shift;
 	my $result = undef;
-	if(defined($id)){
+	if(defined($id) and $id){
 		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
 		my $info = DIR::DB->instance()->readUserFromID($id);
 		if(defined($info)){
@@ -143,7 +141,9 @@ sub commit{
 			nickame			=> $self->nickname(),
 			introduction	=> $self->introduction());
 		if($result){
-			$self->{id} = $id;
+			$self->{id}				= $id;
+			$self->{nickname}		= DIR::Misc::getStrIDFromNumID($id);
+			$self->{introduction}	= '';
 			$result->{registed}		= time;
 			$result->{last_renew}	= time;
 			$result->{last_login}	= time;
@@ -234,10 +234,17 @@ sub isPublisher{ return 0; }
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	SHA1でハッシュ化されたパスワードを取得します。
+#	SHA1でハッシュ化されたパスワードを取得/設定します。
+# PARAM STRING (省略可)新しいパスワード
 # RETURN STRING SHA1でハッシュ化されたパスワード。
 sub password{
 	my $self = shift;
+	my $value = shift;
+	if(defined($value)){
+		my $sha1 = Digest::SHA1->new();
+		$sha1->add($value);
+		$self->{password} = $sha1->b64digest();
+	}
 	return $self->{password};
 }
 

@@ -58,7 +58,7 @@ sub createRandomID{
 	my $result;
 	unless(defined($af)){ $af = 0; }
 	do{ $result = int(rand(0xFFFF) * 0x10000 + rand(0xFFFF)); }
-	until((sprintf('%08X', $result) =~ /^[A-F]{8}$/) or (not $af));
+	until($result and ((sprintf('%08X', $result) =~ /^[A-F]{8}$/) or (not $af)));
 	return $result;
 }
 

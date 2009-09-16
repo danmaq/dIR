@@ -30,6 +30,7 @@ use constant FILE_SQL_GAMEACCOUNT_INSERT				=> 'sql/User/GameAccount/insert.sql'
 use constant FILE_SQL_GAMEACCOUNT_UPDATE				=> 'sql/User/GameAccount/update.sql';
 use constant FILE_SQL_GAMEACCOUNT_UPDATE_LOGIN			=> 'sql/User/GameAccount/updateLogin.sql';
 use constant FILE_SQL_GAMEACCOUNT_SELECT_FROM_ID		=> 'sql/User/GameAccount/selectFromID.sql';
+use constant FILE_SQL_GAMEACCOUNT_SELECT_GAME_AND_USER	=> 'sql/User/GameAccount/selectFromGameAndUser.sql';
 use constant FILE_SQL_USER_INSERT						=> 'sql/User/insert.sql';
 use constant FILE_SQL_USER_SELECT_FROMID				=> 'sql/User/selectFromID.sql';
 use constant FILE_SQL_USER_UPDATE						=> 'sql/User/update.sql';

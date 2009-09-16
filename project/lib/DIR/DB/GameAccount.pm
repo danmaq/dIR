@@ -20,6 +20,10 @@ $DIR::DB::GameAccount::VERSION = 0.01;	# バージョン情報
 @DIR::DB::GameAccount::ISA = qw(Exporter);
 @DIR::DB::GameAccount::EXPORT = qw(
 	readGameAccountFromID
+	readGameAccountIDFromGameAndUser
+	writeGameAccountNew
+	writeGameAccountRenew
+	writeUserLogin
 );
 
 #==========================================================
@@ -62,12 +66,88 @@ sub readGameAccountFromID{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウントIDとゲーム マスターIDからゲーム アカウントIDを検索します。
+# PARAM %(user_id game_id) ユーザ マスター アカウントID、ゲーム マスターID
+# RETURN NUM ゲーム アカウントID
+sub readGameAccountIDFromGameAndUser{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(DIR::Validate::isExistParameter(\%args, [qw(user_id game_id)], 1, 1)){
+		$result = $self->selectSingleColumn(DIR::Template::FILE_SQL_GAMEACCOUNT_SELECT_GAME_AND_USER,
+			'ID', $args{game_id}, $args{user_id});
+	}
+	return $result;
+}
+
 ###########################################################
 
-
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム アカウント情報をデータベースへ格納します。
+# PARAM %(id user_id game_id password nickname introduction)
+#	ゲーム アカウントID、ユーザ マスター アカウントID、ゲーム マスターID、パスワード、ニックネーム、自己紹介
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeGameAccountNew{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id password nickname introduction)], 1)){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_INSERT), undef,
+			$args{id}, $args{user_id}, $args{game_id}, $args{password},
+			Jcode->new($args{nickame},		'ucs2')->utf8(),
+			Jcode->new($args{introduction},	'ucs2')->utf8());
+	}
+	return $result;
+}
 
 ###########################################################
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	データベースのゲーム アカウント情報を更新します。
+# PARAM %(id user_id game_id password nickame introduction notes)
+#	ゲーム アカウントID、ユーザ マスター アカウントID、ゲーム マスターID、パスワード、ニックネーム、自己紹介、備考
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeGameAccountRenew{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id password nickame introduction)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)])
+	){
+		my $notes = $args{notes};
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_UPDATE), undef,
+			$args{password},
+			Jcode->new($args{nickame},				'ucs2')->utf8(),
+			Jcode->new($args{introduction},			'ucs2')->utf8(),
+			defined($notes) ? Jcode->new($notes,	'ucs2')->utf8() : undef,
+			$args{id}, $args{user_id}, $args{game_id});
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	データベースのログイン情報を更新します。
+# PARAM %(id user_id game_id) ゲーム アカウントID、ユーザ マスター アカウントID、ゲーム マスターID
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeGameAccountLogin{
+	my $self = shift;
+	my %args = @_;
+	my $result = undef;
+	if(DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id)], 1, 1)){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_UPDATE_LOGIN), undef,
+				$args{id}, $args{user_id}, $args{game_id});
+	}
+	return $result;
+}
 
 1;
 
