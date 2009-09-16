@@ -135,14 +135,14 @@ sub commit{
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
 		while(defined(DIR::User->newExist($id)));
+		$self->{id}			= $id;
+		$self->{nickname}	= DIR::Misc::getStrIDFromNumID($id);
 		$result = $db->writeUserNew(
 			id				=> $id,
 			password		=> $self->password(),
 			nickame			=> $self->nickname(),
 			introduction	=> $self->introduction());
 		if($result){
-			$self->{id}				= $id;
-			$self->{nickname}		= DIR::Misc::getStrIDFromNumID($id);
 			$self->{introduction}	= '';
 			$result->{registed}		= time;
 			$result->{last_renew}	= time;

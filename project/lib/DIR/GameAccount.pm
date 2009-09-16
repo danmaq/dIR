@@ -23,7 +23,7 @@ my %s_fields = (	# フィールド
 	user			=> undef,	# ユーザ マスター アカウント情報オブジェクト
 	game			=> undef,	# ゲーム マスター情報オブジェクト
 	password		=> undef,	# パスワード(SHA1でハッシュ化)
-	nickname		=> '',		# ニックネーム
+	nickname		=> undef,	# ニックネーム
 	introduction	=> '',		# 自己紹介
 	registed		=> time,	# 登録日時(UNIX時間)
 	last_renew		=> time,	# 最終更新日時(UNIX時間)
@@ -38,12 +38,31 @@ my %s_fields = (	# フィールド
 #----------------------------------------------------------
 # PUBLIC NEW
 #	ゲーム アカウントを新規作成します。
-# PARAM \%(passwd co_name head_name url mail commition) パスワード、団体名、代表者名、WebページURL、メールアドレス
+# PARAM %(user gamme password nickname)
+#	ユーザ マスター アカウント、ゲーム マスター、パスワード、(省略可)ニックネーム
 # RETURN \% ゲーム アカウント情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
-	my $args = shift;
+	my %args = @_;
 	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(user game password)], 1, 1) and
+		ref($args{user}) =~ /DIR::User/ and ref($args{game}) eq 'DIR::Game' and
+		DIR::Validate::isLengthInRange($args{password}, 4, 40) and
+		not ($args{game}->isTemp() or $args{game}->guest())
+	){
+		my $obj = DIR::GameAccount->newExistFromGameAndUser(
+			game => $args{game}, user => $args{user});
+		if(defined($obj)){ $result = $obj; }
+		else{
+			$obj = bless({%s_fields}, $class);
+			$obj->{user} = $args{user};
+			$obj->{game} = $args{game};
+			$obj->password($args{password});
+			if(exists($args{nickname})){ $obj->nickname($args{nickname}); }
+			if($obj->commit()){ $result = $obj; }
+		}
+	}
 	return $result;
 }
 
@@ -142,11 +161,31 @@ sub login{
 sub commit{
 	my $self = shift;
 	my $result = 0;
+	my $db = DIR::DB->instance();
+	my %params = (
+		user_id		=> $self->user()->id(),
+		game_id		=> $self->game()->id(),
+		password	=> $self->password());
 	if($self->id()){
-		# UPDATE
+		$result = $db->writeGameAccountRenew(
+			id				=> $self->id(),
+			nickame			=> $self->nickname(),
+			introduction	=> $self->introduction(),
+			notes			=> $self->notes(),
+			%params);
 	}
 	else{
-		# INSERT
+		my $id;
+		my $i = 0;
+		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
+		while(defined(DIR::GameAccount->newExistFromID($id)));
+		$self->{id} = $id;
+		if(defined($self->nickname())){ $self->nickname(DIR::Misc::getStrIDFromNumID($id)); }
+		$result = $db->writeGameAccountNew(
+			id				=> $id,
+			nickame			=> $self->nickname(),
+			introduction	=> $self->introduction(),
+			%params);
 	}
 	return $result;
 }
