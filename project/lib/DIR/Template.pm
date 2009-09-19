@@ -16,6 +16,10 @@ use constant FILE_HTT_FRAME	=> 'html/frame.htt';
 
 use constant FILE_SQL_DDL								=> 'sql/table.sql';
 use constant FILE_SQL_NOWTIME							=> 'sql/nowTime.sql';
+use constant FILE_SQL_ACCESS_INSERT						=> 'sql/Access/insert.sql';
+use constant FILE_SQL_ACCESS_UPDATE						=> 'sql/Access/update.sql';
+use constant FILE_SQL_ACCESS_SELECT_FROM_ID				=> 'sql/Access/selectFromID.sql';
+use constant FILE_SQL_ACCESS_SELECT_LAST_ID				=> 'sql/Access/selectLastID.sql';
 use constant FILE_SQL_BATCHREPORT_INSERT				=> 'sql/BatchReport/insert.sql';
 use constant FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES		=> 'sql/BatchReport/updateWithNotes.sql';
 use constant FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES	=> 'sql/BatchReport/updateWithoutNotes.sql';

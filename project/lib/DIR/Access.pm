@@ -21,10 +21,9 @@ my %s_fields = (	# フィールド
 #----------------------------------------------------------
 # PUBLIC NEW
 #	アクセスログ情報を新規作成します。
-#	コミットされない限りは、プログラム終了と同時に削除されます。
-# PARAM \%(passwd co_name head_name url mail commition) パスワード、団体名、代表者名、WebページURL、メールアドレス
+# PARAM \%(page_name page_number ) パスワード、団体名、代表者名、WebページURL、メールアドレス
 # RETURN \% アクセスログ情報の入ったオブジェクト。
-sub new_temp{
+sub new{
 	my $class = shift;
 	my $args = shift;
 	my $result = undef;

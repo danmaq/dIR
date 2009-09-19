@@ -1,0 +1,3 @@
+UPDATE		DIR_ACCESS
+	SET		NOTES	= ?
+	WHERE	ID		= ?;

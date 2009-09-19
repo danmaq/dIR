@@ -1,0 +1,8 @@
+INSERT INTO DIR_ACCESS (
+	USER_ID,		PAGE_NAME,		PAGE_NUMBER,	REFERER,
+	CREATE_TIME,	REMOTE_ADDR,	REMOTE_HOST,	USER_AGENT
+)
+VALUES(
+	?,				?,				?,				?,
+	NOW(),			?,				?,				?
+);
