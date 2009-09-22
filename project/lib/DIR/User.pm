@@ -75,21 +75,23 @@ sub newExist{
 	my $class = shift;
 	my $id = shift;
 	my $result = undef;
-	if(defined($id) and $id){
-		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
-		my $info = DIR::DB->instance()->readUserFromID($id);
-		if(defined($info)){
-			$result = DIR::User->new_guest();
-			$result->{id}			= $id;
-			$result->{password}		= $info->{PASSWD};
-			$result->{nickname}		= $info->{NICKNAME};
-			$result->{introduction}	= $info->{INTRODUCTION};
-			$result->{registed}		= $info->{REGIST_TIME};
-			$result->{last_renew}	= $info->{RENEW_TIME};
-			$result->{last_login}	= $info->{LOGIN_TIME};
-			$result->{login_count}	= $info->{LOGIN_COUNT};
-			$result->{notes}		= $info->{NOTES};
-			$result->{email}		= [DIR::User::EMail::createObjFromUID($result)];
+	if(defined($id)){
+		$result = DIR::User->new_guest();
+		if($id){
+			if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
+			my $info = DIR::DB->instance()->readUserFromID($id);
+			if(defined($info)){
+				$result->{id}			= $id;
+				$result->{password}		= $info->{PASSWD};
+				$result->{nickname}		= $info->{NICKNAME};
+				$result->{introduction}	= $info->{INTRODUCTION};
+				$result->{registed}		= $info->{REGIST_TIME};
+				$result->{last_renew}	= $info->{RENEW_TIME};
+				$result->{last_login}	= $info->{LOGIN_TIME};
+				$result->{login_count}	= $info->{LOGIN_COUNT};
+				$result->{notes}		= $info->{NOTES};
+				$result->{email}		= [DIR::User::EMail::createObjFromUID($result)];
+			}
 		}
 	}
 	return $result;

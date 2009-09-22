@@ -23,6 +23,8 @@ $DIR::DB::Game::VERSION = 0.01;	# バージョン情報
 	readGameFromUID
 	writeGameInsert
 	writeGameUpdate
+	eraseGame
+	eraseGameFromPublisherID
 );
 
 #==========================================================
@@ -100,6 +102,8 @@ sub writeGameInsert{
 	return $result;
 }
 
+###########################################################
+
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	ゲーム マスター情報をデータベースへ格納します。
@@ -122,6 +126,40 @@ sub writeGameUpdate{
 			$args{registable_on_browser},
 			defined($notes) ? Jcode->new($notes,	'ucs2')->utf8() : undef,
 			$args{id}, $args{user_id});
+	}
+	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム マスターをデータベースから抹消します。
+# PARAM NUM ゲーム マスターID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseGame{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE), undef,
+			$id);
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	特定パブリッシャーのゲーム マスターをデータベースから抹消します。
+# PARAM NUM パブリッシャーID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseGameFromPublisherID{
+	my $self = shift;
+	my $pid = shift;
+	my $result = undef;
+	if(defined($pid) and $pid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE_FROM_PID), undef, $pid);
 	}
 	return $result;
 }

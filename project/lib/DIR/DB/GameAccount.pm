@@ -149,6 +149,56 @@ sub writeGameAccountLogin{
 	return $result;
 }
 
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム アカウントをデータベースから抹消します。
+# PARAM NUM ゲーム アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseGameAccount{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE), undef, $id);
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	特定ゲームのゲーム アカウントをデータベースから抹消します。
+# PARAM NUM ゲーム マスターID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseGameAccountFromGameID{
+	my $self = shift;
+	my $gid = shift;
+	my $result = undef;
+	if(defined($gid) and $gid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE_FROM_GID), undef, $gid);
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	特定ユーザ マスター アカウントのゲーム アカウントをデータベースから抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseGameAccountFromUserID{
+	my $self = shift;
+	my $uid = shift;
+	my $result = undef;
+	if(defined($uid) and $uid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE_FROM_UID), undef, $uid);
+	}
+	return $result;
+}
+
 1;
 
 __END__

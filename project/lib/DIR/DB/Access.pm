@@ -22,6 +22,7 @@ $DIR::DB::Access::VERSION = 0.01;	# バージョン情報
 	readAccessFromID
 	writeAccessInsert
 	writeAccessUpdate
+	writeAccessClearUID
 );
 
 #==========================================================
@@ -68,7 +69,8 @@ sub readAccessFromID{
 # PUBLIC INSTANCE
 #	アクセスログをデータベースへ格納します。
 # PARAM %(user_id page_name page_number referer remote_addr remote_host user_agent)
-#	ユーザID、ページ名、ページ番号、リファラ、IPアドレス、リモートホスト、エージェント名
+#	ユーザ マスター アカウントID、ページ名、ページ番号、
+#	リファラ、IPアドレス、リモートホスト、エージェント名
 # RETURN NUM アクセスログID。失敗した場合、未定義値。
 sub writeAccessInsert{
 	my $self = shift;
@@ -99,12 +101,27 @@ sub writeAccessUpdate{
 		DIR::Validate::isExistParameter(\%args, [qw(id)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(notes)])
 	){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_UPDATE), undef, 
-			Jcode->new($args{notes}, 'ucs2')->utf8(), $args{id})
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_UPDATE), undef,
+			Jcode->new($args{notes}, 'ucs2')->utf8(), $args{id});
 	}
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	データベースのアクセスログからユーザ マスター アカウントIDを抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeAccessClearUID{
+	my $self = shift;
+	my $uid = shift;
+	my $result = undef;
+	if(defined($uid) and $uid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_UPDATE_CLEAR_UID), undef, $uid);
+	}
+	return $result;
+}
 
 1;
 
