@@ -23,6 +23,8 @@ $DIR::DB::EMail::VERSION = 0.01;	# バージョン情報
 	readEMailFromUID
 	writeEMailInsert
 	writeEMailUpdate
+	eraseEMail
+	eraseEMailFromUserID
 );
 
 #==========================================================
@@ -112,6 +114,40 @@ sub writeEMailUpdate{
 	if(DIR::Validate::isExistParameter(\%args, [qw(id email valid service ads undeliverable)], 1)){
 		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_UPDATE), undef,
 			$args{valid}, $args{service}, $args{ads}, $args{undeliverable}, $args{id}, $args{email});
+	}
+	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	メールアドレスをデータベースから抹消します。
+# PARAM STRING メールアドレス
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseEMail{
+	my $self = shift;
+	my $email = shift;
+	my $result = undef;
+	if(DIR::Validate::isEMail($email)){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_DELETE), undef, $email);
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	指定ユーザ マスター アカウントのメールアドレスをデータベースから抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseEMailFromUserID{
+	my $self = shift;
+	my $uid = shift;
+	my $result = undef;
+	if(defined($uid) and $uid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_DELETE_FROM_UID), undef, $uid);
 	}
 	return $result;
 }

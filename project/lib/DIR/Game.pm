@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DIR::DB;
 use DIR::User;
+use LWP::UserAgent;
 
 $DIR::Game::VERSION = 0.01;	# バージョン情報
 
@@ -129,6 +130,27 @@ sub isEquals{
 		$self->registed()				== $expr->registed()				and
 		$self->notes()					eq $expr->notes()					and
 		$self->publisher()->isEquals($expr->publisher()));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	スコア認証コードが正しいかどうかを検出します。
+# RETURN @ ステータスコード、スコア1～8。
+sub validate{
+	my $self = shift;
+	my $password = shift;
+	@result = [-255, 0, 0, 0, 0, 0, 0, 0, 0];
+	if(defined($password) and $password){
+		my $lwp = LWP::UserAgent->new();
+		$lwp->timeout(60);
+		my $response = $lwp->request(
+			HTTP::Request->new('GET', sprintf('%s?%s', $self->validatorURI(), $password)));
+		if($response->is_success()){
+			
+		}
+		# ! TODO : 書きかけよ
+	}
+	return @result;
 }
 
 ############################################################

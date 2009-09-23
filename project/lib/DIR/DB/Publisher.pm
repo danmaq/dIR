@@ -23,6 +23,7 @@ $DIR::DB::Publisher::VERSION = 0.01;	# バージョン情報
 	readPublisherFromUID
 	writePublisherInsert
 	writePublisherUpdate
+	erasePublisher
 );
 
 #==========================================================
@@ -101,6 +102,24 @@ sub writePublisherUpdate{
 				Jcode->new($args{co_name},		'ucs2')->utf8(),
 				Jcode->new($args{head_name},	'ucs2')->utf8(),
 				$args{uri}, $args{commision}, $args{uid});
+	}
+	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	パブリッシャー アカウントをデータベースから抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub erasePublisher{
+	my $self = shift;
+	my $uid = shift;
+	my $result = undef;
+	if(defined($uid) and $uid){
+		$result = $self->dbi()->do(
+			DIR::Template::get(DIR::Template::FILE_SQL_USER_PUBLISHER_DELETE), undef, $uid);
 	}
 	return $result;
 }

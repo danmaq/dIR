@@ -81,7 +81,7 @@ sub newExistFromID{
 		my $info = DIR::DB->instance()->readGameAccountFromID($id);
 		if(defined($info)){
 			my $user = DIR::User->newExist($info->{USER_ID});
-			my $game = DIR::User->newExist($info->{GAME_ID});
+			my $game = DIR::Game->newExist($info->{GAME_ID});
 			if(defined($user) and defined($game)){
 				$result = bless({%s_fields}, $class);
 				$result->{id}			= $id;

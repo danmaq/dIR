@@ -23,6 +23,7 @@ $DIR::DB::User::VERSION = 0.01;	# バージョン情報
 	writeUserNew
 	writeUserRenew
 	writeUserLogin
+	eraseUser
 );
 
 #==========================================================
@@ -120,6 +121,24 @@ sub writeUserLogin{
 	if(defined($id) and $id =~ /^[0-9]+$/){
 		$result = $self->dbi()->do(
 			DIR::Template::get(DIR::Template::FILE_SQL_USER_UPDATE_LOGIN), undef, $id);
+	}
+	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウントをデータベースから抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseUser{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_DELETE), undef,
+			$id);
 	}
 	return $result;
 }

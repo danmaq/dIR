@@ -24,6 +24,9 @@ $DIR::DB::GameAccount::VERSION = 0.01;	# バージョン情報
 	writeGameAccountNew
 	writeGameAccountRenew
 	writeUserLogin
+	eraseGameAccount
+	eraseGameAccountFromGameID
+	eraseGameAccountFromUserID
 );
 
 #==========================================================
