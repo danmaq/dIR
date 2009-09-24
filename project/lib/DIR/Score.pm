@@ -18,9 +18,9 @@ my %s_fields = (	# フィールド
 	game_account	=> undef,						# ゲーム アカウント情報
 	password		=> undef,						# スコア認証コード
 	score			=> [0, 0, 0, 0, 0, 0, 0, 0],	# スコア
-	injustice		=> undef,						# 不正フラグ
-	withdraw		=> undef,						# 非公開フラグ
-	registed		=> undef,						# 登録日時(UNIX時間)
+	injustice		=> 0,							# 不正フラグ
+	withdraw		=> 0,							# 非公開フラグ
+	registed		=> time,						# 登録日時(UNIX時間)
 	remote_addr		=> undef,						# リモートIPアドレス
 	remote_host		=> undef,						# リモートホスト
 	user_agent		=> undef,						# エージェント名
@@ -32,9 +32,9 @@ my %s_fields = (	# フィールド
 
 #----------------------------------------------------------
 # PUBLIC NEW
-#	ゲームスコアを新規作成します。
+#	スコアを新規作成します。
 # PARAM \%(game_account password) ゲーム アカウント、スコア認証コード
-# RETURN \% ゲームスコア情報の入ったオブジェクト。
+# RETURN \% スコア情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
 	my %args = @_;
@@ -43,13 +43,57 @@ sub new{
 		DIR::Validate::isExistParameter(\%args, [qw(game_account password)], 1, 1) and
 		ref($args{game_account}) eq 'DIR::GameAccount'
 	){
-		
+		my @score = $args{game_account}->game()->validate($args{password});
+		if(scalar(@score) == 9 and $score[0] >= 0){
+			shift(@score);
+			my $env = DIR::Input->instance()->getRemoteEnvironment();
+			my $obj = bless({%s_fields}, $class);
+			$obj->{game_account}	= $args{game_account};
+			$obj->{socre}			= [@score];
+			$obj->{password}		= $args{password};
+			$obj->{remote_addr}		= $env->{addr};
+			$obj->{remote_host}		= $env->{host};
+			$obj->{user_agent}		= $env->{agent};
+			if($obj->commit()){ $result = $obj; }
+		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	スコアIDからスコア情報を新規作成します。
+# PARAM NUM スコアID
+# RETURN \% スコア情報の入ったオブジェクト。
+sub newExist{
+	my $class = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+#		my $info = DIR::DB->instance()->readGameFromID($id);
 	}
 	return $result;
 }
 
 #==========================================================
 #==========================================================
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトの変更をデータベースへ反映します。
+# RETURN BOOLEAN 成功した場合、真値。
+sub commit{
+	my $self = shift;
+	my $result = 0;
+	my $db = DIR::DB->instance();
+	if($self->id()){
+		# ! TODO : UPDATE
+	}
+	else{
+		# ! TODO : INSERT
+	}
+	return $result;
+}
 
 ############################################################
 

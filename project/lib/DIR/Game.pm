@@ -41,7 +41,7 @@ sub new{
 	my $result = undef;
 	if(
 		DIR::Validate::isExistParameter(\%args, [qw(publisher devcode title validator reg_browser)], 1) and
-		ref($args{publisher}) eq 'DIR::User::Publisher'
+		DIR::Validate::isHttp($args{validator}) and ref($args{publisher}) eq 'DIR::User::Publisher'
 	){
 		my $obj = bless({%s_fields}, $class);
 		$obj->{publisher}	= $args{publisher};
@@ -139,16 +139,26 @@ sub isEquals{
 sub validate{
 	my $self = shift;
 	my $password = shift;
-	@result = [-255, 0, 0, 0, 0, 0, 0, 0, 0];
+	my @result = (-255, 0, 0, 0, 0, 0, 0, 0, 0);
 	if(defined($password) and $password){
 		my $lwp = LWP::UserAgent->new();
 		$lwp->timeout(60);
 		my $response = $lwp->request(
 			HTTP::Request->new('GET', sprintf('%s?%s', $self->validatorURI(), $password)));
 		if($response->is_success()){
-			
+			my $contents = $response->content();
+			my $len;
+			do{
+				$len = length($contents);
+				chomp($contents);
+			}
+			while($len > length($contents));
+			if($contents =~ /^-?[0-9]+;/){
+				my @head = split(/[; ]/, $contents);
+				$result[0] = $head[0];
+				if($head[0] and scalar(@head) == 9){ @result = @head; }
+			}
 		}
-		# ! TODO : 書きかけよ
 	}
 	return @result;
 }
