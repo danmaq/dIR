@@ -1,1 +1,45 @@
 @charset "UTF-8";
+#basic a:link{
+	color: #CCFF66;
+}
+
+#basic a:visited{
+	color: #33CC66;
+}
+
+#basic a:active{
+	background-color: #CCFF66;
+	color: #33CC66;
+}
+
+#basic a:hover{
+	background-color: #CCFF66;
+	color: #3366FF;
+}
+
+#basic address{
+	text-align: right;
+	padding-right: 1em;
+}
+
+#basic body{
+	background-color: #3366FF;
+	margin: 0px;
+}
+
+#basic p#user{
+	text-align: right;
+	font-size: 90%;
+}
+
+#basic h1{
+	text-align: center;
+	margin: 0px;
+	background-image: url("../image/basic/bg.png");
+	background-repeat: repeat-x;
+}
+
+#basic h1 img{
+	vertical-align: text-bottom;
+	border-style: none;
+}
