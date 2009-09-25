@@ -19,6 +19,9 @@ $DIR::DB::Score::VERSION = 0.01;	# バージョン情報
 @DIR::DB::Score::ISA = qw(Exporter);
 @DIR::DB::Score::EXPORT = qw(
 	readScoreFromID
+	writeScoreInsert
+	writeScoreUpdate
+	eraseScore
 );
 
 #==========================================================
@@ -77,14 +80,51 @@ sub writeScoreInsert{
 	my %args = @_;
 	my $result = undef;
 	if(
-		DIR::Validate::isExistParameter(\%args,
-			[qw(user_id dev_code title validator_uri registable_on_browser)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(GACCOUNT_ID PASSWD SCORE REMOTE_ADDR)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(REMOTE_HOST USER_AGENT)], 1) and
+		scalar(@{$args{SCORE}}) >= 8 and
 		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_INSERT), undef, 
-			$args{user_id}, $args{dev_code},
-			Jcode->new($args{title}, 'ucs2')->utf8(),
-			$args{validator_uri}, $args{registable_on_browser})
+			$args{GACCOUNT_ID}, $args{PASSWD}, $args{SCORE}->[0], $args{SCORE}->[1],
+			$args{SCORE}->[2], $args{SCORE}->[3], $args{SCORE}->[4], $args{SCORE}->[5],
+			$args{SCORE}->[6], $args{SCORE}->[7], $args{REMOTE_ADDR}, $args{REMOTE_HOST},
+			$args{USER_AGENT})
 	){ $result = selectTableLastID(DIR::Template::FILE_SQL_SCORE_SELECT_LAST_ID); }
 	return $result;
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	スコア情報をデータベースへ格納します。
+# PARAM %(ID INJUSTICE WITHDRAW NOTES) スコアID、不正フラグ、非公開フラグ、備考
+# RETURN BOOLEAN 成功した場合、真値。
+sub writeScoreUpdate{
+	my $self = shift;
+	my %args = @_;
+	return (
+		DIR::Validate::isExistParameter(\%args, [qw(ID INJUSTICE WITHDRAW)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(NOTES)]) and
+		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_UPDATE), undef,
+			$args{INJUSTICE}, $args{WITHDRAW},
+			defined($args{NOTES}) ? Jcode->new($args{NOTES}, 'ucs2')->utf8() : undef, $args{ID})
+	);
+}
+
+###########################################################
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	スコア情報をデータベースから抹消します。
+# PARAM NUM スコアID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseScore{
+	my $self = shift;
+	my $id = shift;
+	return (
+		defined($id) and $id and
+		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_DELETE), undef, $id)
+	);
 }
 
 1;

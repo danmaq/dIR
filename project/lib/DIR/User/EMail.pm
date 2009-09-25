@@ -58,7 +58,7 @@ sub new{
 	my %args = @_;
 	my $result = undef;
 	if(
-		DIR::Validate::isExistParameter(\%args, [qw(user email)], 2) and
+		DIR::Validate::isExistParameter(\%args, [qw(user email)], 1, 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(service ads)], 1) and
 		ref($args{user}) eq 'DIR::User' and not $args{user}->guest() and
 		DIR::Validate::isEMail($args{email}) and
@@ -130,7 +130,7 @@ sub commit{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
-# PARAM \% バッチ レポート オブジェクト
+# PARAM \% 電子メール情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。
 sub isEquals{
 	my $self = shift;

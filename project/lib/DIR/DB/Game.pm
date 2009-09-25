@@ -142,8 +142,8 @@ sub eraseGame{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE), undef,
-			$id);
+		$result =
+			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE), undef, $id);
 	}
 	return $result;
 }

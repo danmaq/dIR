@@ -115,6 +115,31 @@ sub commit{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% アクセスログ情報オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals{
+	my $self = shift;
+	my $expr = shift;
+	my $result = 0;
+	if(defined($expr) and ref($expr) eq 'DIR::Access'){
+		$result = (
+			$self->id()			== $expr->id()			and
+			$self->userID()		== $expr->userID()		and
+			$self->pageName()	eq $expr->pageName()	and
+			$self->pageNumber()	== $expr->pageNumber()	and
+			$self->created()	== $expr->created()		and
+			$self->referer()	eq $expr->referer()		and
+			$self->remoteIP()	eq $expr->remoteIP()	and
+			$self->remoteHost()	eq $expr->remoteHost()	and
+			$self->userAgent()	eq $expr->userAgent()	and
+			$self->notes()		eq $expr->notes());
+	}
+	return $result;
+}
+
 ############################################################
 
 #----------------------------------------------------------

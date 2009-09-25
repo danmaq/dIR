@@ -15,8 +15,11 @@ use DIR::Game;
 use DIR::Misc;
 use DIR::User;
 use DIR::Validate;
+use DIR::GameAccount::Rival;
 
-$DIR::GameAccount::VERSION = 0.01;	# バージョン情報
+$DIR::GameAccount::VERSION =	# バージョン情報
+	$DIR::GameAccount::Rival::VERSION +
+	0.01;
 
 my %s_fields = (	# フィールド
 	id				=> 0,		# ゲーム アカウントID
@@ -193,7 +196,7 @@ sub commit{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
-# PARAM \% バッチ レポート オブジェクト
+# PARAM \% ゲーム アカウント情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。
 sub isEquals{
 	my $self = shift;

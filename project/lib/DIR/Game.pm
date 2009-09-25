@@ -116,7 +116,7 @@ sub commit{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
-# PARAM \% バッチ レポート オブジェクト
+# PARAM \% ゲーム情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。
 sub isEquals{
 	my $self = shift;

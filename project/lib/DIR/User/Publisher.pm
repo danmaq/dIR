@@ -97,7 +97,7 @@ sub commit;		# OVERRIDE
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
-# PARAM \% バッチ レポート オブジェクト
+# PARAM \% パブリッシャー情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。
 sub isEquals;	# OVERRIDE
 

@@ -10,11 +10,13 @@ use strict;
 use warnings;
 use utf8;
 use Jcode;
+use DIR::GameAccount;
 
 $DIR::Score::VERSION = 0.01;	# バージョン情報
 
 my %s_fields = (	# フィールド
 	id				=> 0,							# スコアID
+	game_account_id	=> 0,							# ゲーム アカウントID
 	game_account	=> undef,						# ゲーム アカウント情報
 	password		=> undef,						# スコア認証コード
 	score			=> [0, 0, 0, 0, 0, 0, 0, 0],	# スコア
@@ -48,6 +50,7 @@ sub new{
 			shift(@score);
 			my $env = DIR::Input->instance()->getRemoteEnvironment();
 			my $obj = bless({%s_fields}, $class);
+			$obj->{game_account_id}	= $args{game_account}->id();
 			$obj->{game_account}	= $args{game_account};
 			$obj->{socre}			= [@score];
 			$obj->{password}		= $args{password};
@@ -70,7 +73,21 @@ sub newExist{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-#		my $info = DIR::DB->instance()->readGameFromID($id);
+		my $info = DIR::DB->instance()->readScoreFromID($id);
+		if(defined($info)){
+			$result = bless({%s_fields}, $class);
+			$result->{id}				= $id;
+			$result->{game_account_id}	= $info->{GACCOUNT_ID};
+			$result->{password}			= $info->{PASSWD};
+			$result->{score}			= $info->{SCORE};
+			$result->{injustice}		= $info->{INJUSTICE};
+			$result->{withdraw}			= $info->{WITHDRAW};
+			$result->{registed}			= $info->{REGIST_TIME};
+			$result->{remote_addr}		= $info->{REMOTE_ADDR};
+			$result->{remote_host}		= $info->{REMOTE_HOST};
+			$result->{user_agent}		= $info->{USER_AGENT};
+			$result->{notes}			= $info->{NOTES};
+		}
 	}
 	return $result;
 }
@@ -87,10 +104,56 @@ sub commit{
 	my $result = 0;
 	my $db = DIR::DB->instance();
 	if($self->id()){
-		# ! TODO : UPDATE
+		$result = $db->writeScoreUpdate(
+			ID			=> $self->id(),
+			INJUSTICE	=> $self->isInjustice(),
+			WITHDRAW	=> $self->isWithdraw(),
+			NOTES		=> $self->notes());
 	}
 	else{
-		# ! TODO : INSERT
+		my $id = $db->writeScoreInsert(
+			GACCOUNT_ID	=> $self->gameAccountID(),
+			PASSWD		=> $self->password(),
+			SCORE		=> $self->score(),
+			REMOTE_ADDR	=> $self->remoteIP(),
+			REMOTE_HOST	=> $self->remoteHost(),
+			USER_AGENT	=> $self->userAgent());
+		$result = (defined($id) and $id);
+		if($result){ $self->{id} = $id; }
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	オブジェクトが同等のものかどうかを取得します。
+# PARAM \% スコア情報オブジェクト
+# RETURN BOOLEAN オブジェクトが同等である場合、真値。
+sub isEquals{
+	my $self = shift;
+	my $expr = shift;
+	my $result = 0;
+	if(defined($expr) and ref($expr) eq 'DIR::Score'){
+		my $selfScore = $self->score();
+		my $exprScore = $expr->score();
+		my $len = scalar(@$selfScore);
+		my $equalScore = ($len == scalar(@$exprScore));
+		if($equalScore){
+			for(my $i = $len - 1; $i >= 0; $i--){
+				$equalScore = ($equalScore and $selfScore->[$i] == $exprScore->[$i]);
+			}
+		}
+		$result = ($equalScore									and
+			$self->id()				== $expr->id()				and
+			$self->gameAccountID()	== $expr->gameAccountID()	and
+			$self->password()		eq $expr->password()		and
+			$self->isInjustice()	== $expr->isInjustice()		and
+			$self->isWithdraw()		== $expr->isWithdraw()		and
+			$self->registed()		== $expr->registed()		and
+			$self->remoteIP()		eq $expr->remoteIP()		and
+			$self->remoteHost()		eq $expr->remoteHost()		and
+			$self->userAgent()		eq $expr->userAgent()		and
+			$self->notes()			eq $expr->notes());
 	}
 	return $result;
 }
@@ -104,6 +167,27 @@ sub commit{
 sub id{
 	my $self = shift;
 	return $self->{id};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム アカウントIDを取得します。
+# RETURN \% ゲーム アカウントID。
+sub gameAccountID{
+	my $self = shift;
+	return defined($self->{game_account}) ? $self->{game_account}->id() : $self->{game_account_id};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム アカウント情報を取得します。
+# RETURN \% ゲーム アカウント情報オブジェクト。
+sub gameAccount{
+	my $self = shift;
+	if(defined($self->{game_account})){
+		$self->{game_account} = DIR::GameAccount->newExist($self->{game_account_id});
+	}
+	return $self->{game_account};
 }
 
 #----------------------------------------------------------

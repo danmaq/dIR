@@ -20,6 +20,7 @@ use DIR::DB::EMail;
 use DIR::DB::Game;
 use DIR::DB::GameAccount;
 use DIR::DB::Publisher;
+use DIR::DB::Rival;
 use DIR::DB::Score;
 use DIR::DB::User;
 
@@ -30,6 +31,7 @@ $DIR::DB::VERSION =	# バージョン情報
 	$DIR::DB::Game::VERSION +
 	$DIR::DB::GameAccount::VERSION +
 	$DIR::DB::Publisher::VERSION +
+	$DIR::DB::Rival::VERSION +
 	$DIR::DB::Score::VERSION +
 	$DIR::DB::User::VERSION +
 	0.01;
