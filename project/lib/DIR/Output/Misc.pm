@@ -42,9 +42,9 @@ sub putTop{
 	foreach my $game (@_){
 		push(@$games, {
 			GAME_ID			=> $game->id(),
-			GAME_NAME		=> $game->title(),
+			GAME_NAME		=> Jcode->new($game->title(), 'ucs2')->utf8(),
 			PUB_URL			=> $game->publisher()->uri(),
-			PUB_NAME		=> $game->publisher()->coName(),
+			PUB_NAME		=> Jcode->new($game->publisher()->coName(), 'ucs2')->utf8(),
 			GAME_REGISTED	=> $self->_createTimeStamp($game->registed())});
 	}
 	$self->_put(DIR::Template::getHTT(DIR::Template::FILE_HTT_TOP,
