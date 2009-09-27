@@ -241,7 +241,7 @@ sub publisherID{
 sub publisher{
 	my $self = shift;
 	unless(defined($self->{publisher})){
-		$self->{publisher} = DIR::Publisher->newExist($self->publisherID());
+		$self->{publisher} = DIR::User::Publisher->newExist($self->publisherID());
 	}
 	return $self->{publisher};
 }

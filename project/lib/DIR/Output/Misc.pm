@@ -38,9 +38,19 @@ sub putMaintenance{
 # PARAM %()
 sub putTop{
 	my $self = shift;
-	my %param = @_;
-	$self->putMaintenance();
-
+	my $games = [];
+	foreach my $game (@_){
+		push(@$games, {
+			GAME_ID			=> $game->id(),
+			GAME_NAME		=> $game->title(),
+			PUB_URL			=> $game->publisher()->uri(),
+			PUB_NAME		=> $game->publisher()->coName(),
+			GAME_REGISTED	=> $self->_createTimeStamp($game->registed())});
+	}
+	$self->_put(DIR::Template::getHTT(DIR::Template::FILE_HTT_TOP,
+		GAMES			=> $games,
+		GAMES_EXISTS	=> scalar(@$games),
+		VERSION			=> Jcode->new(DIR::versionLong())->utf8()));
 }
 
 1;

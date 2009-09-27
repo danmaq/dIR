@@ -21,9 +21,7 @@ my $pageNumber = undef;
 
 my @games = DIR::Game::listNewAll();
 $pageName = 'TOP';
-$out->putTop(
-	games => \@games
-);
+$out->putTop(DIR::Game::listNewAll());
 
 DIR::Access->new(account => undef, page_name => $pageName, page_number => $pageNumber);
 DIR::DB->instance()->dispose();

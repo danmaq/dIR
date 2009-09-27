@@ -71,8 +71,7 @@ sub readEMailFromUID{
 	my $uid = shift;
 	my @result = ();
 	if(defined($uid) and $uid){
-		@result = $self->selectAll(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID,
-		{ type => SQL_INTEGER, value => $uid });
+		@result = $self->selectAll(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID, $uid);
 	}
 	return @result;
 }

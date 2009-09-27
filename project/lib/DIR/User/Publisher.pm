@@ -38,7 +38,7 @@ sub new{
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(user_id co_name head_name uri)], 1)){
-		my $super = DIR::User::Publisher->newExistFromUID($args{user_id});
+		my $super = DIR::User::Publisher->newExist($args{user_id});
 		if(defined($super) and not $super->guest()){
 			if($super->isPublisher()){ $result = $super; }
 			else{
@@ -60,7 +60,7 @@ sub new{
 # (1) PARAM NUM 格納用ユーザ マスター アカウントID
 # (2) PARAM STRING 表示用ユーザ マスター アカウントID
 # RETURN \% ユーザ情報の入ったオブジェクト。存在しない場合、未定義値。
-sub newExistFromUID{
+sub newExist{
 	my $class = shift;
 	my $uid = shift;
 	my $result = undef;

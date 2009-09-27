@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use base 'Class::Singleton';
 use Jcode;
+use Time::localtime;
 use XML::Twig;
 use DIR;
 use DIR::Output::Misc;
@@ -20,7 +21,8 @@ $DIR::Output::VERSION =		# バージョン情報
 	0.01;
 
 ### 設定項目ここから
-$DIR::Output::NPH = 1;	# NPH(Non Parsed Header)を使用するかどうか
+$DIR::Output::NPH	= 1;	# NPH(Non Parsed Header)を使用するかどうか
+$DIR::Output::TWIG	= 1;	# HTMLを整形するかどうか
 ### 設定項目おわり
 
 my %s_fields = ();	# フィールド
@@ -50,12 +52,14 @@ sub _put{
 	my $self = shift;
 	my $body = Jcode->new(DIR::Template::getHTT(DIR::Template::FILE_HTT_FRAME,
 		VERSION => DIR::versionShort(), BODY => shift), 'utf8')->utf8();
-	my $twig = XML::Twig->new();
-	$twig->set_indent("\t");
-	$twig->parse($body);
-	$twig->set_pretty_print('indented');
-	$twig->trim();
-	$body = Jcode->new($twig->sprint(), 'utf8')->utf8();
+	if($DIR::Output::TWIG){
+		my $twig = XML::Twig->new();
+		$twig->set_indent("\t");
+		$twig->parse($body);
+		$twig->set_pretty_print('indented');
+		$twig->trim();
+		$body = Jcode->new($twig->sprint(), 'utf8')->utf8();
+	}
 	print DIR::Input->instance()->cgi()->header(
 		-nph			=> $DIR::Output::NPH,
 		-cookie			=> DIR::Input->instance()->cookie(),
