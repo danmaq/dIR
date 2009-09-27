@@ -3,25 +3,21 @@
 #	dIR - danmaq Internet Ranking CGI
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
-#	クライアント振り分け・表示などのCGI。
+#	メンテナンス中画面表示スクリプト。
 use 5.006;
 use strict;
 use warnings;
-use utf8;
 use lib qw(. ./lib);
-use Switch;
+use utf8;
+use CGI qw(-compile);
 use DIR;
 
-#	require 'maintenance.pl';
+use constant DIR_MAINTENANCE => 1;
 
 require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
-unless(exists(&DIR_MAINTENANCE)){
-	my $mode = DIR::Input->instance()->getMode();
-	switch($mode){
-		case 'temp'		{ require 'define.pl';		}
-		else			{ require 'top.pl';			}
-	}
-}
+DIR::Output->instance()->putMaintenance();
+
+1;
 
 __END__

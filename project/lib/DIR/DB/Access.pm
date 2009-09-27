@@ -82,7 +82,7 @@ sub writeAccessInsert{
 		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_INSERT), undef, 
 			$args{user_id}, $args{page_name}, $args{page_number}, $args{referer},
 			$args{remote_addr},$args{remote_host}, $args{user_agent})
-	){ $result = selectTableLastID(DIR::Template::FILE_SQL_ACCESS_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_ACCESS_SELECT_LAST_ID); }
 	return $result;
 }
 

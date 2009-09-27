@@ -21,6 +21,7 @@ $DIR::DB::Game::VERSION = 0.01;	# バージョン情報
 @DIR::DB::Game::EXPORT = qw(
 	readGameFromID
 	readGameFromUID
+	readGameAll
 	writeGameInsert
 	writeGameUpdate
 	eraseGame
@@ -79,6 +80,15 @@ sub readGameFromUID{
 	return @result;
 }
 
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム全件を検索します。
+# RETURN @\% ゲーム全情報
+sub readGameAll{
+	my $self = shift;
+	return $self->selectAll(DIR::Template::FILE_SQL_GAME_SELECT);
+}
+
 ###########################################################
 
 #----------------------------------------------------------
@@ -98,7 +108,7 @@ sub writeGameInsert{
 			$args{user_id}, $args{dev_code},
 			Jcode->new($args{title}, 'ucs2')->utf8(),
 			$args{validator_uri}, $args{registable_on_browser})
-	){ $result = selectTableLastID(DIR::Template::FILE_SQL_GAME_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_GAME_SELECT_LAST_ID); }
 	return $result;
 }
 

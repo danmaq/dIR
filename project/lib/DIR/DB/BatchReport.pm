@@ -71,7 +71,7 @@ sub writeBatchReportStart{
 		if(
 			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
 				Jcode->new($name, 'ucs2')->utf8())
-		){ $result = selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID); }
+		){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID); }
 	}
 	return $result;
 }

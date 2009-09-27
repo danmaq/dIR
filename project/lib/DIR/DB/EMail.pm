@@ -11,7 +11,6 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
-use Jcode;
 use DIR::Template;
 use DIR::Validate;
 
@@ -66,14 +65,14 @@ sub readEMailFromEMail{
 # PUBLIC INSTANCE
 #	ユーザ マスター アカウントIDからメールアドレスを検索します。
 # PARAM NUM ユーザ マスター アカウントID
-# RETURN @STRING メールアドレス
+# RETURN @\% メールアドレス全情報
 sub readEMailFromUID{
 	my $self = shift;
 	my $uid = shift;
 	my @result = ();
 	if(defined($uid) and $uid){
-		@result = $self->selectAllSingleColumn(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID,
-			'EMAIL', $uid);
+		@result = $self->selectAll(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID,
+		{ type => SQL_INTEGER, value => $uid });
 	}
 	return @result;
 }

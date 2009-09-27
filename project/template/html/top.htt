@@ -1,0 +1,37 @@
+<TMPL_IF NAME="GAMES_EXISTS">
+	<table>
+		<caption>dIR対応ゲーム一覧</caption>
+		<tbody>
+			<TMPL_LOOP NAME="GAMES">
+				<tr>
+					<td><strong><a href="?mode=rank;id=<TMPL_VAR NAME='GAME_ID'>"><TMPL_VAR NAME="GAME_NAME"></a></strong></td>
+					<td><a href="<TMPL_VAR NAME='PUB_URL'>"><TMPL_VAR NAME="PUB_NAME"></a></td>
+					<td><TMPL_VAR NAME="GAME_REGISTED"></td>
+				</tr>
+			</TMPL_LOOP>
+		</tbody>
+		<thead>
+			<tr>
+				<th>名称</th>
+				<th>メーカー</th>
+				<th>開始日</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>名称</th>
+				<th>メーカー</th>
+				<th>開始日</th>
+			</tr>
+		</tfoot>
+	</table>
+<TMPL_ELSE>
+	<p>
+		現在、dIR対応ゲームはありません。
+	</p>
+</TMPL_IF>
+<h2>その他</h2>
+<ul>
+	<li><a href="./help/">このサイトについて</a></li>
+	<li>バージョン情報：<TMPL_VAR NAME="VERSION"></li>
+</ul>

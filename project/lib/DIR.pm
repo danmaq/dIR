@@ -15,6 +15,7 @@ use DIR::Game;
 use DIR::GameAccount;
 use DIR::Input;
 use DIR::Misc;
+use DIR::Output;
 use DIR::Score;
 use DIR::Template;
 use DIR::User;
@@ -30,6 +31,7 @@ $DIR::VERSION =	# バージョン情報
 	$DIR::GameAccount::VERSION +
 	$DIR::Input::VERSION +
 	$DIR::Misc::VERSION +
+	$DIR::Output::VERSION +
 	$DIR::Score::VERSION +
 	$DIR::Template::VERSION +
 	$DIR::User::VERSION +

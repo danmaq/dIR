@@ -74,6 +74,23 @@ sub newExist{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してバッチレポート情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% バッチレポート情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id name started ended)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(status)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)])
+	){ $result = bless({%args}, $class); }
+	return $result;
+}
+
 #==========================================================
 #==========================================================
 

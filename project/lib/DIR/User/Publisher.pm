@@ -84,6 +84,33 @@ sub newExistFromUID{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してゲーム情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% ゲーム情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(co_name head_name uri registed inserted)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(commision)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)])
+	){
+		my $super = DIR::User->newAllParams(%args);
+		$result = bless($super, $class);
+		$super->{co_name}	= $args{co_name};
+		$super->{head_name}	= $args{head_name};
+		$super->{uri}		= $args{uri};
+		$super->{commision}	= $args{commision};
+		$super->{registed}	= $args{registed};
+		$super->{notes}		= $args{notes};
+		$super->{inserted}	= $args{inserted};
+	}
+	return $result;
+}
+
 #==========================================================
 #==========================================================
 

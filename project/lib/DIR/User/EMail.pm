@@ -36,17 +36,28 @@ my %s_fields = (	# フィールド
 #	ユーザ マスター アカウントIDからメールアドレス情報オブジェクト一覧を生成します。
 # PARAM \% ユーザのマスター アカウント オブジェクト
 # RETURN @\% メールアドレス情報の入ったオブジェクト一覧。
-sub createObjFromUID{
+sub listNewFromUID{
 	my $user = shift;
 	my @result = ();
 	if(defined($user) and ref($user) eq 'DIR::User' and not $user->guest()){
-		foreach my $email (DIR::DB->instance()->readEMailFromUID($user)){
-			my $obj = DIR::User::EMail->newExistFromURI($email);
+		foreach my $info (DIR::DB->instance()->readEMailFromUID($user)){
+			my $obj = DIR::User::EMail->newAllParams(
+				id				=> $user->id(),
+				email_url		=> $info->{EMAIL},
+				validate_code	=> $info->{EMAIL_VALID},
+				notify_service	=> $info->{NOTIFY_SERVICE},
+				notify_ads		=> $info->{NOTIFY_ADS},
+				undeliverable	=> $info->{UNDELIVERABLE},
+				registed		=> $info->{REGIST_TIME},
+				inserted		=> 1);
 			if(defined($obj)){ push(@result, $obj); }
 		}
 	}
 	return @result;
 }
+
+#==========================================================
+#==========================================================
 
 #----------------------------------------------------------
 # PUBLIC NEW
@@ -97,6 +108,23 @@ sub newExistFromURI{
 			$result->{inserted}			= 1;
 		}
 	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してメールアドレス情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% メールアドレス情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id email_url registed inserted)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notify_service notify_ads undeliverable)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(validate_code)])
+	){ $result = bless({%args}, $class); }
 	return $result;
 }
 

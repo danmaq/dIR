@@ -88,7 +88,7 @@ sub writeScoreInsert{
 			$args{SCORE}->[2], $args{SCORE}->[3], $args{SCORE}->[4], $args{SCORE}->[5],
 			$args{SCORE}->[6], $args{SCORE}->[7], $args{REMOTE_ADDR}, $args{REMOTE_HOST},
 			$args{USER_AGENT})
-	){ $result = selectTableLastID(DIR::Template::FILE_SQL_SCORE_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_SCORE_SELECT_LAST_ID); }
 	return $result;
 }
 

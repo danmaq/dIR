@@ -17,6 +17,7 @@ $DIR::Game::VERSION = 0.01;	# バージョン情報
 
 my %s_fields = (	# フィールド
 	id			=> 0,		# ゲームID
+	pub_id		=> 0,		# パブリッシャー ユーザ マスター アカウントID
 	publisher	=> undef,	# パブリッシャー オブジェクト
 	devcode		=> undef,	# 開発コード
 	title		=> undef,	# タイトル
@@ -25,6 +26,32 @@ my %s_fields = (	# フィールド
 	registed	=> time,	# 登録日時
 	notes		=> undef,	# 備考
 );
+
+#==========================================================
+#==========================================================
+
+#----------------------------------------------------------
+# PUBLIC STATIC
+#	データベース内からゲーム情報を新規作成します。
+# RETURN @\% ゲーム情報の入ったオブジェクト一覧。
+sub listNewAll{
+	my @result = ();
+	foreach my $info (DIR::DB->instance()->readGameAll()){
+		my $obj = DIR::Game->newAllParams(
+			id			=> $info->{ID},
+			pub_id		=> $info->{PUB_ID},
+			publisher	=> undef,
+			devcode		=> $info->{DEVCODE},
+			title		=> $info->{TITLE},
+			validator	=> $info->{VALIDATOR},
+			reg_browser	=> $info->{REG_BROWSER},
+			registed	=> $info->{REGIST_TIME},
+			notes		=> $info->{NOTES},
+		);
+		if(defined($obj)){ push(@result, $obj); }
+	}
+	return @result;
+}
 
 #==========================================================
 #==========================================================
@@ -44,6 +71,7 @@ sub new{
 		DIR::Validate::isHttp($args{validator}) and ref($args{publisher}) eq 'DIR::User::Publisher'
 	){
 		my $obj = bless({%s_fields}, $class);
+		$obj->{pub_id}		= $args{publisher}->id();
 		$obj->{publisher}	= $args{publisher};
 		$obj->{devcode}		= $args{devcode};
 		$obj->{title}		= $args{title};
@@ -66,20 +94,34 @@ sub newExistFromID{
 	if(defined($id) and $id){
 		my $info = DIR::DB->instance()->readGameFromID($id);
 		if(defined($info)){
-			my $user = DIR::User->newExist($info->{PUB_ID});
-			if(defined($user)){
-				$result = bless({%s_fields}, $class);
-				$result->{id}			= $id;
-				$result->{publisher}	= $user;
-				$result->{devcode}		= $info->{DEVCODE};
-				$result->{title}		= $info->{TITLE};
-				$result->{validator}	= $info->{VALIDATOR};
-				$result->{reg_browser}	= $info->{REG_BROWSER};
-				$result->{registed}		= $info->{REGIST_TIME};
-				$result->{notes}		= $info->{NOTES};
-			}
+			$result = bless({%s_fields}, $class);
+			$result->{id}			= $id;
+			$result->{pub_id}		= $info->{PUB_ID};
+			$result->{devcode}		= $info->{DEVCODE};
+			$result->{title}		= $info->{TITLE};
+			$result->{validator}	= $info->{VALIDATOR};
+			$result->{reg_browser}	= $info->{REG_BROWSER};
+			$result->{registed}		= $info->{REGIST_TIME};
+			$result->{notes}		= $info->{NOTES};
 		}
 	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してゲーム情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% ゲーム情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id pub_id devcode title validator registed)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(reg_browser)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(publisher notes)])
+	){ $result = bless({%args}, $class); }
 	return $result;
 }
 
@@ -95,7 +137,7 @@ sub commit{
 	my $result = 0;
 	my $db = DIR::DB->instance();
 	my %args = (
-		user_id					=> $self->publisher()->id(),
+		user_id					=> $self->publisherID(),
 		dev_code				=> $self->devcode(),
 		title					=> $self->title(),
 		validator_uri			=> $self->validatorURI(),
@@ -123,13 +165,13 @@ sub isEquals{
 	my $expr = shift;
 	return (
 		$self->id()						== $expr->id()						and
+		$self->publisherID()			== $expr->publisherID()				and
 		$self->devcode()				eq $expr->devcode()					and
 		$self->title()					eq $expr->title()					and
 		$self->validatorURI()			eq $expr->validatorURI()			and
 		$self->isRegistableOnBrowser()	== $expr->isRegistableOnBrowser()	and
 		$self->registed()				== $expr->registed()				and
-		$self->notes()					eq $expr->notes()					and
-		$self->publisher()->isEquals($expr->publisher()));
+		$self->notes()					eq $expr->notes());
 }
 
 #----------------------------------------------------------
@@ -185,10 +227,22 @@ sub isTemp{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	パブリッシャー ユーザ マスター アカウントIDを取得します。
+# RETURN \% パブリッシャー ユーザ マスター アカウントID。
+sub publisherID{
+	my $self = shift;
+	return defined($self->{publisher}) ? $self->{publisher}->id() : $self->{pub_id};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	パブリッシャー オブジェクトを取得します。
 # RETURN \% パブリッシャー オブジェクト。
 sub publisher{
 	my $self = shift;
+	unless(defined($self->{publisher})){
+		$self->{publisher} = DIR::Publisher->newExist($self->publisherID());
+	}
 	return $self->{publisher};
 }
 

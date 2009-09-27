@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<POLICY name="danmaq" discuri="http://danmaq.com/" opturi="http://danmaq.com/">
+	<EXPIRY max-age="864000" />
+	<ENTITY>
+		<DATA-GROUP>
+			<DATA ref="#business.name">Shuhei Nomura (danmaq)</DATA>
+			<DATA ref="#business.contact-info.postal.street">Higashi-mukojima 2-36-12-1115</DATA>
+			<DATA ref="#business.contact-info.postal.city">Sumida</DATA>
+			<DATA ref="#business.contact-info.postal.stateprov">Tokyo</DATA>
+			<DATA ref="#business.contact-info.postal.postalcode">131-0032</DATA>
+			<DATA ref="#business.contact-info.postal.country">Japan</DATA>
+			<DATA ref="#business.contact-info.online.uri">http://danmaq.com/</DATA>
+		</DATA-GROUP>
+	</ENTITY>
+	<ACCESS><nonident /></ACCESS>
+	<STATEMENT>
+		<PURPOSE>
+			<current />
+			<admin />
+			<develop />
+			<tailoring />
+			<pseudo-analysis />
+			<pseudo-decision />
+			<contact required="opt-in" />
+		</PURPOSE>
+		<RECIPIENT>
+			<ours />
+			<delivery required="opt-in" /> 
+			<public required="opt-in" /> 
+		</RECIPIENT>
+		<RETENTION><indefinitely /></RETENTION>
+		<DATA-GROUP>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><online /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><uniqueid /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><computer /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><navigation /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><interactive /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><content /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><state /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.miscdata">
+				<CATEGORIES><preference /></CATEGORIES>
+			</DATA>
+			<DATA ref="#dynamic.cookies">
+				<CATEGORIES>
+					<uniqueid />
+					<navigation />
+					<interactive />
+					<preference />
+				</CATEGORIES>
+			</DATA>
+		</DATA-GROUP>
+	</STATEMENT>
+</POLICY>

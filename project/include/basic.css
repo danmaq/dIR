@@ -24,6 +24,7 @@
 
 #basic body{
 	background-color: #3366FF;
+	font-family: "ƒƒCƒŠƒI", sans-serif;
 	margin: 0px;
 }
 
@@ -42,4 +43,13 @@
 #basic h1 img{
 	vertical-align: text-bottom;
 	border-style: none;
+}
+
+#basic table{
+	margin: auto;
+}
+
+#basic table td, #basic table th{
+	padding: 1ex;
+	border: 1px solid black;
 }

@@ -137,15 +137,17 @@ sub _new_instance{
 	my $self = bless({ %s_fields }, shift);
 	binmode(STDIN, ':bytes');
 	my $cgi = CGI->new();
-	my $session = new CGI::Session('driver:MySQL',
-		($cgi->cookie(COOKIE_ID) or undef),
-		{ TableName => SESSION_TABLE, Handle => DIR::DB->instance()->dbi() });
-	$self->{ cookie } = $cgi->cookie(
-		-name => COOKIE_ID,
-		-value => $session->id(),
-		-expires => COOKIE_EXPIRES);
+	unless(exists(&DIR_MAINTENANCE)){
+		my $session = new CGI::Session('driver:MySQL',
+			($cgi->cookie(COOKIE_ID) or undef),
+			{ TableName => SESSION_TABLE, Handle => DIR::DB->instance()->dbi() });
+		$self->{ cookie } = $cgi->cookie(
+			-name => COOKIE_ID,
+			-value => $session->id(),
+			-expires => COOKIE_EXPIRES);
+		$self->{ session } = $session;
+	}
 	$self->{ cgi } = $cgi;
-	$self->{ session } = $session;
 	return $self;
 }
 

@@ -90,9 +90,36 @@ sub newExist{
 				$result->{last_login}	= $info->{LOGIN_TIME};
 				$result->{login_count}	= $info->{LOGIN_COUNT};
 				$result->{notes}		= $info->{NOTES};
-				$result->{email}		= [DIR::User::EMail::createObjFromUID($result)];
+				$result->{email}		= [DIR::User::EMail::listNewFromUID($result)];
 			}
 		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してユーザ マスター アカウント情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% ユーザ マスター アカウント情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id password email nickname registed last_renew last_login)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(introduction login_count)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)]) and
+		ref($args{email}) eq 'ARRAY'
+	){
+		my $emailValidate = 1;
+		foreach my $email (@{$args{email}}){
+			unless(defined($email) and ref($email) eq 'DIR::User::EMail'){
+				$emailValidate = 0;
+				last;
+			}
+		}
+		if($emailValidate){ $result = bless({%args}, $class); }
 	}
 	return $result;
 }

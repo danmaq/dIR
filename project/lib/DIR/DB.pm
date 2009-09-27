@@ -180,26 +180,29 @@ sub _new_instance{
 # !!! XXX !!! : 値から型を判断するのは良くない。最終的に型と引数の両方を渡すべき
 sub _execute{
 	my $self = shift;
+	my $fname = shift;
 	my $result = 0;
-	my $sql = $self->dbi()->prepare(DIR::Template::get(shift));
-	if(defined($sql)){
-		$result = 1;
-		my @args = @_;
-		my $len = scalar(@args);
-		my $param;
-		my $manual;
-		for(my $i = 0; $i < $len; $i++){
-			$param = $args[$i];
-			$manual = ref($param);
-			$sql->bind_param($i + 1, $manual ? $param->{ value } : $param,
-				$manual ? $param->{ type } :
-				(defined($param) and $param =~ /^-?\d+$/ ? SQL_INTEGER : undef));
-		}
-		$sql->execute();
-		if($sql->rows()){ $result = $sql; }
-		else{
+	if(defined($fname)){
+		my $sql = $self->dbi()->prepare(DIR::Template::get($fname));
+		if(defined($sql)){
 			$result = 1;
-			$sql->finish();
+			my @args = @_;
+			my $len = scalar(@args);
+			my $param;
+			my $manual;
+			for(my $i = 0; $i < $len; $i++){
+				$param = $args[$i];
+				$manual = ref($param);
+				$sql->bind_param($i + 1, $manual ? $param->{ value } : $param,
+					$manual ? $param->{ type } :
+					(defined($param) and $param =~ /^-?\d+$/ ? SQL_INTEGER : undef));
+			}
+			$sql->execute();
+			if($sql->rows()){ $result = $sql; }
+			else{
+				$result = 1;
+				$sql->finish();
+			}
 		}
 	}
 	return $result;

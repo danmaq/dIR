@@ -92,6 +92,24 @@ sub newExist{
 	return $result;
 }
 
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してスコア情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% スコア情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id game_account_id password score registed remote_addr)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(injustice withdraw)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(game_account remote_host user_agent notes)]) and
+		ref($args{score}) eq 'ARRAY' and scalar($args{score}) >= 8
+	){ $result = bless({%args}, $class); }
+	return $result;
+}
+
 #==========================================================
 #==========================================================
 

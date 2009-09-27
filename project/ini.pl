@@ -12,8 +12,8 @@ use lib qw(. ./lib);
 use utf8;
 use CGI qw(-compile);
 use DIR;
-#use DIR::DB;
-#use DIR::Template;
+use DIR::DB;
+use DIR::Template;
 
 use constant DIR_INI => 1;
 
@@ -27,11 +27,9 @@ $DIR::DB::HOST = 'localhost';		# ホスト名
 $DIR::DB::USER = 'danmaq00001';		# ユーザ名
 $DIR::DB::PASS = 'zddscc';			# パスワード
 
-=pod
 $DIR::Template::DIR = './template';	# テンプレートファイル格納場所へのパス
 
 $DIR::Output::NPH = 1;	# NPH(Non Parsed Header)を使用するかどうか
-=cut
 
 1;
 

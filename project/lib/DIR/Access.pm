@@ -44,7 +44,7 @@ sub new{
 	if(DIR::Validate::isExistParameter(\%args, [qw(page_name)], 1)){
 		my $env = DIR::Input->instance()->getRemoteEnvironment();
 		my $obj = bless({%s_fields}, $class);
-		unless(exists($args{user}) and ref($args{user}) =~ /^DIR::User/ and not $args{user}->guest()){
+		if(exists($args{user}) and ref($args{user}) =~ /^DIR::User/ and not $args{user}->guest()){
 			$obj->{user_id}	= $args{user}->id();
 			$obj->{user}	= $args{user};
 		}
@@ -85,6 +85,23 @@ sub newExist{
 			$result->{notes}		= $info->{NOTES};
 		}
 	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してアクセスログ情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% アクセスログ情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id page_name created_time remote_addr)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(user_id page_number)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(user referer remote_host user_agent notes)])
+	){ $result = bless({%args}, $class); }
 	return $result;
 }
 
@@ -167,7 +184,8 @@ sub userID{
 sub user{
 	my $self = shift;
 	if(defined($self->{user})){
-		$self->{user} = DIR::User::Publisher->newExistFromUID($self->userID());
+		$self->{user} = $self->userID() ? DIR::User->new_guest() :
+			DIR::User::Publisher->newExistFromUID($self->userID());
 	}
 	return $self->{user};
 }

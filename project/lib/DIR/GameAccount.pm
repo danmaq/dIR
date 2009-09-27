@@ -23,7 +23,9 @@ $DIR::GameAccount::VERSION =	# バージョン情報
 
 my %s_fields = (	# フィールド
 	id				=> 0,		# ゲーム アカウントID
+	user_id			=> 0,		# ユーザ マスター アカウントID
 	user			=> undef,	# ユーザ マスター アカウント情報オブジェクト
+	game_id			=> 0,		# ゲーム マスターID
 	game			=> undef,	# ゲーム マスター情報オブジェクト
 	password		=> undef,	# パスワード(SHA1でハッシュ化)
 	nickname		=> undef,	# ニックネーム
@@ -83,22 +85,18 @@ sub newExistFromID{
 		if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
 		my $info = DIR::DB->instance()->readGameAccountFromID($id);
 		if(defined($info)){
-			my $user = DIR::User->newExist($info->{USER_ID});
-			my $game = DIR::Game->newExist($info->{GAME_ID});
-			if(defined($user) and defined($game)){
-				$result = bless({%s_fields}, $class);
-				$result->{id}			= $id;
-				$result->{user}			= $user;
-				$result->{game}			= $game;
-				$result->{password}		= $info->{PASSWD};
-				$result->{nickname}		= $info->{NICKNAME};
-				$result->{introduction}	= $info->{INTRODUCTION};
-				$result->{registed}		= $info->{REGIST_TIME};
-				$result->{last_renew}	= $info->{RENEW_TIME};
-				$result->{last_login}	= $info->{LOGIN_TIME};
-				$result->{login_count}	= $info->{LOGIN_COUNT};
-				$result->{notes}		= $info->{NOTES};
-			}
+			$result = bless({%s_fields}, $class);
+			$result->{id}			= $id;
+			$result->{user_id}		= $info->{USER_ID};
+			$result->{game_id}		= $info->{GAME_ID};
+			$result->{password}		= $info->{PASSWD};
+			$result->{nickname}		= $info->{NICKNAME};
+			$result->{introduction}	= $info->{INTRODUCTION};
+			$result->{registed}		= $info->{REGIST_TIME};
+			$result->{last_renew}	= $info->{RENEW_TIME};
+			$result->{last_login}	= $info->{LOGIN_TIME};
+			$result->{login_count}	= $info->{LOGIN_COUNT};
+			$result->{notes}		= $info->{NOTES};
 		}
 	}
 	return $result;
@@ -123,6 +121,23 @@ sub newExistFromGameAndUser{
 		);
 		if(defined($id) and $id){ $result = DIR::GameAccount->newExistFromID($id); }
 	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	パラメータを手動指定してゲーム アカウント情報を新規作成します。
+# PARAM % フィールド全部
+# RETURN \% ゲーム アカウント情報の入ったオブジェクト。
+sub newAllParams{
+	my $class = shift;
+	my %args = @_;
+	my $result = undef;
+	if(
+		DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id password nickname registed last_renew last_login)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(introduction login_count)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(user game notes)])
+	){ $result = bless({%args}, $class); }
 	return $result;
 }
 
@@ -166,8 +181,8 @@ sub commit{
 	my $result = 0;
 	my $db = DIR::DB->instance();
 	my %params = (
-		user_id		=> $self->user()->id(),
-		game_id		=> $self->game()->id(),
+		user_id		=> $self->userID(),
+		game_id		=> $self->gameID(),
 		password	=> $self->password());
 	if($self->id()){
 		$result = $db->writeGameAccountRenew(
@@ -230,11 +245,30 @@ sub id{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	ゲーム マスターIDを取得します。
+# RETURN NUM ゲーム マスターID。
+sub gameID{
+	my $self = shift;
+	return defined($self->{game}) ? $self->{game}->id() : $self->{game_id};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	ゲーム マスターを取得します。
 # RETURN NUM ゲーム マスター情報オブジェクト。
 sub game{
 	my $self = shift;
+	unless(defined($self->{game})){ $self->{game} = DIR::Game->newExist($self->gameID()); }
 	return $self->{game};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウントIDを取得します。
+# RETURN NUM ユーザ マスター アカウントID。
+sub userID{
+	my $self = shift;
+	return defined($self->{user}) ? $self->{user}->id() : $self->{user_id};
 }
 
 #----------------------------------------------------------
@@ -243,6 +277,7 @@ sub game{
 # RETURN NUM ユーザ マスター アカウント情報オブジェクト。
 sub user{
 	my $self = shift;
+	unless(defined($self->{user})){ $self->{user} = DIR::User->newExist($self->userID()); }
 	return $self->{user};
 }
 
