@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -44,7 +45,7 @@ sub readGameAccountFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_GAMEACCOUNT_SELECT_FROM_ID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_GAMEACCOUNT_SELECT_FROM_ID,
 			{type => SQL_INTEGER, value => $id});
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -79,7 +80,7 @@ sub readGameAccountIDFromGameAndUser{
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(user_id game_id)], 1, 1)){
-		$result = $self->selectSingleColumn(DIR::Template::FILE_SQL_GAMEACCOUNT_SELECT_GAME_AND_USER,
+		$result = $self->selectSingleColumn(DIR::Const::FILE_SQL_GAMEACCOUNT_SELECT_GAME_AND_USER,
 			'ID', $args{game_id}, $args{user_id});
 	}
 	return $result;
@@ -99,7 +100,7 @@ sub writeGameAccountNew{
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id password nickname introduction)], 1)){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_INSERT), undef,
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_INSERT), undef,
 			$args{id}, $args{user_id}, $args{game_id}, $args{password},
 			Jcode->new($args{nickame},		'ucs2')->utf8(),
 			Jcode->new($args{introduction},	'ucs2')->utf8());
@@ -125,7 +126,7 @@ sub writeGameAccountRenew{
 	){
 		my $notes = $args{notes};
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_UPDATE), undef,
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_UPDATE), undef,
 			$args{password},
 			Jcode->new($args{nickame},				'ucs2')->utf8(),
 			Jcode->new($args{introduction},			'ucs2')->utf8(),
@@ -146,7 +147,7 @@ sub writeGameAccountLogin{
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(id user_id game_id)], 1, 1)){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_UPDATE_LOGIN), undef,
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_UPDATE_LOGIN), undef,
 				$args{id}, $args{user_id}, $args{game_id});
 	}
 	return $result;
@@ -165,7 +166,7 @@ sub eraseGameAccount{
 	my $result = undef;
 	if(defined($id) and $id){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE), undef, $id);
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_DELETE), undef, $id);
 	}
 	return $result;
 }
@@ -181,7 +182,7 @@ sub eraseGameAccountFromGameID{
 	my $result = undef;
 	if(defined($gid) and $gid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE_FROM_GID), undef, $gid);
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_DELETE_FROM_GID), undef, $gid);
 	}
 	return $result;
 }
@@ -197,7 +198,7 @@ sub eraseGameAccountFromUserID{
 	my $result = undef;
 	if(defined($uid) and $uid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_DELETE_FROM_UID), undef, $uid);
+			DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_DELETE_FROM_UID), undef, $uid);
 	}
 	return $result;
 }

@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -40,7 +41,7 @@ sub readUserFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_USER_SELECT_FROMID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_USER_SELECT_FROMID,
 		{ type => SQL_INTEGER, value => $id });
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -75,7 +76,7 @@ sub writeUserNew{
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(id password nickame introduction)], 1)){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_INSERT), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_INSERT), undef,
 			$args{id}, $args{password},
 			Jcode->new($args{nickame},		'ucs2')->utf8(),
 			Jcode->new($args{introduction},	'ucs2')->utf8());
@@ -99,7 +100,7 @@ sub writeUserRenew{
 		DIR::Validate::isExistParameter(\%args, [qw(notes)])
 	){
 		my $notes = $args{notes};
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_UPDATE), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_UPDATE), undef,
 			$args{password},
 			Jcode->new($args{nickame},				'ucs2')->utf8(),
 			Jcode->new($args{introduction},			'ucs2')->utf8(),
@@ -120,7 +121,7 @@ sub writeUserLogin{
 	my $result = undef;
 	if(defined($id) and $id =~ /^[0-9]+$/){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_USER_UPDATE_LOGIN), undef, $id);
+			DIR::Template::get(DIR::Const::FILE_SQL_USER_UPDATE_LOGIN), undef, $id);
 	}
 	return $result;
 }
@@ -137,7 +138,7 @@ sub eraseUser{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_DELETE), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_DELETE), undef,
 			$id);
 	}
 	return $result;

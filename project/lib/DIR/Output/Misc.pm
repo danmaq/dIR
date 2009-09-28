@@ -11,6 +11,8 @@ use warnings;
 use utf8;
 use Exporter;
 use Jcode;
+use DIR::Const;
+use DIR::Template;
 
 $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 
@@ -28,7 +30,7 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 # 	メンテナンス中画面を表示します。
 sub putMaintenance{
 	my $self = shift;
-	$self->_put(DIR::Template::getHTT(DIR::Template::FILE_HTT_MAINTENANCE,
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_MAINTENANCE,
 		VERSION => Jcode->new(DIR::versionLong())->utf8()));
 }
 
@@ -45,9 +47,10 @@ sub putTop{
 			GAME_NAME		=> Jcode->new($game->title(), 'ucs2')->utf8(),
 			PUB_URL			=> $game->publisher()->uri(),
 			PUB_NAME		=> Jcode->new($game->publisher()->coName(), 'ucs2')->utf8(),
-			GAME_REGISTED	=> $self->_createTimeStamp($game->registed())});
+			GAME_REGISTED	=> $self->_createTimeStamp($game->registed()),
+			MODE			=> DIR::Const::MODE_RANK_TOP});
 	}
-	$self->_put(DIR::Template::getHTT(DIR::Template::FILE_HTT_TOP,
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_TOP,
 		GAMES			=> $games,
 		GAMES_EXISTS	=> scalar(@$games),
 		VERSION			=> Jcode->new(DIR::versionLong())->utf8()));

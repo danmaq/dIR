@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -40,7 +41,7 @@ sub readEMailFromEMail{
 	my $email = shift;
 	my $result = undef;
 	if(DIR::Validate::isEMail($email)){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_URI,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_USER_EMAIL_SELECT_FROM_URI,
 		{ type => SQL_VARCHAR, value => $email });
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -71,7 +72,7 @@ sub readEMailFromUID{
 	my $uid = shift;
 	my @result = ();
 	if(defined($uid) and $uid){
-		@result = $self->selectAll(DIR::Template::FILE_SQL_USER_EMAIL_SELECT_FROM_UID, $uid);
+		@result = $self->selectAll(DIR::Const::FILE_SQL_USER_EMAIL_SELECT_FROM_UID, $uid);
 	}
 	return @result;
 }
@@ -91,7 +92,7 @@ sub writeEMailInsert{
 		DIR::Validate::isExistParameter(\%args, [qw(id email valid service ads)], 1) and
 		DIR::Validate::isEMail($args{email})
 	){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_INSERT), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_EMAIL_INSERT), undef,
 			$args{id}, $args{email}, $args{valid}, $args{service}, $args{ads});
 	}
 	return $result;
@@ -110,7 +111,7 @@ sub writeEMailUpdate{
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(id email valid service ads undeliverable)], 1)){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_UPDATE), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_EMAIL_UPDATE), undef,
 			$args{valid}, $args{service}, $args{ads}, $args{undeliverable}, $args{id}, $args{email});
 	}
 	return $result;
@@ -129,7 +130,7 @@ sub eraseEMail{
 	my $result = undef;
 	if(DIR::Validate::isEMail($email)){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_DELETE), undef, $email);
+			DIR::Template::get(DIR::Const::FILE_SQL_USER_EMAIL_DELETE), undef, $email);
 	}
 	return $result;
 }
@@ -145,7 +146,7 @@ sub eraseEMailFromUserID{
 	my $result = undef;
 	if(defined($uid) and $uid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_USER_EMAIL_DELETE_FROM_UID), undef, $uid);
+			DIR::Template::get(DIR::Const::FILE_SQL_USER_EMAIL_DELETE_FROM_UID), undef, $uid);
 	}
 	return $result;
 }

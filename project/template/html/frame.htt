@@ -10,8 +10,11 @@
 		<meta name="MS.LOCALE" content="JA" />
 		<meta name="Author" content="Mc/danmaq" />
 		<title>dIR - danmaq Internet Ranking [version <TMPL_VAR NAME="VERSION">]</title>
+		<link type="image/vnd.microsoft.icon" rel="shortcut icon" href="/favicon.ico" />
+		<link type="image/vnd.microsoft.icon" rel="icon" href="/favicon.ico" />
 		<link href="./" rel="Start" />
 		<link href="./include/basic.css" rel="Stylesheet" />
+		<link type="text/xml" rel="help" href="./help/" />
 	</head>
 	<body>
 		<h1><a href="/" rel="start"><img alt="dIR - danmaq Internet Ranking" src="./image/banner.png" width="468" height="60" /></a></h1>

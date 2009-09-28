@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -39,7 +40,7 @@ sub readAccessFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_ACCESS_SELECT_FROM_ID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_ACCESS_SELECT_FROM_ID,
 		{ type => SQL_INTEGER, value => $id });
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -79,10 +80,10 @@ sub writeAccessInsert{
 	if(
 		DIR::Validate::isExistParameter(\%args, [qw(user_id page_name remote_addr)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(page_number referer remote_host user_agent)]) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_INSERT), undef, 
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_ACCESS_INSERT), undef, 
 			$args{user_id}, $args{page_name}, $args{page_number}, $args{referer},
 			$args{remote_addr},$args{remote_host}, $args{user_agent})
-	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_ACCESS_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_ACCESS_SELECT_LAST_ID); }
 	return $result;
 }
 
@@ -101,7 +102,7 @@ sub writeAccessUpdate{
 		DIR::Validate::isExistParameter(\%args, [qw(id)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(notes)])
 	){
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_UPDATE), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_ACCESS_UPDATE), undef,
 			Jcode->new($args{notes}, 'ucs2')->utf8(), $args{id});
 	}
 	return $result;
@@ -118,7 +119,7 @@ sub writeAccessClearUID{
 	my $result = undef;
 	if(defined($uid) and $uid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_ACCESS_UPDATE_CLEAR_UID), undef, $uid);
+			DIR::Template::get(DIR::Const::FILE_SQL_ACCESS_UPDATE_CLEAR_UID), undef, $uid);
 	}
 	return $result;
 }

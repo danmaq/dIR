@@ -30,7 +30,7 @@ $DIR::DB::PASS = 'zddscc';			# パスワード
 $DIR::Template::DIR = './template';	# テンプレートファイル格納場所へのパス
 
 $DIR::Output::NPH	= 1;	# NPH(Non Parsed Header)を使用するかどうか
-$DIR::Output::TWIG	= 0;	# HTMLを整形するかどうか
+$DIR::Output::TWIG	= 1;	# HTMLを整形するかどうか
 
 1;
 

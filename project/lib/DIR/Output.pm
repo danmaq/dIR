@@ -50,7 +50,7 @@ sub _new_instance{
 # PARAM STRING HTML本体文字列
 sub _put{
 	my $self = shift;
-	my $body = Jcode->new(DIR::Template::getHTT(DIR::Template::FILE_HTT_FRAME,
+	my $body = Jcode->new(DIR::Template::getHTT(DIR::Const::FILE_HTT_FRAME,
 		VERSION => DIR::versionShort(), BODY => shift), 'utf8')->utf8();
 	if($DIR::Output::TWIG){
 		my $twig = XML::Twig->new();

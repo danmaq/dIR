@@ -10,7 +10,8 @@ use warnings;
 use utf8;
 use lib qw(. ./lib);
 use Switch;
-use DIR;
+use DIR::Const;
+use DIR::Input;
 
 #	require 'maintenance.pl';
 
@@ -19,8 +20,8 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 unless(exists(&DIR_MAINTENANCE)){
 	my $mode = DIR::Input->instance()->getMode();
 	switch($mode){
-		case 'temp'		{ require 'define.pl';		}
-		else			{ require 'top.pl';			}
+		case DIR::Const::MODE_RANK_TOP	{ require 'ranktop.pl';	}
+		else							{ require 'top.pl';		}
 	}
 }
 

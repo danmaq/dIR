@@ -11,6 +11,8 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
+use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -39,7 +41,7 @@ sub readScoreFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_SCORE_SELECT_FROM_ID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_SCORE_SELECT_FROM_ID,
 			{type => SQL_INTEGER, value => $id});
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -83,12 +85,12 @@ sub writeScoreInsert{
 		DIR::Validate::isExistParameter(\%args, [qw(GACCOUNT_ID PASSWD SCORE REMOTE_ADDR)], 1, 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(REMOTE_HOST USER_AGENT)], 1) and
 		scalar(@{$args{SCORE}}) >= 8 and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_INSERT), undef, 
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_INSERT), undef, 
 			$args{GACCOUNT_ID}, $args{PASSWD}, $args{SCORE}->[0], $args{SCORE}->[1],
 			$args{SCORE}->[2], $args{SCORE}->[3], $args{SCORE}->[4], $args{SCORE}->[5],
 			$args{SCORE}->[6], $args{SCORE}->[7], $args{REMOTE_ADDR}, $args{REMOTE_HOST},
 			$args{USER_AGENT})
-	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_SCORE_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_SCORE_SELECT_LAST_ID); }
 	return $result;
 }
 
@@ -105,7 +107,7 @@ sub writeScoreUpdate{
 	return (
 		DIR::Validate::isExistParameter(\%args, [qw(ID INJUSTICE WITHDRAW)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(NOTES)]) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_UPDATE), undef,
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_UPDATE), undef,
 			$args{INJUSTICE}, $args{WITHDRAW},
 			defined($args{NOTES}) ? Jcode->new($args{NOTES}, 'ucs2')->utf8() : undef, $args{ID})
 	);
@@ -123,7 +125,7 @@ sub eraseScore{
 	my $id = shift;
 	return (
 		defined($id) and $id and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_SCORE_DELETE), undef, $id)
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_DELETE), undef, $id)
 	);
 }
 

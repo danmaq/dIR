@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -40,7 +41,7 @@ sub readRivalFromID{
 	my $id = shift;
 	my @result = ();
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_SELECT_FROM_ID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_SELECT_FROM_ID,
 			{type => SQL_INTEGER, value => $id});
 		if(ref($sql)){
 			while(my $row = $sql->fetchrow_hashref()){
@@ -65,7 +66,7 @@ sub readRivalFromBothID{
 	my %args = @_;
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(GACCOUNT_ID RIVAL_ID)], 1, 1)){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_SELECT_FROM_ID_BOTH,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_SELECT_FROM_ID_BOTH,
 			{type => SQL_INTEGER, value => $args{GACCOUNT_ID}},
 			{type => SQL_INTEGER, value => $args{RIVAL_ID}});
 		if(ref($sql)){
@@ -94,7 +95,7 @@ sub writeRivalInsert{
 	my %args = @_;
 	return (
 		DIR::Validate::isExistParameter(\%args, [qw(INTRODUCTION GACCOUNT_ID RIVAL_ID)], 1) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_INSERT), undef,
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_INSERT), undef,
 			$args{GACCOUNT_ID}, $args{RIVAL_ID}, Jcode->new($args{INTRODUCTION}, 'ucs2')->utf8())
 	);
 }
@@ -112,7 +113,7 @@ sub writeRivalUpdate{
 	my %args = @_;
 	return (
 		DIR::Validate::isExistParameter(\%args, [qw(INTRODUCTION GACCOUNT_ID RIVAL_ID)], 1) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_UPDATE), undef,
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_UPDATE), undef,
 			Jcode->new($args{INTRODUCTION}, 'ucs2')->utf8(), $args{GACCOUNT_ID}, $args{RIVAL_ID})
 	);
 }
@@ -129,7 +130,7 @@ sub eraseRival{
 	my %args = @_;
 	return (
 		DIR::Validate::isExistParameter(\%args, [qw(GACCOUNT_ID RIVAL_ID)], 1, 1) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_DELETE), undef,
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_DELETE), undef,
 			$args{GACCOUNT_ID}, $args{RIVAL_ID})
 	);
 }
@@ -144,7 +145,7 @@ sub eraseRivalFromGameAccountID{
 	my $id = shift;
 	return (
 		defined($id) and $id and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAMEACCOUNT_RIVAL_DELETE_FROM_GAID), undef,
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAMEACCOUNT_RIVAL_DELETE_FROM_GAID), undef,
 			$id, $id)
 	);
 }

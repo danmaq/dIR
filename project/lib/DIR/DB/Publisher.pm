@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -40,7 +41,7 @@ sub readPublisherFromUID{
 	my $uid = shift;
 	my $result = undef;
 	if(defined($uid) and $uid){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_USER_PUBLISHER_SELECT_FROM_UID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_USER_PUBLISHER_SELECT_FROM_UID,
 			{ type => SQL_INTEGER, value => $uid });
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -75,7 +76,7 @@ sub writePublisherInsert{
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(uid co_name head_name uri)], 1)){
 		$result =
-			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_PUBLISHER_INSERT), undef,
+			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_PUBLISHER_INSERT), undef,
 				$args{uid},
 				Jcode->new($args{co_name},		'ucs2')->utf8(),
 				Jcode->new($args{head_name},	'ucs2')->utf8(),
@@ -98,7 +99,7 @@ sub writePublisherUpdate{
 	my $result = undef;
 	if(DIR::Validate::isExistParameter(\%args, [qw(uid co_name head_name uri commision)], 1)){
 		$result = 
-			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_USER_PUBLISHER_UPDATE), undef,
+			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_USER_PUBLISHER_UPDATE), undef,
 				Jcode->new($args{co_name},		'ucs2')->utf8(),
 				Jcode->new($args{head_name},	'ucs2')->utf8(),
 				$args{uri}, $args{commision}, $args{uid});
@@ -119,7 +120,7 @@ sub erasePublisher{
 	my $result = undef;
 	if(defined($uid) and $uid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_USER_PUBLISHER_DELETE), undef, $uid);
+			DIR::Template::get(DIR::Const::FILE_SQL_USER_PUBLISHER_DELETE), undef, $uid);
 	}
 	return $result;
 }

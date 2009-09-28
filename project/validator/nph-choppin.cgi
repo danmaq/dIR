@@ -30,6 +30,7 @@ sub validate{
 	$result[1] = $chopbonus;
 	$result[2] = $chopped;
 	$result[3] = $chopped * 3000;
+	$result[4] = ($chopped > 0 ? int($chopbonus / $chopped) : 0);
 	$result[0] = $chopbonus + $result[3];
 	return 0;
 }

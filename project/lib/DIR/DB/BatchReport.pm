@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DBI qw(:sql_types);
 use Exporter;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -36,7 +37,7 @@ sub readBatchReportFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_FROMID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_BATCHREPORT_SELECT_FROMID,
 		{ type => SQL_INTEGER, value => $id });
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -69,9 +70,9 @@ sub writeBatchReportStart{
 	my $result = undef;
 	if(DIR::Validate::isLengthInRange($name, 1, 255)){
 		if(
-			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_INSERT), undef, 
+			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_BATCHREPORT_INSERT), undef, 
 				Jcode->new($name, 'ucs2')->utf8())
-		){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_BATCHREPORT_SELECT_LASTID); }
+		){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_BATCHREPORT_SELECT_LASTID); }
 	}
 	return $result;
 }
@@ -90,12 +91,12 @@ sub writeBatchReportEnd{
 	if(DIR::Validate::isExistParameter(\%args, [qw(id status)], 1)){
 		if(exists($args{notes})){
 			$result = $self->dbi()->do(
-				DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES), undef,
+				DIR::Template::get(DIR::Const::FILE_SQL_BATCHREPORT_UPDATE_WITH_NOTES), undef,
 					$args{status}, Jcode->new($args{notes}, 'ucs2')->utf8(), $args{id});
 		}
 		else{
 			$result = $self->dbi()->do(
-				DIR::Template::get(DIR::Template::FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES), undef,
+				DIR::Template::get(DIR::Const::FILE_SQL_BATCHREPORT_UPDATE_WITHOUT_NOTES), undef,
 					$args{status}, $args{id});
 		}
 	}

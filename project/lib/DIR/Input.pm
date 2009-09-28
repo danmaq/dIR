@@ -15,13 +15,15 @@ use CGI qw(-compile);
 use CGI::Session;
 use DIR::Validate;
 use DIR::DB;
+use DIR::Input::Misc;
 
 use constant COOKIE_ID		=> 'SESSIONID';
 use constant COOKIE_EXPIRES	=> '+5m';
 use constant SESSION_TABLE	=> 'DIR_SESSIONS';
 use constant SESSION_KEY_ACCOUNT_ID	=> 'ACCOUNT_ID';
-
-$DIR::Input::VERSION = 0.01;	# バージョン情報
+$DIR::Input::VERSION =	# バージョン情報
+	$DIR::Input::Misc::VERSION +
+	0.01;
 
 my %s_fields = (	# フィールド
 	cgi => undef,		# CGIオブジェクト
@@ -67,7 +69,7 @@ sub getRemoteEnvironment{
 # RETURN STRING 動作モード文字列
 sub getMode{
 	my $self = shift;
-	return $self->cgi()->param('mode') or '';
+	return $self->cgi()->param('q') or '';
 }
 
 #----------------------------------------------------------

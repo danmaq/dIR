@@ -12,6 +12,7 @@ use utf8;
 use DBI qw(:sql_types);
 use Exporter;
 use Jcode;
+use DIR::Const;
 use DIR::Template;
 use DIR::Validate;
 
@@ -42,7 +43,7 @@ sub readGameFromID{
 	my $id = shift;
 	my $result = undef;
 	if(defined($id) and $id){
-		my $sql = $self->_execute(DIR::Template::FILE_SQL_GAME_SELECT_FROM_ID,
+		my $sql = $self->_execute(DIR::Const::FILE_SQL_GAME_SELECT_FROM_ID,
 			{type => SQL_INTEGER, value => $id});
 		if(ref($sql)){
 			my $row = $sql->fetchrow_hashref();
@@ -74,7 +75,7 @@ sub readGameFromUID{
 	my $uid = shift;
 	my @result = ();
 	if(defined($uid) and $uid){
-		@result = $self->selectAllSingleColumn(DIR::Template::FILE_SQL_GAME_SELECT_FROM_UID,
+		@result = $self->selectAllSingleColumn(DIR::Const::FILE_SQL_GAME_SELECT_FROM_UID,
 			'ID', $uid);
 	}
 	return @result;
@@ -86,7 +87,25 @@ sub readGameFromUID{
 # RETURN @\% ゲーム全情報
 sub readGameAll{
 	my $self = shift;
-	return $self->selectAll(DIR::Template::FILE_SQL_GAME_SELECT);
+	my @result = ();
+	my $sql = $self->_execute(DIR::Const::FILE_SQL_GAME_SELECT);
+	if(ref($sql)){
+		while(my $row = $sql->fetchrow_hashref()){
+			my $notes = $row->{NOTES};
+			push(@result, {
+				ID			=> $row->{ID},
+				PUB_ID		=> $row->{PUB_ID},
+				DEVCODE		=> $row->{DEVCODE},
+				TITLE		=> Jcode->new($row->{TITLE}, 'utf8')->ucs2(),
+				VALIDATOR	=> $row->{VALIDATOR},
+				REG_BROWSER	=> $row->{REG_BROWSER},
+				REGIST_TIME	=> $row->{REGIST_TIME},
+				NOTES		=> defined($notes) ? Jcode->new($notes, 'utf8')->ucs2() : undef,
+			});
+		}
+		$sql->finish();
+	}
+	return @result;
 }
 
 ###########################################################
@@ -104,11 +123,11 @@ sub writeGameInsert{
 	if(
 		DIR::Validate::isExistParameter(\%args,
 			[qw(user_id dev_code title validator_uri registable_on_browser)], 1) and
-		$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_INSERT), undef, 
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAME_INSERT), undef, 
 			$args{user_id}, $args{dev_code},
 			Jcode->new($args{title}, 'ucs2')->utf8(),
 			$args{validator_uri}, $args{registable_on_browser})
-	){ $result = $self->selectTableLastID(DIR::Template::FILE_SQL_GAME_SELECT_LAST_ID); }
+	){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_GAME_SELECT_LAST_ID); }
 	return $result;
 }
 
@@ -129,7 +148,7 @@ sub writeGameUpdate{
 		DIR::Validate::isExistParameter(\%args, [qw(notes)])
 	){
 		my $notes = $args{notes};
-		$result = $self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_UPDATE), undef,
+		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAME_UPDATE), undef,
 			$args{dev_code},
 			Jcode->new($args{title},				'ucs2')->utf8(),
 			$args{validator_uri},
@@ -153,7 +172,7 @@ sub eraseGame{
 	my $result = undef;
 	if(defined($id) and $id){
 		$result =
-			$self->dbi()->do(DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE), undef, $id);
+			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAME_DELETE), undef, $id);
 	}
 	return $result;
 }
@@ -169,7 +188,7 @@ sub eraseGameFromPublisherID{
 	my $result = undef;
 	if(defined($pid) and $pid){
 		$result = $self->dbi()->do(
-			DIR::Template::get(DIR::Template::FILE_SQL_GAME_DELETE_FROM_PID), undef, $pid);
+			DIR::Template::get(DIR::Const::FILE_SQL_GAME_DELETE_FROM_PID), undef, $pid);
 	}
 	return $result;
 }
