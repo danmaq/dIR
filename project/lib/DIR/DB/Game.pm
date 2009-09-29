@@ -36,8 +36,8 @@ $DIR::DB::Game::VERSION = 0.01;	# バージョン情報
 # PUBLIC INSTANCE
 #	ゲーム マスターIDからデータベース内のゲーム マスター情報を検索します。
 # PARAM NUM ゲーム マスターID
-# RETURN \%(PUB_ID DEVCODE TITLE VALIDATOR REG_BROWSER REGIST_TIME NOTES)
-#	団体名、代表者名、URL、権限レベル、登録日時、備考
+# RETURN \%(PUB_ID DEVCODE TITLE VALIDATOR REG_BROWSER \@SCORE_NAME REGIST_TIME NOTES)
+#	団体名、代表者名、URL、権限レベル、スコア名称一覧、登録日時、備考
 sub readGameFromID{
 	my $self = shift;
 	my $id = shift;
@@ -55,6 +55,11 @@ sub readGameFromID{
 					TITLE		=> Jcode->new($row->{TITLE}, 'utf8')->ucs2(),
 					VALIDATOR	=> $row->{VALIDATOR},
 					REG_BROWSER	=> $row->{REG_BROWSER},
+					SCORE_NAME	=> [
+						$row->{SCORENAME0}, $row->{SCORENAME1}, $row->{SCORENAME2},
+						$row->{SCORENAME3}, $row->{SCORENAME4}, $row->{SCORENAME5},
+						$row->{SCORENAME6}, $row->{SCORENAME7},
+					],
 					REGIST_TIME	=> $row->{REGIST_TIME},
 					NOTES		=> defined($notes) ? Jcode->new($notes, 'utf8')->ucs2() : undef,
 				};
@@ -99,6 +104,10 @@ sub readGameAll{
 				TITLE		=> Jcode->new($row->{TITLE}, 'utf8')->ucs2(),
 				VALIDATOR	=> $row->{VALIDATOR},
 				REG_BROWSER	=> $row->{REG_BROWSER},
+				SCORE_NAME	=> [
+					$row->{SCORENAME0}, $row->{SCORENAME1}, $row->{SCORENAME2}, $row->{SCORENAME3},
+					$row->{SCORENAME4}, $row->{SCORENAME5}, $row->{SCORENAME6}, $row->{SCORENAME7},
+				],
 				REGIST_TIME	=> $row->{REGIST_TIME},
 				NOTES		=> defined($notes) ? Jcode->new($notes, 'utf8')->ucs2() : undef,
 			});
@@ -135,17 +144,19 @@ sub writeGameInsert{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-#	ゲーム マスター情報をデータベースへ格納します。
-# PARAM %(id user_id dev_code title validator_uri registable_on_browser notes)
-#	ゲーム マスターID、ユーザ マスター アカウントID、開発コード、タイトル、検証URL、Webブラウザから登録可能かどうか、備考
+#	データベースのゲーム マスター情報を更新します。
+# PARAM %(id user_id dev_code title validator_uri registable_on_browser \@score_name notes)
+#	ゲーム マスターID、ユーザ マスター アカウントID、開発コード、タイトル、
+#	検証URL、Webブラウザから登録可能かどうか、スコア名称一覧、備考
 # RETURN BOOLEAN 成功した場合、真値。
 sub writeGameUpdate{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
 	if(
-		DIR::Validate::isExistParameter(\%args, [qw(id user_id dev_code title validator_uri registable_on_browser)], 1) and
-		DIR::Validate::isExistParameter(\%args, [qw(notes)])
+		DIR::Validate::isExistParameter(\%args, [qw(id user_id dev_code title validator_uri registable_on_browser score_name)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(notes)]) and
+		ref($args{score_name}) eq 'ARRAY' and scalar($args{score_name}) >= 8
 	){
 		my $notes = $args{notes};
 		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_GAME_UPDATE), undef,
@@ -153,6 +164,9 @@ sub writeGameUpdate{
 			Jcode->new($args{title},				'ucs2')->utf8(),
 			$args{validator_uri},
 			$args{registable_on_browser},
+			$args{score_name}->[0], $args{score_name}->[1], $args{score_name}->[2],
+			$args{score_name}->[3], $args{score_name}->[4], $args{score_name}->[5],
+			$args{score_name}->[6], $args{score_name}->[7],
 			defined($notes) ? Jcode->new($notes,	'ucs2')->utf8() : undef,
 			$args{id}, $args{user_id});
 	}

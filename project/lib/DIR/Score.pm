@@ -9,7 +9,6 @@ use 5.006;
 use strict;
 use warnings;
 use utf8;
-use Jcode;
 use DIR::GameAccount;
 
 $DIR::Score::VERSION = 0.01;	# バージョン情報

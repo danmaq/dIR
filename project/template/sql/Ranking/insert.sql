@@ -1,0 +1,6 @@
+INSERT INTO DIR_RANKING (
+	GAME_ID,	CAPTION
+)
+VALUES (
+	?,			?
+);

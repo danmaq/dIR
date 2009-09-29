@@ -16,15 +16,16 @@ use LWP::UserAgent;
 $DIR::Game::VERSION = 0.01;	# バージョン情報
 
 my %s_fields = (	# フィールド
-	id			=> 0,		# ゲームID
-	pub_id		=> 0,		# パブリッシャー ユーザ マスター アカウントID
-	publisher	=> undef,	# パブリッシャー オブジェクト
-	devcode		=> undef,	# 開発コード
-	title		=> undef,	# タイトル
-	validator	=> undef,	# 検証ツールURL
-	reg_browser	=> 0,		# Webブラウザから登録可能かどうか
-	registed	=> time,	# 登録日時
-	notes		=> undef,	# 備考
+	id				=> 0,									# ゲームID
+	pub_id			=> 0,									# パブリッシャー ユーザ マスター アカウントID
+	publisher		=> undef,								# パブリッシャー オブジェクト
+	devcode			=> undef,								# 開発コード
+	title			=> undef,								# タイトル
+	validator		=> undef,								# 検証ツールURL
+	reg_browser		=> 0,									# Webブラウザから登録可能かどうか
+	score_caption	=> ['', '', '', '', '', '', '', ''],	# スコア名称一覧
+	registed		=> time,								# 登録日時
+	notes			=> undef,								# 備考
 );
 
 #==========================================================
@@ -148,8 +149,9 @@ sub commit{
 	}
 	else{
 		$result = $db->writeGameUpdate(
-			id		=> $self->id(),
-			notes	=> $self->notes(),
+			score_name	=> $self->scoreCaption(),
+			id			=> $self->id(),
+			notes		=> $self->notes(),
 			%args);
 	}
 	return $result;
@@ -163,15 +165,28 @@ sub commit{
 sub isEquals{
 	my $self = shift;
 	my $expr = shift;
-	return (
-		$self->id()						== $expr->id()						and
-		$self->publisherID()			== $expr->publisherID()				and
-		$self->devcode()				eq $expr->devcode()					and
-		$self->title()					eq $expr->title()					and
-		$self->validatorURI()			eq $expr->validatorURI()			and
-		$self->isRegistableOnBrowser()	== $expr->isRegistableOnBrowser()	and
-		$self->registed()				== $expr->registed()				and
-		$self->notes()					eq $expr->notes());
+	my $result = ref($self) eq ref($expr);
+	if($result){
+		my $len = scalar(@{$self->scoreCaption()});
+		if($len == scalar(@{$expr->scoreCaption()})){
+			for(my $i = 7; $i >= 0; $i--){
+				$result =
+					($result and ($self->scoreCaption()->[$i] eq $expr->scoreCaption()->[$i]));
+			}
+			if($result){
+				$result = (
+					$self->id()						== $expr->id()						and
+					$self->publisherID()			== $expr->publisherID()				and
+					$self->devcode()				eq $expr->devcode()					and
+					$self->title()					eq $expr->title()					and
+					$self->validatorURI()			eq $expr->validatorURI()			and
+					$self->isRegistableOnBrowser()	== $expr->isRegistableOnBrowser()	and
+					$self->registed()				== $expr->registed()				and
+					$self->notes()					eq $expr->notes());
+			}
+		}
+	}
+	return $result;
 }
 
 #----------------------------------------------------------
@@ -292,6 +307,15 @@ sub isRegistableOnBrowser{
 	my $value = shift;
 	if(defined($value)){ $self->{reg_browser} = $value ? 1 : 0; }
 	return $self->{reg_browser};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	スコア名称一覧を取得します。
+# RETURN \@ スコア名称一覧。
+sub scoreCaption{
+	my $self = shift;
+	return $self->{score_caption};
 }
 
 #----------------------------------------------------------
