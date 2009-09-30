@@ -1,6 +1,7 @@
 UPDATE		DIR_GAME
 	SET		DEVCODE		= ?,
 			TITLE		= ?,
+			HOME_URI	= ?,
 			VALIDATOR	= ?,
 			REG_BROWSER	= ?,
 			SCORENAME0	= ?,

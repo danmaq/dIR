@@ -1,8 +1,8 @@
 INSERT INTO DIR_GAME (
-	PUB_ID,		DEVCODE,		TITLE,
+	PUB_ID,		DEVCODE,		TITLE,		HOME_URI,
 	VALIDATOR,	REG_BROWSER,	REGIST_TIME
 )
 VALUES(
-	?,			?,				?,
+	?,			?,				?,			?,
 	?,			?,				NOW()
 );

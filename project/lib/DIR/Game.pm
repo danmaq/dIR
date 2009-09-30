@@ -22,6 +22,7 @@ my %s_fields = (	# フィールド
 	publisher		=> undef,								# パブリッシャー オブジェクト
 	devcode			=> undef,								# 開発コード
 	title			=> undef,								# タイトル
+	home_uri		=> undef,								# ホームURL
 	validator		=> undef,								# 検証ツールURL
 	reg_browser		=> 0,									# Webブラウザから登録可能かどうか
 	score_caption	=> ['', '', '', '', '', '', '', ''],	# スコア名称一覧
@@ -45,6 +46,7 @@ sub listNewAll{
 			publisher	=> undef,
 			devcode		=> $info->{DEVCODE},
 			title		=> $info->{TITLE},
+			home_uri	=> $info->{HOME_URI},
 			validator	=> $info->{VALIDATOR},
 			reg_browser	=> $info->{REG_BROWSER},
 			registed	=> $info->{REGIST_TIME},
@@ -61,15 +63,15 @@ sub listNewAll{
 #----------------------------------------------------------
 # PUBLIC NEW
 #	ゲーム情報を新規作成します。
-# PARAM %(publisher devcode title validator reg_browser)
-#	パブリッシャー オブジェクト、開発コード、タイトル、検証ツールURL、Webブラウザから登録可能かどうか
+# PARAM %(publisher devcode title home_uri validator reg_browser)
+#	パブリッシャー オブジェクト、開発コード、タイトル、ホームURL、検証ツールURL、Webブラウザから登録可能かどうか
 # RETURN \% ゲーム情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
 	my %args = @_;
 	my $result = undef;
 	if(
-		DIR::Validate::isExistParameter(\%args, [qw(publisher devcode title validator reg_browser)], 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(publisher devcode title home_uri validator reg_browser)], 1) and
 		DIR::Validate::isHttp($args{validator}) and ref($args{publisher}) eq 'DIR::User::Publisher'
 	){
 		my $obj = bless({%s_fields}, $class);
@@ -77,6 +79,7 @@ sub new{
 		$obj->{publisher}	= $args{publisher};
 		$obj->{devcode}		= $args{devcode};
 		$obj->{title}		= $args{title};
+		$obj->{home_uri}	= $args{home_uri};
 		$obj->{validator}	= $args{validator};
 		$obj->{reg_browser}	= $args{reg_browser};
 		if($obj->commit()){ $result = $obj; }
@@ -101,6 +104,7 @@ sub newExistFromID{
 			$result->{pub_id}		= $info->{PUB_ID};
 			$result->{devcode}		= $info->{DEVCODE};
 			$result->{title}		= $info->{TITLE};
+			$result->{home_uri}		= $info->{HOME_URI};
 			$result->{validator}	= $info->{VALIDATOR};
 			$result->{reg_browser}	= $info->{REG_BROWSER};
 			$result->{registed}		= $info->{REGIST_TIME};
@@ -120,7 +124,7 @@ sub newAllParams{
 	my %args = @_;
 	my $result = undef;
 	if(
-		DIR::Validate::isExistParameter(\%args, [qw(id pub_id devcode title validator registed)], 1, 1) and
+		DIR::Validate::isExistParameter(\%args, [qw(id pub_id devcode title home_uri validator registed)], 1, 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(reg_browser)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(publisher notes)])
 	){ $result = bless({%args}, $class); }
@@ -142,6 +146,7 @@ sub commit{
 		user_id					=> $self->publisherID(),
 		dev_code				=> $self->devcode(),
 		title					=> $self->title(),
+		home_uri				=> $self->homeURI(),
 		validator_uri			=> $self->validatorURI(),
 		registable_on_browser	=> $self->isRegistableOnBrowser());
 	if($self->isTemp()){
@@ -181,6 +186,7 @@ sub isEquals{
 					$self->publisherID()			== $expr->publisherID()				and
 					$self->devcode()				eq $expr->devcode()					and
 					$self->title()					eq $expr->title()					and
+					$self->homeURI()				eq $expr->homeURI()					and
 					$self->validatorURI()			eq $expr->validatorURI()			and
 					$self->isRegistableOnBrowser()	== $expr->isRegistableOnBrowser()	and
 					$self->registed()				== $expr->registed()				and
@@ -232,6 +238,7 @@ sub ranking{
 	my $define = shift;
 	my @result = ();
 	my $strSQL = $define->sql();
+	# ! TODO : 作りかけ
 	return @result;
 }
 
@@ -298,6 +305,18 @@ sub title{
 	my $value = shift;
 	if(defined($value)){ $self->{title} = $value; }
 	return $self->{title};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ホームURLを取得/設定します。
+# PARAM STRING (省略可)新しいホームURL
+# RETURN STRING ホームURL。
+sub homeURI{
+	my $self = shift;
+	my $value = shift;
+	if(defined($value)){ $self->{home_uri} = $value; }
+	return $self->{home_uri};
 }
 
 #----------------------------------------------------------
