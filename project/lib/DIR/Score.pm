@@ -66,7 +66,7 @@ sub new{
 # PUBLIC NEW
 #	スコアIDからスコア情報を新規作成します。
 # PARAM NUM スコアID
-# RETURN \% スコア情報の入ったオブジェクト。
+# RETURN \% スコア情報の入ったオブジェクト。存在しない場合、未定義値。
 sub newExist{
 	my $class = shift;
 	my $id = shift;
@@ -74,18 +74,19 @@ sub newExist{
 	if(defined($id) and $id){
 		my $info = DIR::DB->instance()->readScoreFromID($id);
 		if(defined($info)){
-			$result = bless({%s_fields}, $class);
-			$result->{id}				= $id;
-			$result->{game_account_id}	= $info->{GACCOUNT_ID};
-			$result->{password}			= $info->{PASSWD};
-			$result->{score}			= $info->{SCORE};
-			$result->{injustice}		= $info->{INJUSTICE};
-			$result->{withdraw}			= $info->{WITHDRAW};
-			$result->{registed}			= $info->{REGIST_TIME};
-			$result->{remote_addr}		= $info->{REMOTE_ADDR};
-			$result->{remote_host}		= $info->{REMOTE_HOST};
-			$result->{user_agent}		= $info->{USER_AGENT};
-			$result->{notes}			= $info->{NOTES};
+			$result = DIR::Score->newAllParams(
+				id				=> $id,
+				game_account_id	=> $info->{GACCOUNT_ID},
+				game_account	=> undef,
+				password		=> $info->{PASSWD},
+				score			=> $info->{SCORE},
+				injustice		=> $info->{INJUSTICE},
+				withdraw		=> $info->{WITHDRAW},
+				registed		=> $info->{REGIST_TIME},
+				remote_addr		=> $info->{REMOTE_ADDR},
+				remote_host		=> $info->{REMOTE_HOST},
+				user_agent		=> $info->{USER_AGENT},
+				notes			=> $info->{NOTES});
 		}
 	}
 	return $result;

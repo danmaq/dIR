@@ -48,7 +48,7 @@ sub readRankingFromID{
 			my $row = $sql->fetchrow_hashref();
 			if(defined($row)){
 				$result = {
-					GAME_ID		=> $row->{USER_ID},
+					GAME_ID		=> $row->{GAME_ID},
 					CAPTION		=> Jcode->new($row->{CAPTION}, 'utf8')->ucs2(),
 					VIEW		=> [
 						$row->{VIEW0}, $row->{VIEW1}, $row->{VIEW2}, $row->{VIEW3},

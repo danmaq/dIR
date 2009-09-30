@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use DIR::DB;
 use DIR::User;
+use DIR::Ranking;
 use LWP::UserAgent;
 
 $DIR::Game::VERSION = 0.01;	# バージョン情報
@@ -144,8 +145,9 @@ sub commit{
 		validator_uri			=> $self->validatorURI(),
 		registable_on_browser	=> $self->isRegistableOnBrowser());
 	if($self->isTemp()){
-		$result = $db->writeUserNew(%args);
-		if(defined($result) and $result){ $self->{id} = $result; }
+		my $id = $db->writeUserNew(%args);
+		$result = (defined($id) and $id);
+		if($result){ $self->{id} = $result; }
 	}
 	else{
 		$result = $db->writeGameUpdate(
@@ -217,6 +219,19 @@ sub validate{
 			}
 		}
 	}
+	return @result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ランキング一覧を作成します。
+# PARAM \% ランキング定義情報
+# RETURN @ ランキング一覧。
+sub ranking{
+	my $self = shift;
+	my $define = shift;
+	my @result = ();
+	my $strSQL = $define->sql();
 	return @result;
 }
 

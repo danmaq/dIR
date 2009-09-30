@@ -1,5 +1,5 @@
 UPDATE		DIR_RANKING_ORDER
-	SET		SCORE_COL	= ?,
+	SET		TARGET_COL	= ?,
 			RANK_ORDER	= ?
 	WHERE	ID			= ? AND
 			RANK_ID		= ?;

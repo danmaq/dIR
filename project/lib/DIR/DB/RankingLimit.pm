@@ -34,7 +34,7 @@ $DIR::DB::RankingLimit::VERSION = 0.01;	# バージョン情報
 # PUBLIC INSTANCE
 #	絞込アイテムIDからデータベース内の絞込アイテム情報を検索します。
 # PARAM NUM 絞込アイテムID
-# RETURN \%(RANK_ID SCORE_COL BORDER LESS_GAP MORE_GAP)
+# RETURN \%(RANK_ID TARGET_COL THRESHOLD LO_PASS HI_PASS)
 #	ランキングID、対象カラム、閾値、閾値以下許容誤差、閾値以上許容誤差
 sub readRankingLimitFromID{
 	my $self = shift;
@@ -55,7 +55,7 @@ sub readRankingLimitFromID{
 # PUBLIC INSTANCE
 #	ランキングIDからデータベース内の絞込アイテム情報を検索します。
 # PARAM NUM ランキングID
-# RETURN @\%(ID SCORE_COL BORDER LESS_GAP MORE_GAP)
+# RETURN @\%(ID TARGET_COL THRESHOLD LO_PASS HI_PASS)
 #	絞込アイテムID、対象カラム、閾値、閾値以下許容誤差、閾値以上許容誤差
 sub readRankingLimitFromGameID{
 	my $self = shift;
@@ -77,18 +77,18 @@ sub readRankingLimitFromGameID{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	絞込アイテム情報をデータベースへ格納します。
-# PARAM %(RANK_ID SCORE_COL BORDER LESS_GAP MORE_GAP)
+# PARAM %(RANK_ID TARGET_COL THRESHOLD LO_PASS HI_PASS)
 #	ランキングID、対象カラム、閾値、閾値以下許容誤差、閾値以上許容誤差
 # RETURN NUM 絞込アイテムID。失敗した場合、未定義値。
 sub writeRankingLimitInsert{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(DIR::Validate::isExistParameter(\%args, [qw(RANK_ID SCORE_COL BORDER LESS_GAP MORE_GAP)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(RANK_ID TARGET_COL THRESHOLD LO_PASS HI_PASS)], 1)){
 		if(
 			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_RANKING_LIMIT_INSERT), undef,
-				$args{RANK_ID},		$args{SCORE_COL},	$args{BORDER},
-				$args{LESS_GAP},	$args{MORE_GAP})
+				$args{RANK_ID},		$args{TARGET_COL},	$args{THRESHOLD},
+				$args{LO_PASS},	$args{HI_PASS})
 		){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_RANKING_LIMIT_SELECT_LAST_ID); }
 	}
 	return $result;
@@ -99,17 +99,17 @@ sub writeRankingLimitInsert{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	データベースの絞込アイテム情報を更新します。
-# PARAM %(ID RANK_ID SCORE_COL BORDER LESS_GAP MORE_GAP)
+# PARAM %(ID RANK_ID TARGET_COL THRESHOLD LO_PASS HI_PASS)
 #	絞込アイテムID、ランキングID、対象カラム、閾値、閾値以下許容誤差、閾値以上許容誤差
 # RETURN BOOLEAN 成功した場合、真値。
 sub writeRankingLimitUpdate{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(DIR::Validate::isExistParameter(\%args, [qw(ID RANK_ID SCORE_COL BORDER LESS_GAP MORE_GAP)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(ID RANK_ID TARGET_COL THRESHOLD LO_PASS HI_PASS)], 1)){
 		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_RANKING_LIMIT_UPDATE), undef,
-			$args{SCORE_COL},	$args{BORDER},	$args{LESS_GAP},
-			$args{MORE_GAP},	$args{ID},		$args{RANK_ID});
+			$args{TARGET_COL},	$args{THRESHOLD},	$args{LO_PASS},
+			$args{HI_PASS},	$args{ID},		$args{RANK_ID});
 	}
 	return $result;
 }

@@ -37,7 +37,7 @@ $DIR::Validate::HTTP_REGEX =	# HTTPアドレス検証用正規表現
 # PARAM \@	有無を確認する配列
 # PARAM NUM	nullチェック。省略時はチェックしない。
 # PARAM NUM	真偽チェック。省略時はチェックしない。
-# RETURN BOOL 指定のキーが存在しオプション指定に合致する場合、真値。
+# RETURN BOOLEAN 指定のキーが存在しオプション指定に合致する場合、真値。
 sub isExistParameter{
 	my $args = shift;
 	my $reqs = shift;
@@ -57,16 +57,15 @@ sub isExistParameter{
 
 #----------------------------------------------------------
 # PUBLIC STATIC
-#	パラメータハッシュに指定のキーが存在するかどうかを検証します。
-# PARAM \%	チェック対象のパラメータハッシュ
-# PARAM \@	有無を確認する配列
-# PARAM NUM	nullチェック。省略時はチェックしない。
-# PARAM NUM	真偽チェック。省略時はチェックしない。
-# RETURN BOOL 指定のキーが存在しオプション指定に合致する場合、真値。
+#	数値かどうかを検証します。
+# PARAM NUM	対象の値
+# PARAM BOOLEAN	真偽チェック。省略時はチェックしない。
+# RETURN BOOLEAN 数値である場合、真値。
 sub isNum{
 	my $num = shift;
 	my $true = shift;
-	return (defined($num) and not ref($num) and $num =~ /[0-9]/ and (not $true or $num));
+	unless(defined($true)){ $true = 0; }
+	return (defined($num) and not ref($num) and $num =~ /-?[0-9]+/ and (not $true or $num));
 }
 
 #----------------------------------------------------------
@@ -75,7 +74,7 @@ sub isNum{
 # PARAM STRING 文字列または数値
 # PARAM 1 NUM 文字列幅
 # PARAM 2 @[2] 最小値・最大値
-# RETURN BOOL 指定のキーが存在しオプション指定に合致する場合、真値。
+# RETURN BOOLEAN 指定のキーが存在しオプション指定に合致する場合、真値。
 sub isLengthInRange{
 	my $expr = shift;
 	my @limit = @_;
@@ -100,7 +99,7 @@ sub isLengthInRange{
 # PUBLIC STATIC
 #	メールアドレスが文法的に正しいかどうかを検証します。
 # PARAM STRING メールアドレス文字列
-# RETURN BOOL メールアドレスが文法的に正しい場合、真値。
+# RETURN BOOLEAN メールアドレスが文法的に正しい場合、真値。
 sub isEMail{
 	my $expr = shift;
 	return (defined($expr) and $expr =~ /^$DIR::Validate::MAIL_REGEX\z/o);
@@ -110,7 +109,7 @@ sub isEMail{
 # PUBLIC STATIC
 #	HTTP URLが文法的に正しいかどうかを検証します。
 # PARAM STRING HTTP URL文字列
-# RETURN BOOL HTTP URLが文法的に正しい場合、真値。
+# RETURN BOOLEAN HTTP URLが文法的に正しい場合、真値。
 sub isHttp{
 	my $expr = shift;
 	return (defined($expr) and $expr =~ /^$DIR::Validate::HTTP_REGEX\z/o);

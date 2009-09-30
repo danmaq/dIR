@@ -34,7 +34,7 @@ $DIR::DB::RankingOrder::VERSION = 0.01;	# バージョン情報
 # PUBLIC INSTANCE
 #	並替アイテムIDからデータベース内の並替アイテム情報を検索します。
 # PARAM NUM 並替アイテムID
-# RETURN \%(RANK_ID SCORE_COL RANK_ORDER) ランキングID、対象カラム、昇降順フラグ
+# RETURN \%(RANK_ID TARGET_COL RANK_ORDER) ランキングID、対象カラム、昇降順フラグ
 sub readRankingOrderFromID{
 	my $self = shift;
 	my $id = shift;
@@ -54,7 +54,7 @@ sub readRankingOrderFromID{
 # PUBLIC INSTANCE
 #	ランキングIDからデータベース内の並替アイテム情報を検索します。
 # PARAM NUM ランキングID
-# RETURN @\%(ID SCORE_COL RANK_ORDER) 並替アイテムID、対象カラム、昇降順フラグ
+# RETURN @\%(ID TARGET_COL RANK_ORDER) 並替アイテムID、対象カラム、昇降順フラグ
 sub readRankingOrderFromGameID{
 	my $self = shift;
 	my $id = shift;
@@ -75,16 +75,16 @@ sub readRankingOrderFromGameID{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	並替アイテム情報をデータベースへ格納します。
-# PARAM %(RANK_ID SCORE_COL RANK_ORDER) ランキングID、対象カラム、昇降順フラグ
+# PARAM %(RANK_ID TARGET_COL RANK_ORDER) ランキングID、対象カラム、昇降順フラグ
 # RETURN NUM 並替アイテムID。失敗した場合、未定義値。
 sub writeRankingOrderInsert{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(DIR::Validate::isExistParameter(\%args, [qw(RANK_ID SCORE_COL RANK_ORDER)], 1, 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(RANK_ID TARGET_COL RANK_ORDER)], 1, 1)){
 		if(
 			$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_RANKING_ORDER_INSERT), undef,
-				$args{RANK_ID},		$args{SCORE_COL},	$args{RANK_ORDER})
+				$args{RANK_ID},		$args{TARGET_COL},	$args{RANK_ORDER})
 		){ $result = $self->selectTableLastID(DIR::Const::FILE_SQL_RANKING_ORDER_SELECT_LAST_ID); }
 	}
 	return $result;
@@ -95,15 +95,15 @@ sub writeRankingOrderInsert{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	データベースの並替アイテム情報を更新します。
-# PARAM %(ID RANK_ID SCORE_COL RANK_ORDER) 並替アイテムID、ランキングID、対象カラム、昇降順フラグ
+# PARAM %(ID RANK_ID TARGET_COL RANK_ORDER) 並替アイテムID、ランキングID、対象カラム、昇降順フラグ
 # RETURN BOOLEAN 成功した場合、真値。
 sub writeRankingOrderUpdate{
 	my $self = shift;
 	my %args = @_;
 	my $result = undef;
-	if(DIR::Validate::isExistParameter(\%args, [qw(ID RANK_ID SCORE_COL RANK_ORDER)], 1)){
+	if(DIR::Validate::isExistParameter(\%args, [qw(ID RANK_ID TARGET_COL RANK_ORDER)], 1)){
 		$result = $self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_RANKING_ORDER_UPDATE), undef,
-			$args{SCORE_COL},	$args{RANK_ORDER},
+			$args{TARGET_COL},	$args{RANK_ORDER},
 			$args{ID},			$args{RANK_ID});
 	}
 	return $result;
