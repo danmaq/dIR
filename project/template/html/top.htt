@@ -4,7 +4,7 @@
 		<tbody>
 			<TMPL_LOOP NAME="GAMES">
 				<tr>
-					<td><strong><a href="?q=<TMPL_VAR NAME='MODE'>;id=<TMPL_VAR NAME='GAME_ID'>"><TMPL_VAR NAME="GAME_NAME"></a></strong></td>
+					<td><strong><a href="?q=<TMPL_VAR NAME='MODE'>;g=<TMPL_VAR NAME='GAME_ID'>"><TMPL_VAR NAME="GAME_NAME"></a></strong></td>
 					<td><a href="<TMPL_VAR NAME='PUB_URL'>"><TMPL_VAR NAME="PUB_NAME"></a></td>
 					<td><TMPL_VAR NAME="GAME_REGISTED"></td>
 				</tr>

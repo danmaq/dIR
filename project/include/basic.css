@@ -45,11 +45,21 @@
 	border-style: none;
 }
 
+#basic h2{
+	text-align: center;
+}
+
+#basic h3{
+	text-align: center;
+	border-top: 3px dotted black;
+}
+
 #basic table{
 	margin: auto;
 }
 
 #basic table td, #basic table th{
+	background-color: #0099CC;
 	padding: 1ex;
 	border: 1px solid black;
 }

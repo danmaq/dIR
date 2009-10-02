@@ -22,10 +22,11 @@ if(defined($id)){
 	my $game = DIR::Game->newExistFromID($id);
 	if(defined($game)){
 		$gamecode = $game->devcode();
-		foreach(DIR::Ranking::listNewFromGame($game)){
-			print $_->sql();
-			print "\n";
-		}
+		my @ranks = DIR::Ranking::listNewFromGame($game);
+		my @ranksView	= grep { $_->isViewListInTop();			} @ranks;
+		my @ranksNoView	= grep { (not $_->isViewListInTop());	} @ranks;
+		my @score = ();
+		foreach my $rank (@ranksView){ push(@score, [$rank->ranking()]); }
 	}
 }
 DIR::Access->new(account => undef, page_name => 'RANK_TOP_' . $gamecode);

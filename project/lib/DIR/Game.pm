@@ -228,20 +228,6 @@ sub validate{
 	return @result;
 }
 
-#----------------------------------------------------------
-# PUBLIC INSTANCE
-#	ランキング一覧を作成します。
-# PARAM \% ランキング定義情報
-# RETURN @ ランキング一覧。
-sub ranking{
-	my $self = shift;
-	my $define = shift;
-	my @result = ();
-	my $strSQL = $define->sql();
-	# ! TODO : 作りかけ
-	return @result;
-}
-
 ############################################################
 
 #----------------------------------------------------------

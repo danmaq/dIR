@@ -1,0 +1,58 @@
+<h2><a href="<TMPL_VAR NAME='GAME_HOME_URL'>"><TMPL_VAR NAME="GAME_NAME"></a>のランキング</h2>
+<TMPL_IF NAME="RANKING_EXISTS">
+	<TMPL_IF NAME="RANKING_VIEW_EXISTS">
+		<TMPL_LOOP NAME="RANKING_VIEW">
+			<h3>
+				<a href="?q=<TMPL_VAR NAME='MODE'>;g=<TMPL_VAR NAME='GAME_ID'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_VIEW"></a>
+			</h3>
+			<TMPL_IF NAME="RANKING_EXISTS">
+				<table>
+					<tbody>
+						<TMPL_LOOP NAME="RANKING_ROWS">
+							<tr>
+								<TMPL_LOOP NAME="RANKING_COLS">
+									<th><TMPL_VAR NAME="NAME"></th>
+								</TMPL_LOOP>
+							</tr>
+						</TMPL_LOOP>
+					</tbody>
+					<thead>
+						<tr>
+							<TMPL_LOOP NAME="RANKING_COLS">
+								<th><TMPL_VAR NAME="NAME"></th>
+							</TMPL_LOOP>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<TMPL_LOOP NAME="RANKING_COLS">
+								<th><TMPL_VAR NAME="NAME"></th>
+							</TMPL_LOOP>
+						</tr>
+					</tfoot>
+				</table>
+			<TMPL_ELSE>
+				<p>
+					現在、このゲームのランキングに誰も参加していません。
+				</p>
+			</TMPL_IF>
+		</TMPL_LOOP>
+	</TMPL_IF>
+	<TMPL_IF NAME="RANKING_HIDE_EXISTS">
+		<h3>その他のランキング</h3>
+		<ol>
+			<TMPL_LOOP NAME="RANKING_HIDE">
+				<li>
+					<a href="?q=<TMPL_VAR NAME='MODE'>;g=<TMPL_VAR NAME='GAME_ID'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_VIEW"></a>
+				</li>
+			</TMPL_LOOP>
+		</ol>
+	</TMPL_IF>
+<TMPL_ELSE>
+	<p>
+		現在、このゲームのランキングは公開されていません。
+	</p>
+</TMPL_IF>
+<p>
+	<a href="/" rel="Start">TOPに戻る</a>
+</p>

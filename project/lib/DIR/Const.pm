@@ -9,11 +9,13 @@ use strict;
 use warnings;
 use utf8;
 
-use constant MODE_RANK_TOP	=> 1;
+use constant MODE_RANK_TOP			=> 1;
+use constant MODE_RANK_DESCRIPTION	=> 2;
 
 use constant FILE_HTT_FRAME			=> 'html/frame.htt';
 use constant FILE_HTT_MAINTENANCE	=> 'html/maintenance.htt';
 use constant FILE_HTT_TOP			=> 'html/top.htt';
+use constant FILE_HTT_RANK_TOP		=> 'html/rankTop.htt';
 
 use constant FILE_SQL_DDL									=> 'sql/table.sql';
 use constant FILE_SQL_NOWTIME								=> 'sql/nowTime.sql';

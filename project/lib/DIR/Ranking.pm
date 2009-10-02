@@ -9,6 +9,7 @@ use 5.006;
 use strict;
 use warnings;
 use utf8;
+use Jcode;
 use DIR::DB;
 use DIR::Validate;
 use DIR::Ranking::Limit;
@@ -202,27 +203,69 @@ sub isEquals{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	SQLを作成、取得します。
+# PARAM NUM (省略可)開始行
+# PARAM NUM (省略可)終了行
 # RETURN STRING SQL構文。
 sub sql{
 	my $self = shift;
-	my $result = 'SELECT ';
+	my @limit = @_;
+	my $result =
+		'SELECT A.NICKNAME AS NICKNAME, A.INTRODUCTION AS INTRODUCTION, ' .
+		'A.LOGIN_COUNT AS LOGIN_COUNT, UNIX_TIMESTAMP(S.REGIST_TIME) AS REGIST_TIME, ';
 	for(my $i = 0; $i < 8; $i++){
-		if($self->isViewList()->[$i]){ $result .= ($DIR::Ranking::COLUMN_NAME->[$i] . ','); }
+		if($self->isViewList()->[$i]){
+			my $name = $DIR::Ranking::COLUMN_NAME->[$i];
+			$result .= sprintf('S.%s AS %s,', $name, $name);
+		}
 	}
 	chop($result);
 	my $andString = ' AND ';
-	$result .= (' FROM DIR_SCORE WHERE NOT (INJUSTICE OR WITHDRAW)' . $andString);
-	foreach my $limit (@{$self->limitList()}){ $result .= ($limit->query() . $andString); }
+	$result .= (' FROM DIR_SCORE AS S, DIR_GAME_ACCOUNT AS A ' .
+		'WHERE A.ID = S.GACCOUNT_ID AND NOT (S.INJUSTICE OR S.WITHDRAW)' . $andString);
+	foreach my $limit (@{$self->limitList()}){ $result .= ($limit->query('S') . $andString); }
 	for(my $i = length($andString) - 1; $i >= 0; $i--){ chop($result); }
 	$result .= ' ORDER BY ';
 	foreach my $limit (@{$self->orderList()}){
-		$result .= $limit->targetScoreColumnName();
+		$result .= ('S.' . $limit->targetScoreColumnName());
 		if($limit->order() > 0){ $result .= ' DESC'; }
 		$result .= ',';
 	}
 	chop($result);
+	if(scalar(@limit) >= 2 and $limit[0] . $limit[1] =~ /^\d+$/ and $limit[0] != $limit[1]){
+		if($limit[0] > $limit[1]){
+			$limit[0] ^= $limit[1];
+			$limit[1] ^= $limit[0];
+			$limit[0] ^= $limit[1];
+		}
+		$result .= sprintf(' LIMIT %d, %d', @limit);
+	}
 	$result .= ';';
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ランキングを作成、取得します。
+# PARAM NUM (省略可)開始行
+# PARAM NUM (省略可)終了行
+# RETURN @\@ ランキング情報。
+sub ranking{
+	my $self = shift;
+	my @result = ();
+	my $sql = DIR::DB->instance()->dbi()->prepare($self->sql(@_));
+	if(defined($sql)){
+		$sql->execute();
+		if(ref($sql)){
+			while(my $row = $sql->fetchrow_hashref()){
+				$row->{NICKNAME}		= Jcode->new($row->{NICKNAME},		'utf8')->ucs2();
+				$row->{INTRODUCTION}	= Jcode->new($row->{INTRODUCTION},	'utf8')->ucs2();
+				
+				push(@result, $row);
+			}
+			$sql->finish();
+		}
+	}
+	return @result;
 }
 
 ###########################################################

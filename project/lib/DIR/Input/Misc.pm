@@ -27,7 +27,7 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 # RETURN NUM ゲームID
 sub getParamRankTop{
 	my $self = shift;
-	my $result = $self->cgi()->param('id');
+	my $result = $self->cgi()->param('g');
 	return (defined($result) and $result =~ /^[0-9]+$/ ? $result : undef);
 }
 

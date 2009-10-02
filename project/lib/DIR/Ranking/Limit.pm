@@ -257,11 +257,15 @@ sub HighPass{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	SQLクエリを取得します。
+# PARAM STRING (省略可)テーブル名などの接頭語
 # RETURN STRING SQLクエリ。
 sub query{
 	my $self = shift;
-	my $cname		= $self->targetScoreColumnName();
-	my $threshold	= $self->threshold();
+	my $prefix = shift;
+	my $usePrefix = defined($prefix);
+	unless($usePrefix){ $prefix = ''; }
+	my $cname = sprintf('%s%s%s', $prefix, $usePrefix ? '.' : '', $self->targetScoreColumnName());
+	my $threshold = $self->threshold();
 	return sprintf(
 		'(%s <= (%d - %d) AND %s >= (%d + %d))',
 		$cname, $threshold, $self->LowPass(),
