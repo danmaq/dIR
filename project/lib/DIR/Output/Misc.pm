@@ -21,6 +21,7 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 	putMaintenance
 	putTop
 	putRankingTop
+	putRankingDescription
 );
 
 #==========================================================
@@ -70,17 +71,37 @@ sub putRankingTop{
 	my $infoRankingView = [];
 	my $infoRankingHide = [];
 	for(my $i = 0; $i < $countRankView; $i++){
-		my $rank = $args{rank}->[1]->[$i];
+		my $rank = $args{rank}->[0]->[$i];
+		my $scoreBody = $args{score}->[$i];
+		my $rowLength = scalar(@$scoreBody);
+		my @rankCaption = ();
+		my @rankRows = ();
+		if($rowLength){
+			foreach my $name ($rank->viewScoreColumnName()){ push(@rankCaption, {NAME => $name}); }
+			for(my $j = 0; $j < $rowLength; $j++){
+				my @score = ();
+				foreach my $value (@{$scoreBody->[$j]->{score_list}}){
+					push(@score, {VALUE => $value});
+				}
+				push(@rankRows, {
+					COUNT			=> $j,
+					NICKNAME		=> Jcode->new($scoreBody->[$j]->{nickname},		'ucs2')->utf8(),
+					INTRODUCTION	=> Jcode->new($scoreBody->[$j]->{introduction},	'ucs2')->utf8(),
+					REGISTED		=> $self->_createTimeStamp($scoreBody->[$j]->{registed}),
+					LOGIN_COUNT		=> $scoreBody->[$j]->{login_count},
+					SCORE_LIST		=> [@score]});
+			}
+		}
 		push(@$infoRankingView, {
-			RANKING_EXISTS	=> 0,
-			GAME_ID			=> $args{game}->id(),
+			RANKING_EXISTS	=> $rowLength,
+			RANKING_COLS	=> [@rankCaption],
+			RANKING_ROWS	=> [@rankRows],
 			RANKING_ID		=> $rank->id(),
 			RANKING_NAME	=> Jcode->new($rank->caption(), 'ucs2')->utf8(),
 			MODE			=> DIR::Const::MODE_RANK_DESCRIPTION});
 	}
 	foreach my $rank (@{$args{rank}->[1]}){
 		push(@$infoRankingHide, {
-			GAME_ID			=> $args{game}->id(),
 			RANKING_ID		=> $rank->id(),
 			RANKING_NAME	=> Jcode->new($rank->caption(), 'ucs2')->utf8(),
 			MODE			=> DIR::Const::MODE_RANK_DESCRIPTION});
@@ -92,6 +113,26 @@ sub putRankingTop{
 		RANKING_VIEW_EXISTS	=> $countRankView,
 		RANKING_HIDE_EXISTS	=> $countRankHide,
 		RANKING_HIDE		=> $infoRankingHide,
+		RANKING_VIEW		=> $infoRankingView,
+	));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	各ゲームのランキング詳細ページ画面を表示します。
+# PARAM %(game target \@others \@score)
+#	ゲーム マスター情報、表示するランキング情報一覧、その他のランキング情報一覧、スコア本体
+sub putRankingDescription{
+	my $self = shift;
+	my %args = @_;
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_RANK_DESCRIPTION,
+		GAME_HOME_URL			=> $args{game}->homeURI(),
+		GAME_NAME				=> Jcode->new($args{game}->title(), 'ucs2')->utf8(),
+		RANKING_NAME			=> Jcode->new($args{target}->caption(), 'ucs2')->utf8(),
+		RANKING_EXISTS			=> length(@{$args{score}}),
+		RANKING_OTHERS_EXISTS	=> length(@{$args{others}}),
+		RANKING_ROWS			=> [],
+		RANKING_OTHERS			=> [],
 	));
 }
 

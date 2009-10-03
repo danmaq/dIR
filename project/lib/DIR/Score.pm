@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use utf8;
 use DIR::GameAccount;
+use DIR::Const;
 
 $DIR::Score::VERSION = 0.01;	# バージョン情報
 
@@ -105,7 +106,7 @@ sub newAllParams{
 		DIR::Validate::isExistParameter(\%args, [qw(id game_account_id password score registed remote_addr)], 1, 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(injustice withdraw)], 1) and
 		DIR::Validate::isExistParameter(\%args, [qw(game_account remote_host user_agent notes)]) and
-		ref($args{score}) eq 'ARRAY' and scalar($args{score}) >= 8
+		ref($args{score}) eq 'ARRAY' and scalar($args{score}) >= DIR::Const::SCORE_COLUMN_TOTAL
 	){ $result = bless({%args}, $class); }
 	return $result;
 }

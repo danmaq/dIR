@@ -1,0 +1,60 @@
+<h2><a href="<TMPL_VAR NAME='GAME_HOME_URL'>"><TMPL_VAR NAME="GAME_NAME"></a>の<TMPL_VAR NAME="RANKING_NAME"></h2>
+<TMPL_IF NAME="RANKING_EXISTS">
+	<table>
+		<tbody>
+			<TMPL_LOOP NAME="RANKING_ROWS">
+				<tr>
+					<td><TMPL_VAR NAME="COUNT"></td>
+					<TMPL_LOOP NAME="SCORE_LIST">
+						<td><TMPL_VAR NAME="VALUE"></td>
+					</TMPL_LOOP>
+					<td><TMPL_VAR NAME="NICKNAME"></td>
+					<td><TMPL_VAR NAME="INTRODUCTION"></td>
+					<td><TMPL_VAR NAME="REGISTED"></td>
+					<td><TMPL_VAR NAME="LOGIN_COUNT"></td>
+				</tr>
+			</TMPL_LOOP>
+		</tbody>
+		<thead>
+			<tr>
+				<th>順位</th>
+				<TMPL_LOOP NAME="RANKING_COLS">
+					<th><TMPL_VAR NAME="NAME"></th>
+				</TMPL_LOOP>
+				<th>ニックネーム</th>
+				<th>コメント</th>
+				<th>登録日時</th>
+				<th>プレイ回数</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>順位</th>
+				<TMPL_LOOP NAME="RANKING_COLS">
+					<th><TMPL_VAR NAME="NAME"></th>
+				</TMPL_LOOP>
+				<th>ニックネーム</th>
+				<th>コメント</th>
+				<th>登録日時</th>
+				<th>プレイ回数</th>
+			</tr>
+		</tfoot>
+	</table>
+<TMPL_ELSE>
+	<p>
+		現在、このゲームのランキングに誰も参加していません。
+	</p>
+</TMPL_IF>
+<TMPL_IF NAME="RANKING_OTHERS_EXISTS">
+	<h3>その他のランキング</h3>
+	<ol>
+		<TMPL_LOOP NAME="RANKING_OTHERS">
+			<li>
+				<a href="?q=<TMPL_VAR NAME='MODE'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_NAME"></a>
+			</li>
+		</TMPL_LOOP>
+	</ol>
+</TMPL_IF>
+<p>
+	<a href="/" rel="Start">TOPに戻る</a>
+</p>

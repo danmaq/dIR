@@ -3,31 +3,46 @@
 	<TMPL_IF NAME="RANKING_VIEW_EXISTS">
 		<TMPL_LOOP NAME="RANKING_VIEW">
 			<h3>
-				<a href="?q=<TMPL_VAR NAME='MODE'>;g=<TMPL_VAR NAME='GAME_ID'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_VIEW"></a>
+				<a href="?q=<TMPL_VAR NAME='MODE'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_NAME"></a>
 			</h3>
 			<TMPL_IF NAME="RANKING_EXISTS">
 				<table>
 					<tbody>
 						<TMPL_LOOP NAME="RANKING_ROWS">
 							<tr>
-								<TMPL_LOOP NAME="RANKING_COLS">
-									<th><TMPL_VAR NAME="NAME"></th>
+								<td><TMPL_VAR NAME="COUNT"></td>
+								<TMPL_LOOP NAME="SCORE_LIST">
+									<td><TMPL_VAR NAME="VALUE"></td>
 								</TMPL_LOOP>
+								<td><TMPL_VAR NAME="NICKNAME"></td>
+								<td><TMPL_VAR NAME="INTRODUCTION"></td>
+								<td><TMPL_VAR NAME="REGISTED"></td>
+								<td><TMPL_VAR NAME="LOGIN_COUNT"></td>
 							</tr>
 						</TMPL_LOOP>
 					</tbody>
 					<thead>
 						<tr>
+							<th>順位</th>
 							<TMPL_LOOP NAME="RANKING_COLS">
 								<th><TMPL_VAR NAME="NAME"></th>
 							</TMPL_LOOP>
+							<th>ニックネーム</th>
+							<th>コメント</th>
+							<th>登録日時</th>
+							<th>プレイ回数</th>
 						</tr>
 					</thead>
 					<tfoot>
 						<tr>
+							<th>順位</th>
 							<TMPL_LOOP NAME="RANKING_COLS">
 								<th><TMPL_VAR NAME="NAME"></th>
 							</TMPL_LOOP>
+							<th>ニックネーム</th>
+							<th>コメント</th>
+							<th>登録日時</th>
+							<th>プレイ回数</th>
 						</tr>
 					</tfoot>
 				</table>
@@ -43,7 +58,7 @@
 		<ol>
 			<TMPL_LOOP NAME="RANKING_HIDE">
 				<li>
-					<a href="?q=<TMPL_VAR NAME='MODE'>;g=<TMPL_VAR NAME='GAME_ID'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_VIEW"></a>
+					<a href="?q=<TMPL_VAR NAME='MODE'>;r=<TMPL_VAR NAME='RANKING_ID'>"><TMPL_VAR NAME="RANKING_NAME"></a>
 				</li>
 			</TMPL_LOOP>
 		</ol>

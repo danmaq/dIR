@@ -16,6 +16,7 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 @DIR::Input::Misc::ISA = qw(Exporter);
 @DIR::Input::Misc::EXPORT = qw(
 	getParamRankTop
+	getParamRankDescription
 );
 
 #==========================================================
@@ -23,12 +24,41 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-# 	ランキングTOPページのゲームIDを取得します。
+# 	ランキングTOPページのクエリ情報を取得します。
 # RETURN NUM ゲームID
 sub getParamRankTop{
 	my $self = shift;
-	my $result = $self->cgi()->param('g');
-	return (defined($result) and $result =~ /^[0-9]+$/ ? $result : undef);
+	return _getGameMasterID($self);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ランキング詳細ページのクエリ情報を取得します。
+# RETURN NUM ランキング定義ID
+sub getParamRankDescription{
+	my $self = shift;
+	return _getRankingDefineID($self);
+}
+
+#==========================================================
+#==========================================================
+
+#----------------------------------------------------------
+# PRIVATE STATIC
+# 	ゲーム マスターIDを取得します。
+# RETURN NUM ゲーム マスターID
+sub _getGameMasterID{
+	my $self = shift;
+	return $self->getNumber('g');
+}
+
+#----------------------------------------------------------
+# PRIVATE STATIC
+# 	ランキング定義IDを取得します。
+# RETURN NUM ゲームID
+sub _getRankingDefineID{
+	my $self = shift;
+	return $self->getNumber('r');
 }
 
 1;

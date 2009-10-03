@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use utf8;
 use Jcode;
+use DIR::Const;
 use DIR::DB;
 use DIR::Validate;
 use DIR::Ranking::Limit;
@@ -212,7 +213,8 @@ sub sql{
 	my $result =
 		'SELECT A.NICKNAME AS NICKNAME, A.INTRODUCTION AS INTRODUCTION, ' .
 		'A.LOGIN_COUNT AS LOGIN_COUNT, UNIX_TIMESTAMP(S.REGIST_TIME) AS REGIST_TIME, ';
-	for(my $i = 0; $i < 8; $i++){
+	my $columnTotal = DIR::Const::SCORE_COLUMN_TOTAL;
+	for(my $i = 0; $i < $columnTotal; $i++){
 		if($self->isViewList()->[$i]){
 			my $name = $DIR::Ranking::COLUMN_NAME->[$i];
 			$result .= sprintf('S.%s AS %s,', $name, $name);
@@ -248,7 +250,7 @@ sub sql{
 #	ランキングを作成、取得します。
 # PARAM NUM (省略可)開始行
 # PARAM NUM (省略可)終了行
-# RETURN @\@ ランキング情報。
+# RETURN @\%(nickname introduction registed login_count \@score_list) ランキング情報。
 sub ranking{
 	my $self = shift;
 	my @result = ();
@@ -256,11 +258,21 @@ sub ranking{
 	if(defined($sql)){
 		$sql->execute();
 		if(ref($sql)){
+			my $columnTotal = DIR::Const::SCORE_COLUMN_TOTAL;
 			while(my $row = $sql->fetchrow_hashref()){
-				$row->{NICKNAME}		= Jcode->new($row->{NICKNAME},		'utf8')->ucs2();
-				$row->{INTRODUCTION}	= Jcode->new($row->{INTRODUCTION},	'utf8')->ucs2();
-				
-				push(@result, $row);
+				my $info = {
+					nickname		=> Jcode->new($row->{NICKNAME},		'utf8')->ucs2(),
+					introduction	=> Jcode->new($row->{INTRODUCTION},	'utf8')->ucs2(),
+					registed		=> $row->{REGIST_TIME},
+					login_count		=> $row->{LOGIN_COUNT},
+					score_list		=> []};
+				my $isViewList = $self->isViewList();
+				for(my $i = 0; $i < $columnTotal; $i++){
+					if($isViewList->[$i]){
+						push(@{$info->{score_list}}, $row->{sprintf('SCORE%d', $i)});
+					}
+				}
+				push(@result, $info);
 			}
 			$sql->finish();
 		}
@@ -294,7 +306,7 @@ sub gameID{
 # RETURN NUM ゲーム マスター情報オブジェクト。
 sub game{
 	my $self = shift;
-	unless(defined($self->{game})){ $self->{game} = DIR::Game->newExist($self->gameID()); }
+	unless(defined($self->{game})){ $self->{game} = DIR::Game->newExistFromID($self->gameID()); }
 	return $self->{game};
 }
 
@@ -317,6 +329,32 @@ sub caption{
 sub isViewList{
 	my $self = shift;
 	return $self->{view};
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	表示対象のスコア番号一覧を取得します。
+# RETURN @ 表示対象のスコア番号一覧。
+sub viewScoreColumnNumber{
+	my $self = shift;
+	my $columnTotal = DIR::Const::SCORE_COLUMN_TOTAL;
+	my @result = ();
+	for(my $i = 0; $i < $columnTotal; $i++){
+		if($self->isViewList()->[$i]){ push(@result, $i); }
+	}
+	return @result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	表示対象のスコア名称を取得します。
+# RETURN @ 表示対象のスコア名称。
+sub viewScoreColumnName{
+	my $self = shift;
+	my @result = ();
+	my $scoreCaptionList = $self->game()->scoreCaption();
+	foreach my $col ($self->viewScoreColumnNumber()){ push(@result, $scoreCaptionList->[$col]); }
+	return @result;
 }
 
 #----------------------------------------------------------

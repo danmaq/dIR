@@ -16,24 +16,24 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 my $in = DIR::Input->instance();
 my $out = DIR::Output->instance();
-my $id = $in->getParamRankTop();
+my $id = $in->getParamRankDescription();
 my $gamecode = 'unknown';
+my $rankID = 0;
 if(defined($id)){
-	my $game = DIR::Game->newExistFromID($id);
-	if(defined($game)){
+	my $rank = DIR::Ranking->newExist($id);
+	if(defined($rank)){
+		my $game = $rank->game();
 		$gamecode = $game->devcode();
-		my @ranks = DIR::Ranking::listNewFromGame($game);
-		my @ranksView	= grep { $_->isViewListInTop();			} @ranks;
-		my @ranksNoView	= grep { (not $_->isViewListInTop());	} @ranks;
-		my @score = ();
-		foreach my $rank (@ranksView){ push(@score, [$rank->ranking()]); }
-		$out->putRankingTop(
+		$rankID = $rank->id();
+		my @ranks = grep {$_->id() != $rank->id()} DIR::Ranking::listNewFromGame($game);
+		$out->putRankingDescription(
 			game	=> $game,
-			rank	=> [[@ranksView], [@ranksNoView]],
-			score	=> [@score]);
+			target	=> $rank,
+			others	=> [@ranks],
+			score	=> [$rank->ranking()]);
 	}
 }
-DIR::Access->new(account => undef, page_name => 'RANK_TOP_' . $gamecode);
+DIR::Access->new(account => undef, page_name => sprintf('RANK_DESC_%s-%d', $gamecode, $rankID));
 DIR::DB->instance()->dispose();
 
 1;

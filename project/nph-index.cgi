@@ -20,8 +20,9 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 unless(exists(&DIR_MAINTENANCE)){
 	my $mode = DIR::Input->instance()->getMode();
 	switch($mode){
-		case DIR::Const::MODE_RANK_TOP	{ require 'ranktop.pl';	}
-		else							{ require 'top.pl';		}
+		case DIR::Const::MODE_RANK_TOP			{ require 'ranktop.pl';			}
+		case DIR::Const::MODE_RANK_DESCRIPTION	{ require 'rankDescription.pl';	}
+		else									{ require 'top.pl';				}
 	}
 }
 

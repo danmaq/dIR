@@ -74,6 +74,22 @@ sub getMode{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+# 	数値パラメータを取得します。
+# PARAM STRING キー文字列
+# RETURN NUM 数値パラメータ。
+sub getNumber{
+	my $self = shift;
+	my $key = shift;
+	my $result = undef;
+	if(defined($key) and length($key) > 0){
+		my $value = $self->cgi()->param($key);
+		if(defined($value) and $value =~ /^[0-9]+$/){ $result = $value; }
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 # 	アクセスログ収集のためのページ情報を取得します。
 # RETURN % ページ情報一覧
 sub getPageInfo{
