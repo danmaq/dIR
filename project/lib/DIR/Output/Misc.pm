@@ -22,6 +22,7 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 @DIR::Output::Misc::EXPORT = qw(
 	putMaintenance
 	putTop
+	putTopRedirect
 );
 
 #==========================================================
@@ -63,6 +64,14 @@ sub putTop{
 		GAMES_EXISTS	=> scalar(@$games),
 		VERSION			=> Jcode->new(DIR::versionLong())->utf8(),
 		$self->getAccountBarInfo()));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	トップページへのリダイレクトを出力します。
+sub putTopRedirect{
+	my $self = shift;
+	$self->_redirect('/');
 }
 
 1;

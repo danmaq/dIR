@@ -27,6 +27,8 @@ $DIR::DB::HOST = 'localhost';		# ホスト名
 $DIR::DB::USER = 'danmaq00001';		# ユーザ名
 $DIR::DB::PASS = 'zddscc';			# パスワード
 
+$DIR::Input::COOKIE_EXPIRES	= '+1h';	# Cookie有効期限
+
 $DIR::Template::DIR = './template';	# テンプレートファイル格納場所へのパス
 
 $DIR::Output::NPH	= 1;	# NPH(Non Parsed Header)を使用するかどうか

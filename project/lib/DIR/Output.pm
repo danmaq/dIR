@@ -92,6 +92,7 @@ sub _redirect{
 	unless(defined($uri)){			$uri = '/';			}
 	$uri = $cgi->url() . $uri;
 	$uri =~ s/\/+\?/\/\?/g;
+	$uri =~ s/\/+$/\//g;
 	print $cgi->redirect(
 		-nph			=> $DIR::Output::NPH,
 		-cookie			=> DIR::Input->instance()->cookie(),

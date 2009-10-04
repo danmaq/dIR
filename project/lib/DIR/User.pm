@@ -43,6 +43,19 @@ my %s_fields = (	# フィールド
 #==========================================================
 
 #----------------------------------------------------------
+# PUBLIC STATIC
+#	セッションからユーザ情報を削除します。
+sub logout{
+	DIR::Input->instance()->session()->param(
+		-name => DIR::Const::SESSION_KEY_USER_ID,
+		-value => 0,
+	);
+}
+
+#==========================================================
+#==========================================================
+
+#----------------------------------------------------------
 # PUBLIC NEW
 #	ユーザ マスター アカウントのオブジェクトを作成します。
 # PARAM STRING パスワード(4～40字以内)
@@ -74,7 +87,7 @@ sub new_guest{ return bless({%s_fields}, shift); }
 sub newExistFromSession{
 	my $result = undef;
 	my $id = DIR::Input->instance()->session()->param(DIR::Const::SESSION_KEY_USER_ID);
-	if(defined($id)){ $result = DIR::User->newExist($id); }
+	if(defined($id) and $id){ $result = DIR::User->newExist($id); }
 	return $result;
 }
 

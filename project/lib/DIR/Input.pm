@@ -18,12 +18,13 @@ use DIR::DB;
 use DIR::Input::Misc;
 
 use constant COOKIE_ID		=> 'SESSIONID';
-use constant COOKIE_EXPIRES	=> '+5m';
 use constant SESSION_TABLE	=> 'DIR_SESSIONS';
 use constant SESSION_KEY_ACCOUNT_ID	=> 'ACCOUNT_ID';
 $DIR::Input::VERSION =	# バージョン情報
 	$DIR::Input::Misc::VERSION +
 	0.01;
+
+$DIR::Input::COOKIE_EXPIRES	= '+1m';	# Cookie有効期限
 
 my %s_fields = (	# フィールド
 	cgi => undef,		# CGIオブジェクト
@@ -162,7 +163,7 @@ sub _new_instance{
 		$self->{ cookie } = $cgi->cookie(
 			-name => COOKIE_ID,
 			-value => $session->id(),
-			-expires => COOKIE_EXPIRES);
+			-expires => $DIR::Input::COOKIE_EXPIRES);
 		$self->{ session } = $session;
 	}
 	$self->{ cgi } = $cgi;

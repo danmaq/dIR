@@ -69,7 +69,7 @@ sub putAccountFailed{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-# 	アカウントログイン/サインアップ画面を表示します。
+# 	アカウントログイン/サインアップ画面へのリダイレクトを出力します。
 sub putAccountCheckCookieRedirect{
 	my $self = shift;
 	$self->_redirect(sprintf('/?q=%d', DIR::Const::MODE_ACCOUNT_LOGIN_CHECKSESSION));
@@ -77,7 +77,7 @@ sub putAccountCheckCookieRedirect{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-# 	アカウントログイン/サインアップ画面を表示します。
+# 	アカウントトップ画面へのリダイレクトを出力します。
 sub putAccountTopRedirect{
 	my $self = shift;
 	$self->_redirect(sprintf('/?q=%d', DIR::Const::MODE_ACCOUNT_TOP));
