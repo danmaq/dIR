@@ -18,9 +18,6 @@
 	</head>
 	<body>
 		<h1><a href="/" rel="start"><img alt="dIR - danmaq Internet Ranking" src="./image/banner.png" width="468" height="60" /></a></h1>
-		<p id="user">
-			ログオン/サインアップ(未実装) | <a href="./help/" rel="help">ヘルプ</a>
-		</p>
 		<TMPL_VAR NAME="BODY">
 		<hr />
 		<address>&copy;2009 <a href="http://danmaq.com/">danmaq</a> All rights reserved.</address>

@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use utf8;
 use Exporter;
+use DIR::Misc;
+use DIR::Validate;
 
 $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
@@ -17,6 +19,7 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 @DIR::Input::Misc::EXPORT = qw(
 	getParamRankTop
 	getParamRankDescription
+	getParamAccountLogin
 );
 
 #==========================================================
@@ -38,6 +41,30 @@ sub getParamRankTop{
 sub getParamRankDescription{
 	my $self = shift;
 	return _getRankingDefineID($self);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ログインページのクエリ情報を取得します。
+# RETURN NUM ランキング定義ID
+sub getParamAccountLogin{
+	my $self = shift;
+	my $result = undef;
+	my $id = $self->cgi()->param('id');
+	my $password = $self->cgi()->param('pwd');
+	my $uid = (DIR::Misc::isIDFormat($id) ? $id : undef);
+	my $email = (DIR::Validate::isEMail($id) ? $id : undef);
+	my $passwordLength = length($password);
+	if(
+		defined($password) and $passwordLength > 4 and $passwordLength < 40 and
+		(defined($uid) or defined($email))
+	){
+		$result = {
+			user_id		=> $uid,
+			email		=> $email,
+			password	=> $password};
+	}
+	return $result;
 }
 
 #==========================================================

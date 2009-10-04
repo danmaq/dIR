@@ -1,0 +1,16 @@
+<p id="user">
+	<TMPL_IF NAME="LOGIN">
+		ようこそ <TMPL_VAR NAME="USER_NAME"> さん |
+	</TMPL_IF>
+	<a href="?q=<TMPL_VAR NAME='MODE_ACCOUNT'>">
+		<TMPL_IF NAME="LOGIN">
+			アカウント設定
+		<TMPL_ELSE>
+			ログオン/サインアップ
+		</TMPL_IF>
+	</a>
+	<TMPL_IF NAME="LOGIN">
+		| <a href="?q=<TMPL_VAR NAME='MODE_LOGOUT'>">ログオフ</a>
+	</TMPL_IF>
+	 | <a href="./help/" rel="help">ヘルプ</a>
+</p>

@@ -1,3 +1,3 @@
 @ECHO OFF
-perl -wT nph-index.cgi q=2;r=3
+perl -wT nph-index.cgi q=34
 PAUSE

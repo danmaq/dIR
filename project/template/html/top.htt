@@ -1,3 +1,4 @@
+<TMPL_INCLUDE NAME="Account/_bar.htt">
 <TMPL_IF NAME="GAMES_EXISTS">
 	<table>
 		<caption>dIR対応ゲーム一覧</caption>

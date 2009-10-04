@@ -1,0 +1,39 @@
+<h2>ログオン</h2>
+<form action="/" method="post">
+	<fieldset>
+		<input type="hidden" name="q" value="<TMPL_VAR NAME='LOGON_MODE'>" />
+		<ol>
+			<li>
+				<label for="id">マスター アカウントIDまたはメールアドレスを入力してください。</label><br />
+				<input type="text" id="id" name="id" maxlength="255" size="40" />
+			</li>
+			<li>
+				<label for="pwd">パスワードを4文字以上、40文字以内入力してください。</label><br />
+				<input type="password" id="pwd" name="pwd" maxlength="40" size="40" /><br />
+			</li>
+			<li><input type="submit" value="ボタンを押して、ログオンします。" /></li>
+		</ol>
+	</fieldset>
+</form>
+<h2>サインアップ</h2>
+<h3>dIR会員になることで出来ること</h3>
+<ol>
+	<li>インターネットランキングに参加できます。もちろん参加は無料です。</li>
+	<li>(2010年初春対応予定)あなたの作成したゲームが、このシステムを使うことでインターネットランキングに対応出来ます。</li>
+</ol>
+<h3>サインアップ手続き</h3>
+<form action="/" method="post">
+	<fieldset>
+		<input type="hidden" name="q" value="<TMPL_VAR NAME='SIGNUP_MODE'>" />
+		<ol>
+			<li>
+				<label for="pwd">パスワードを4文字以上、40文字以内入力してください。</label><br />
+				<input type="password" id="pwd" name="pwd" maxlength="40" size="40" /><br />
+			</li>
+			<li><input type="submit" value="ボタンを押して、サインアップします。" /></li>
+		</ol>
+	</fieldset>
+</form>
+<p>
+	<a href="/" rel="Start">TOPに戻る</a>
+</p>

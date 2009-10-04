@@ -32,7 +32,7 @@ my %s_fields = (	# フィールド
 # PUBLIC NEW
 #	ゲームパブリッシャーを新規作成します。
 # PARAM %(user_id co_name head_name uri) ユーザ マスター アカウントID、団体名、代表者名、URL
-# RETURN \% 定義情報の入ったオブジェクト。
+# RETURN \% ゲームパブリッシャー情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
 	my %args = @_;
@@ -56,10 +56,21 @@ sub new{
 
 #----------------------------------------------------------
 # PUBLIC NEW
-#	既にデータベースへ格納されているユーザのオブジェクトを作成します。
+#	セッション情報から既にデータベースへ格納されているゲームパブリッシャーのオブジェクトを作成します。
+# RETURN \% ゲームパブリッシャー情報の入ったオブジェクト。存在しない場合、未定義値。
+sub newExistFromSession{
+	my $result = undef;
+	my $id = DIR::Input->instance()->session()->param(DIR::Const::SESSION_KEY_USER_ID);
+	if(defined($id)){ $result = DIR::User::Publisher->newExist($id); }
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	既にデータベースへ格納されているゲームパブリッシャーのオブジェクトを作成します。
 # (1) PARAM NUM 格納用ユーザ マスター アカウントID
 # (2) PARAM STRING 表示用ユーザ マスター アカウントID
-# RETURN \% ユーザ情報の入ったオブジェクト。存在しない場合、未定義値。
+# RETURN \% ゲームパブリッシャー情報の入ったオブジェクト。存在しない場合、未定義値。
 sub newExist{
 	my $class = shift;
 	my $uid = shift;

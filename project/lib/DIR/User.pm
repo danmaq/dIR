@@ -11,7 +11,9 @@ use warnings;
 use utf8;
 use Jcode;
 use Digest::SHA1;
+use DIR::Const;
 use DIR::DB;
+use DIR::Input;
 use DIR::Misc;
 use DIR::Validate;
 use DIR::User::EMail;
@@ -64,6 +66,17 @@ sub new{
 #	このオブジェクトはデータベースへ格納できません。
 # RETURN \% ゲストユーザ情報の入ったオブジェクト。
 sub new_guest{ return bless({%s_fields}, shift); }
+
+#----------------------------------------------------------
+# PUBLIC NEW
+#	セッション情報から既にデータベースへ格納されているユーザのオブジェクトを作成します。
+# RETURN \% ユーザ情報の入ったオブジェクト。存在しない場合、未定義値。
+sub newExistFromSession{
+	my $result = undef;
+	my $id = DIR::Input->instance()->session()->param(DIR::Const::SESSION_KEY_USER_ID);
+	if(defined($id)){ $result = DIR::User->newExist($id); }
+	return $result;
+}
 
 #----------------------------------------------------------
 # PUBLIC NEW
@@ -143,8 +156,12 @@ sub login{
 		if($result){
 			$result = DIR::DB->instance()->writeUserLogin($self->id());
 			if($result){
-				$result->{last_login}	= time;
-				$result->{login_count}	+= 1;
+				$self->{last_login}		= time;
+				$self->{login_count}	+= 1;
+				DIR::Input->instance()->session()->param(
+					-name => DIR::Const::SESSION_KEY_USER_ID,
+					-value => $self->id(),
+				);
 			}
 		}
 	}

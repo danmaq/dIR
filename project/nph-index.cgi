@@ -10,9 +10,9 @@ use warnings;
 use utf8;
 use lib qw(. ./lib);
 use Switch;
-use DIR::Const;
-use DIR::Input;
+use DIR;
 
+#	$DIR::Output::Misc::RETRY_AFTER = 3600 * 24;
 #	require 'maintenance.pl';
 
 require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
@@ -20,9 +20,13 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 unless(exists(&DIR_MAINTENANCE)){
 	my $mode = DIR::Input->instance()->getMode();
 	switch($mode){
-		case DIR::Const::MODE_RANK_TOP			{ require 'ranktop.pl';			}
-		case DIR::Const::MODE_RANK_DESCRIPTION	{ require 'rankDescription.pl';	}
-		else									{ require 'top.pl';				}
+		case DIR::Const::MODE_RANK_TOP						{ require 'ranktop.pl';						}
+		case DIR::Const::MODE_RANK_DESCRIPTION				{ require 'rankDescription.pl';				}
+		case DIR::Const::MODE_ACCOUNT_TOP					{ require 'accountTop.pl';					}
+		case DIR::Const::MODE_ACCOUNT_LOGIN					{ require 'accountLogin.pl';				}
+		case DIR::Const::MODE_ACCOUNT_LOGIN_CHECKSESSION	{ require 'accountLoginCheckSession.pl';	}
+		case DIR::Const::MODE_ACCOUNT_SIGNUP				{ require 'accountSignup.pl';				}
+		else												{ require 'top.pl';							}
 	}
 }
 

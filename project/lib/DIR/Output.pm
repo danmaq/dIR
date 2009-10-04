@@ -14,10 +14,14 @@ use Jcode;
 use Time::localtime;
 use XML::Twig;
 use DIR;
+use DIR::Output::Account;
 use DIR::Output::Misc;
+use DIR::Output::Ranking;
 
 $DIR::Output::VERSION =		# バージョン情報
+	$DIR::Output::Account::VERSION +
 	$DIR::Output::Misc::VERSION +
+	$DIR::Output::Ranking::VERSION +
 	0.01;
 
 ### 設定項目ここから
@@ -48,10 +52,13 @@ sub _new_instance{
 # PRIVATE INSTANCE
 # 	画面を表示します。
 # PARAM STRING HTML本体文字列
+# PARAM \% (省略可)追加ヘッダ
 sub _put{
 	my $self = shift;
 	my $body = Jcode->new(DIR::Template::getHTT(DIR::Const::FILE_HTT_FRAME,
 		VERSION => DIR::versionShort(), BODY => shift), 'utf8')->utf8();
+	my $additional = shift;
+	unless(defined($additional)){ $additional = {}; }
 	if($DIR::Output::TWIG){
 		my $twig = XML::Twig->new();
 		$twig->set_indent("\t");
@@ -66,8 +73,30 @@ sub _put{
 		-charset		=> 'UTF-8',
 		-content_length	=> length($body),
 		-Pragma			=> 'no-cache',
-		-Cache_Control	=> 'no-cache, must-revalidate');
+		-Cache_Control	=> 'no-cache, must-revalidate',
+		%$additional);
 	print $body;
+}
+
+#----------------------------------------------------------
+# PRIVATE INSTANCE
+# 	リダイレクト ヘッダを出力します。
+# PARAM STRING URI
+# PARAM \% (省略可)追加ヘッダ
+sub _redirect{
+	my $self = shift;
+	my $uri = shift;
+	my $additional = shift;
+	my $cgi = DIR::Input->instance()->cgi();
+	unless(defined($additional)){	$additional = {};	}
+	unless(defined($uri)){			$uri = '/';			}
+	$uri = $cgi->url() . $uri;
+	$uri =~ s/\/+/\//g;
+	print $cgi->redirect(
+		-nph			=> $DIR::Output::NPH,
+		-cookie			=> DIR::Input->instance()->cookie(),
+		-uri			=> $uri,
+		%$additional);
 }
 
 #----------------------------------------------------------

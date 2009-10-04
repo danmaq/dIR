@@ -9,16 +9,28 @@ use strict;
 use warnings;
 use utf8;
 
-use constant SCORE_COLUMN_TOTAL		=> 8;
+use constant SCORE_COLUMN_TOTAL	=> 8;
 
-use constant MODE_RANK_TOP			=> 1;
-use constant MODE_RANK_DESCRIPTION	=> 2;
+use constant SESSION_KEY_USER_ID	=> 'id';
+
+use constant MODE_RANK		=> 0x10;
+use constant MODE_ACCOUNT	=> 0x20;
+
+use constant MODE_RANK_TOP						=> MODE_RANK | 0;
+use constant MODE_RANK_DESCRIPTION				=> MODE_RANK | 1;
+use constant MODE_ACCOUNT_TOP					=> MODE_ACCOUNT | 0;
+use constant MODE_ACCOUNT_LOGIN					=> MODE_ACCOUNT | 1;
+use constant MODE_ACCOUNT_LOGIN_CHECKSESSION	=> MODE_ACCOUNT | 2;
+use constant MODE_ACCOUNT_LOGOUT				=> MODE_ACCOUNT | 3;
+use constant MODE_ACCOUNT_SIGNUP				=> MODE_ACCOUNT | 4;
 
 use constant FILE_HTT_FRAME				=> 'html/frame.htt';
 use constant FILE_HTT_MAINTENANCE		=> 'html/maintenance.htt';
 use constant FILE_HTT_TOP				=> 'html/top.htt';
 use constant FILE_HTT_RANK_TOP			=> 'html/Ranking/top.htt';
 use constant FILE_HTT_RANK_DESCRIPTION	=> 'html/Ranking/description.htt';
+use constant FILE_HTT_ACCOUNT_LOGIN		=> 'html/Account/login.htt';
+use constant FILE_HTT_ACCOUNT_FAILED	=> 'html/Account/failed.htt';
 
 use constant FILE_SQL_DDL									=> 'sql/table.sql';
 use constant FILE_SQL_NOWTIME								=> 'sql/nowTime.sql';
