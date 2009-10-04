@@ -18,6 +18,7 @@ use constant MODE_ACCOUNT	=> 0x20;
 
 use constant MODE_RANK_TOP						=> MODE_RANK | 0;
 use constant MODE_RANK_DESCRIPTION				=> MODE_RANK | 1;
+use constant MODE_RANK_ENTRY					=> MODE_RANK | 2;
 use constant MODE_ACCOUNT_TOP					=> MODE_ACCOUNT | 0;
 use constant MODE_ACCOUNT_LOGIN					=> MODE_ACCOUNT | 1;
 use constant MODE_ACCOUNT_LOGIN_CHECKSESSION	=> MODE_ACCOUNT | 2;

@@ -56,6 +56,15 @@
 		</TMPL_LOOP>
 	</ol>
 </TMPL_IF>
+<h3>このゲームのランキングに参加</h3>
+<p>
+	<a href="<TMPL_VAR NAME='GAME_HOME_URL'>"><TMPL_VAR NAME="GAME_NAME"></a>のインターネット
+	<TMPL_IF NAME="RANKING_BROWSER_ENTRY">
+		ランキングに参加するためには、<a href="?q=<TMPL_VAR NAME='MODE_RANK_ENTRY'>;g=<TMPL_VAR NAME='GAME_ID'>">パスワードを用意して、こちらへどうぞ</a>。
+	<TMPL_ELSE>
+		ランキングは、ここからは参加できません。ゲーム内や外部サイトからのエントリーが必要なゲームですので、詳細は<TMPL_VAR NAME="GAME_NAME">のサイト(<a href="<TMPL_VAR NAME='GAME_HOME_URL'>"><TMPL_VAR NAME="GAME_HOME_URL"></a>)をご覧ください。
+	</TMPL_IF>
+</p>
 <p>
 	<a href="/" rel="Start">TOPに戻る</a>
 </p>

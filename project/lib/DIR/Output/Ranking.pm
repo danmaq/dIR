@@ -44,13 +44,12 @@ sub putRankingTop{
 		push(@$infoRankingView, $info);
 	}
 	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_RANK_TOP,
-		GAME_HOME_URL		=> $args{game}->homeURI(),
-		GAME_NAME			=> Jcode->new($args{game}->title(), 'ucs2')->utf8(),
 		RANKING_EXISTS		=> $countRankView + $countRankHide,
 		RANKING_VIEW_EXISTS	=> $countRankView,
 		RANKING_HIDE_EXISTS	=> $countRankHide,
 		RANKING_HIDE		=> _createRankingDescLinkList($args{rank}->[1]),
 		RANKING_VIEW		=> $infoRankingView,
+		_createRankingEntryLinkList($args{game}),
 		$self->getAccountBarInfo()));
 }
 
@@ -64,15 +63,30 @@ sub putRankingDescription{
 	my %args = @_;
 	my $info = _createRankingBody($self, $args{target}, $args{score});
 	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_RANK_DESCRIPTION,
-		GAME_HOME_URL			=> $args{game}->homeURI(),
-		GAME_NAME				=> Jcode->new($args{game}->title(), 'ucs2')->utf8(),
 		RANKING_OTHERS_EXISTS	=> length(@{$args{others}}),
 		RANKING_OTHERS			=> _createRankingDescLinkList($args{others}),
+		_createRankingEntryLinkList($args{game}),
 		%$info, $self->getAccountBarInfo()));
 }
 
 #==========================================================
 #==========================================================
+
+#----------------------------------------------------------
+# PRIVATE STATIC
+# 	各ゲームのランキングエントリーページへのリンクに必要な情報を作成します。
+# PARAM \% ゲーム マスター情報
+# RETURN %(RANKING_BROWSER_ENTRY GAME_HOME_URL GAME_NAME MODE_RANK_ENTRY GAME_ID)
+sub _createRankingEntryLinkList{
+	my $game = shift;
+	return (
+		RANKING_BROWSER_ENTRY	=> $game->isRegistableOnBrowser(),
+		GAME_HOME_URL			=> $game->homeURI(),
+		GAME_NAME				=> Jcode->new($game->title(), 'ucs2')->utf8(),
+		MODE_RANK_ENTRY			=> DIR::Const::MODE_RANK_ENTRY,
+		GAME_ID					=> $game->id(),
+	);
+}
 
 #----------------------------------------------------------
 # PRIVATE STATIC
