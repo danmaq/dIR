@@ -1,0 +1,15 @@
+<h2>アカウント設定</h2>
+<ul>
+	<li>ID: <TMPL_VAR NAME="USER_ID"></li>
+	<li>NICKNAME: <TMPL_VAR NAME="USER_NAME"></li>
+</ul>
+<ul>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_PASSWORD'>">パスワード変更</a></li>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_NICKNAME'>">ニックネーム設定/変更</a></li>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_EMAIL'>">メールアドレス追加/変更/削除</a></li>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_LOGOUT'>">ログオフ</a></li>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_REMOVE'>">このアカウントの削除</a></li>
+</ul>
+<ul>
+	<li><a href="/" rel="Start">TOPに戻る</a></li>
+</ul>

@@ -27,6 +27,7 @@ unless(exists(&DIR_MAINTENANCE)){
 		case DIR::Const::MODE_ACCOUNT_LOGIN_CHECKSESSION	{ require 'accountLoginCheckSession.pl';	}
 		case DIR::Const::MODE_ACCOUNT_LOGOUT				{ require 'accountLogout.pl';				}
 		case DIR::Const::MODE_ACCOUNT_SIGNUP				{ require 'accountSignup.pl';				}
+		case DIR::Const::MODE_ACCOUNT_SIGNUP_SUCCEEDED		{ require 'accountSignupSucceeded.pl';		}
 		case ''												{ require 'top.pl';							}
 		else												{ require 'maintenance.pl';					}
 	}

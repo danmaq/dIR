@@ -20,7 +20,7 @@ use constant DIR_INI => 1;
 select(STDERR); $| = 1;
 select(STDOUT); $| = 1;
 
-$DIR::VERSION_STRING = '0.0.8';
+$DIR::VERSION_STRING = '0.1.12';
 
 $DIR::DB::NAME = 'danmaq00001';		# データベース名
 $DIR::DB::HOST = 'localhost';		# ホスト名

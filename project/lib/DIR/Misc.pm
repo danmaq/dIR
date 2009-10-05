@@ -43,7 +43,7 @@ sub getNumIDFromStrID{
 		$id =~ s/\-//;
 		my @keyword = ();
 		for(my $i = 3; $i >= 0; $i--){ push(@keyword, substr($id, $i * 2, 2)); }
-		$result = hex(sprintf('%s%s%s%s', $keyword[3], $keyword[1], $keyword[0], $keyword[2]));
+		$result = hex(sprintf('%s%s%s%s', $keyword[1], $keyword[2], $keyword[0], $keyword[3]));
 	}
 	return $result;
 }

@@ -19,7 +19,9 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 @DIR::Input::Misc::EXPORT = qw(
 	getParamRankTop
 	getParamRankDescription
+	getParamRedirectNextMode
 	getParamAccountLogin
+	getParamAccountSignup
 );
 
 #==========================================================
@@ -45,6 +47,15 @@ sub getParamRankDescription{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+# 	次にリダイレクトするモード番号を取得します。
+# RETURN NUM モード番号
+sub getParamRedirectNextMode{
+	my $self = shift;
+	return $self->getNumber('qn');
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 # 	ログインページのクエリ情報を取得します。
 # RETURN NUM ランキング定義ID
 sub getParamAccountLogin{
@@ -64,6 +75,19 @@ sub getParamAccountLogin{
 			email		=> $email,
 			password	=> $password};
 	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ログインページのクエリ情報を取得します。
+# RETURN NUM ランキング定義ID
+sub getParamAccountSignup{
+	my $self = shift;
+	my $result = undef;
+	my $password = $self->cgi()->param('pwd');
+	my $passwordLength = length($password);
+	if(defined($password) and $passwordLength > 4 and $passwordLength < 40){ $result = $password; }
 	return $result;
 }
 

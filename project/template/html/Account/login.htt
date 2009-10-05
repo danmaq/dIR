@@ -34,6 +34,6 @@
 		</ol>
 	</fieldset>
 </form>
-<p>
-	<a href="/" rel="Start">TOPに戻る</a>
-</p>
+<ul>
+	<li><a href="/" rel="Start">TOPに戻る</a></li>
+</ul>

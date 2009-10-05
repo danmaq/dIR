@@ -33,7 +33,7 @@ if(defined($id)){
 			score	=> [@score]);
 	}
 }
-DIR::Access->new(account => undef, page_name => 'RANK_TOP_' . $gamecode);
+DIR::Access->new(account => DIR::User->newExistFromSession(), page_name => 'RANK_TOP_' . $gamecode);
 DIR::DB->instance()->dispose();
 
 1;

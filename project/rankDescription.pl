@@ -33,7 +33,9 @@ if(defined($id)){
 			score	=> [$rank->ranking()]);
 	}
 }
-DIR::Access->new(account => undef, page_name => sprintf('RANK_DESC_%s-%d', $gamecode, $rankID));
+DIR::Access->new(
+	account => DIR::User->newExistFromSession(),
+	page_name => sprintf('RANK_DESC_%s-%d', $gamecode, $rankID));
 DIR::DB->instance()->dispose();
 
 1;

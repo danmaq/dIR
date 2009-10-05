@@ -193,9 +193,9 @@ sub commit{
 		my $id;
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
-		while(defined(DIR::User->newExist($id)));
+		until(defined(DIR::User->newExist($id)));
 		$self->{id}			= $id;
-		$self->{nickname}	= DIR::Misc::getStrIDFromNumID($id);
+		$self->{nickname}	= Jcode->new(DIR::Misc::getStrIDFromNumID($id), 'utf8')->ucs2();
 		$result = $db->writeUserNew(
 			id				=> $id,
 			password		=> $self->password(),
@@ -203,9 +203,9 @@ sub commit{
 			introduction	=> $self->introduction());
 		if($result){
 			$self->{introduction}	= '';
-			$result->{registed}		= time;
-			$result->{last_renew}	= time;
-			$result->{last_login}	= time;
+			$self->{registed}		= time;
+			$self->{last_renew}		= time;
+			$self->{last_login}		= time;
 		}
 	}
 	else{
@@ -215,7 +215,7 @@ sub commit{
 			nickame			=> $self->nickname(),
 			introduction	=> $self->introduction(),
 			notes			=> $self->notes());
-		if($result){ $result->{last_renew} = time; }
+		if($result){ $self->{last_renew} = time; }
 	}
 	return $result;
 }
@@ -273,7 +273,7 @@ sub id{
 # RETURN BOOL 一時的なものである場合、真値。
 sub temp{
 	my $self = shift;
-	return (not defined($self->id()));
+	return (not $self->id());
 }
 
 #----------------------------------------------------------
@@ -282,7 +282,7 @@ sub temp{
 # RETURN BOOL ゲストユーザである場合、真値。
 sub guest{
 	my $self = shift;
-	return $self->temp() or $self->id() == 0;
+	return $self->temp();
 }
 
 #----------------------------------------------------------

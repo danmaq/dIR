@@ -23,6 +23,7 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 	putMaintenance
 	putTop
 	putTopRedirect
+	putRedirect
 );
 
 #==========================================================
@@ -72,6 +73,16 @@ sub putTop{
 sub putTopRedirect{
 	my $self = shift;
 	$self->_redirect('/');
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	リダイレクトを出力します。
+# PARAM NUM モード番号
+sub putRedirect{
+	my $self = shift;
+	my $mode = shift;
+	$self->_redirect(sprintf('/?q=%d', $mode));
 }
 
 1;

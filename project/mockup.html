@@ -22,15 +22,34 @@
 				<img alt="dIR - danmaq Internet Ranking" height="60" src="./image/banner.png" width="468"/>
 			</a>
 		</h1>
-		<h2>ログオンまたはサインアップに失敗しました。</h2>
-		<ul>
-			<li>IDおよびパスワードが正しいかどうかご確認ください。</li>
-			<li>パスワードの文字数をご確認ください。(4～40文字以内に設定してください)</li>
-			<li>Cookieが無効である場合、ログオンまたはサインアップに失敗します。有効にした上で再試行してください。</li>
-		</ul>
+		<h2>パスワード変更</h2>
 		<p>
-			<a href="/" rel="Start">TOPに戻る</a>
+			パスワードを4～40文字で入力してください。
 		</p>
+		<form action="/" method="post">
+			<fieldset>
+				<input type="hidden" name="q" value="<TMPL_VAR NAME='PASSWORD_MODIFY_MODE'>" />
+				<ol>
+					<li>
+						<label for="old">旧パスワード</label><br />
+						<input type="password" id="old" name="old" maxlength="40" size="40" />
+					</li>
+					<li>
+						<label for="new">新パスワード</label><br />
+						<input type="password" id="new" name="new" maxlength="40" size="40" />
+					</li>
+					<li>
+						<label for="renew">新パスワード(再入力)</label><br />
+						<input type="password" id="renew" name="renew" maxlength="40" size="40" />
+					</li>
+					<li><input type="submit" value="このボタンを押して、パスワードを変更します。" /></li>
+				</ol>
+			</fieldset>
+		</form>
+		<ul>
+			<li><a href="?q=">アカウント設定のページへ行く</a></li>
+			<li><a href="/" rel="Start">TOPに戻る</a></li>
+		</ul>
 		<hr/>
 		<address>&copy;2009 <a href="http://danmaq.com/">danmaq</a> All rights reserved.</address>
 	</body>

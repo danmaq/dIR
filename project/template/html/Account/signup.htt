@@ -1,0 +1,9 @@
+<h2>ようこそdanmaq Internet Rankingへ！</h2>
+<p>
+	あなたのマスターIDは<strong><TMPL_VAR NAME="USER_ID"></strong>です。
+	今後ログオンに必要ですので忘れないようメモしてください。
+</p>
+<ul>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_ACCOUNT'>">アカウント設定のページへ行く</a></li>
+	<li><a href="/" rel="Start">TOPに戻る</a></li>
+</ul>

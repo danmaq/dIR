@@ -16,14 +16,9 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 my $in = DIR::Input->instance();
 my $out = DIR::Output->instance();
-my $pageName;
-my $pageNumber = undef;
-
-my @games = DIR::Game::listNewAll();
-$pageName = 'TOP';
 $out->putTop(DIR::Game::listNewAll());
 
-DIR::Access->new(account => undef, page_name => $pageName, page_number => $pageNumber);
+DIR::Access->new(account => DIR::User->newExistFromSession(), page_name => 'TOP');
 DIR::DB->instance()->dispose();
 
 1;

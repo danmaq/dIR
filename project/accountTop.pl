@@ -14,10 +14,18 @@ use DIR;
 
 require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
-#my $in = DIR::Input->instance();
 my $out = DIR::Output->instance();
-$out->putAccountLogin();
-DIR::Access->new(account => undef, page_name => 'ACCOUNT_LOGIN');
+my $user = DIR::User->newExistFromSession();
+my $page;
+if(defined($user) and not $user->guest()){
+	$page = 'ACCOUNT_TOP';
+	$out->putAccountTop($user);
+}
+else{
+	$page = 'ACCOUNT_LOGIN';
+	$out->putAccountLogin();
+}
+DIR::Access->new(account => $user, page_name => $page);
 DIR::DB->instance()->dispose();
 
 1;
