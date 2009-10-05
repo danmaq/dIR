@@ -1,0 +1,23 @@
+<TMPL_IF NAME="MESSAGE">
+	<p><TMPL_VAR NAME="MESSAGE"></p>
+</TMPL_IF>
+<h2>ニックネーム変更</h2>
+<p>
+	ニックネームを1～40文字で入力してください。
+</p>
+<form action="/" method="post">
+	<fieldset>
+		<input type="hidden" name="q" value="<TMPL_VAR NAME='MODE_NICKNAME'>" />
+		<ol>
+			<li>
+				<label for="name">ニックネーム</label><br />
+				<input type="text" id="name" name="name" value="<TMPL_VAR NAME='NICKNAME'>" maxlength="40" size="40" />
+			</li>
+			<li><input type="submit" value="このボタンを押して、ニックネームを変更します。" /></li>
+		</ol>
+	</fieldset>
+</form>
+<ul>
+	<li><a href="?q=<TMPL_VAR NAME='MODE_ACCOUNT'>">アカウント設定のページへ戻る</a></li>
+	<li><a href="/" rel="Start">TOPに戻る</a></li>
+</ul>

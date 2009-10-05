@@ -12,6 +12,7 @@ use utf8;
 use constant SCORE_COLUMN_TOTAL	=> 8;
 
 use constant SESSION_KEY_USER_ID	=> 'id';
+use constant SESSION_KEY_MESSAGE	=> 'message';
 
 use constant MODE_RANK		=> 0x10;
 use constant MODE_ACCOUNT	=> 0x20;
@@ -33,12 +34,14 @@ use constant MODE_ACCOUNT_REMOVE				=> MODE_ACCOUNT | 9;
 use constant FILE_HTT_FRAME				=> 'html/frame.htt';
 use constant FILE_HTT_MAINTENANCE		=> 'html/maintenance.htt';
 use constant FILE_HTT_TOP				=> 'html/top.htt';
+use constant FILE_HTT_ACCOUNT_TOP		=> 'html/Account/top.htt';
+use constant FILE_HTT_ACCOUNT_FAILED	=> 'html/Account/failed.htt';
+use constant FILE_HTT_ACCOUNT_LOGIN		=> 'html/Account/login.htt';
+use constant FILE_HTT_ACCOUNT_NICKNAME	=> 'html/Account/nickname.htt';
+use constant FILE_HTT_ACCOUNT_PASSWORD	=> 'html/Account/password.htt';
+use constant FILE_HTT_ACCOUNT_SIGNUP	=> 'html/Account/signup.htt';
 use constant FILE_HTT_RANK_TOP			=> 'html/Ranking/top.htt';
 use constant FILE_HTT_RANK_DESCRIPTION	=> 'html/Ranking/description.htt';
-use constant FILE_HTT_ACCOUNT_TOP		=> 'html/Account/top.htt';
-use constant FILE_HTT_ACCOUNT_LOGIN		=> 'html/Account/login.htt';
-use constant FILE_HTT_ACCOUNT_SIGNUP	=> 'html/Account/signup.htt';
-use constant FILE_HTT_ACCOUNT_FAILED	=> 'html/Account/failed.htt';
 
 use constant FILE_SQL_DDL									=> 'sql/table.sql';
 use constant FILE_SQL_NOWTIME								=> 'sql/nowTime.sql';

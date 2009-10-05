@@ -22,32 +22,24 @@
 				<img alt="dIR - danmaq Internet Ranking" height="60" src="./image/banner.png" width="468"/>
 			</a>
 		</h1>
-		<h2>パスワード変更</h2>
+		<h2>ニックネーム変更</h2>
 		<p>
-			パスワードを4～40文字で入力してください。
+			ニックネームを1～40文字で入力してください。
 		</p>
 		<form action="/" method="post">
 			<fieldset>
-				<input type="hidden" name="q" value="<TMPL_VAR NAME='PASSWORD_MODIFY_MODE'>" />
+				<input type="hidden" name="q" value="<TMPL_VAR NAME='MODE_NICKNAME'>" />
 				<ol>
 					<li>
-						<label for="old">旧パスワード</label><br />
-						<input type="password" id="old" name="old" maxlength="40" size="40" />
+						<label for="name">ニックネーム</label><br />
+						<input type="text" id="name" name="name" value="<TMPL_VAR NAME='NICKNAME'>" maxlength="40" size="40" />
 					</li>
-					<li>
-						<label for="new">新パスワード</label><br />
-						<input type="password" id="new" name="new" maxlength="40" size="40" />
-					</li>
-					<li>
-						<label for="renew">新パスワード(再入力)</label><br />
-						<input type="password" id="renew" name="renew" maxlength="40" size="40" />
-					</li>
-					<li><input type="submit" value="このボタンを押して、パスワードを変更します。" /></li>
+					<li><input type="submit" value="このボタンを押して、ニックネームを変更します。" /></li>
 				</ol>
 			</fieldset>
 		</form>
 		<ul>
-			<li><a href="?q=">アカウント設定のページへ行く</a></li>
+			<li><a href="?q=">アカウント設定のページへ戻る</a></li>
 			<li><a href="/" rel="Start">TOPに戻る</a></li>
 		</ul>
 		<hr/>

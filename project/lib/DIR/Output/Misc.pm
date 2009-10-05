@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 use Exporter;
 use Jcode;
+use DIR::Input;
 use DIR::Const;
 use DIR::Template;
 
@@ -20,6 +21,8 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 
 @DIR::Output::Misc::ISA = qw(Exporter);
 @DIR::Output::Misc::EXPORT = qw(
+	getAlertMessage
+	setAlertMessage
 	putMaintenance
 	putTop
 	putTopRedirect
@@ -28,6 +31,32 @@ $DIR::Output::Misc::VERSION = 0.01;	# バージョン情報
 
 #==========================================================
 #==========================================================
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	セッションから警告文メッセージを取得します。
+# RETURN STRING 警告文メッセージ。存在しない場合、未定義値。
+sub getAlertMessage{
+	my $session = DIR::Input->instance()->session();
+	my $message = $session->param(DIR::Const::SESSION_KEY_MESSAGE);
+	my $result = undef;
+	if(defined($message)){
+		$session->param(-name => DIR::Const::SESSION_KEY_MESSAGE, -value => 0);
+		$result = Jcode->new($message)->utf8();
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	セッションへ警告文メッセージを格納します。
+# PARAM STRING 警告文メッセージ。
+sub setAlertMessage{
+	my $self = shift;
+	my $message = shift;
+	DIR::Input->instance()->session()->param(
+		-name => DIR::Const::SESSION_KEY_MESSAGE, -value => $message);
+}
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
@@ -64,7 +93,8 @@ sub putTop{
 		GAMES			=> $games,
 		GAMES_EXISTS	=> scalar(@$games),
 		VERSION			=> Jcode->new(DIR::versionLong())->utf8(),
-		$self->getAccountBarInfo()));
+		$self->getAccountBarInfo()
+	));
 }
 
 #----------------------------------------------------------

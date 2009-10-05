@@ -9,8 +9,7 @@ use strict;
 use warnings;
 use lib qw(. ./lib);
 use utf8;
-use CGI qw(-compile);
-use DIR;
+use DIR::Output;
 
 use constant DIR_MAINTENANCE => 1;
 

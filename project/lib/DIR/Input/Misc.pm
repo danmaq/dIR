@@ -10,8 +10,12 @@ use strict;
 use warnings;
 use utf8;
 use Exporter;
+use Jcode;
 use DIR::Misc;
 use DIR::Validate;
+
+use constant PASSWORD_OVERRANGE		=> 0;
+use constant PASSWORD_MISMATCH		=> 1;
 
 $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
@@ -22,6 +26,8 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 	getParamRedirectNextMode
 	getParamAccountLogin
 	getParamAccountSignup
+	getParamAccountPassword
+	getParamAccountNickname
 );
 
 #==========================================================
@@ -65,11 +71,7 @@ sub getParamAccountLogin{
 	my $password = $self->cgi()->param('pwd');
 	my $uid = (DIR::Misc::isIDFormat($id) ? $id : undef);
 	my $email = (DIR::Validate::isEMail($id) ? $id : undef);
-	my $passwordLength = length($password);
-	if(
-		defined($password) and $passwordLength > 4 and $passwordLength < 40 and
-		(defined($uid) or defined($email))
-	){
+	if(DIR::Validate::isLengthInRange($password, 4, 40) and (defined($uid) or defined($email))){
 		$result = {
 			user_id		=> $uid,
 			email		=> $email,
@@ -86,8 +88,50 @@ sub getParamAccountSignup{
 	my $self = shift;
 	my $result = undef;
 	my $password = $self->cgi()->param('pwd');
-	my $passwordLength = length($password);
-	if(defined($password) and $passwordLength > 4 and $passwordLength < 40){ $result = $password; }
+	if(DIR::Validate::isLengthInRange($password, 4, 40)){ $result = $password; }
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	パスワード変更ページのクエリ情報を取得します。
+# RETURN NUM ランキング定義ID
+sub getParamAccountPassword{
+	my $self = shift;
+	my $result = undef;
+	my $passwordOld = $self->cgi()->param('old');
+	my $passwordNew = $self->cgi()->param('new');
+	my $passwordNewRe = $self->cgi()->param('re');
+	if(defined($passwordOld) and defined($passwordNew) and defined($passwordNewRe)){
+		if(
+			DIR::Validate::isLengthInRange($passwordOld, 4, 40) and
+			DIR::Validate::isLengthInRange($passwordNew, 4, 40) and
+			DIR::Validate::isLengthInRange($passwordNewRe, 4, 40)
+		){
+			if($passwordNew eq $passwordNewRe){
+				$result = {
+					password_old => $passwordOld,
+					password_new => $passwordNew
+				};
+			}
+			else{ $result = PASSWORD_MISMATCH; }
+		}
+		else{ $result = PASSWORD_OVERRANGE; }
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ニックネーム変更ページのクエリ情報を取得します。
+# RETURN STRING 新しいニックネーム。
+sub getParamAccountNickname{
+	my $self = shift;
+	my $result = undef;
+	my $name = $self->cgi()->param('name');
+	if(DIR::Validate::isLengthInRange($name, 1, 255)){
+		$result = Jcode->new($name, 'utf8')->ucs2();
+	}
 	return $result;
 }
 

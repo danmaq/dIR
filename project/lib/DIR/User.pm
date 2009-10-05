@@ -58,7 +58,7 @@ sub logout{
 #----------------------------------------------------------
 # PUBLIC NEW
 #	ユーザ マスター アカウントのオブジェクトを作成します。
-# PARAM STRING パスワード(4～40字以内)
+# PARAM STRING 平文パスワード(4～40字以内)
 # RETURN \% ゲストユーザ情報の入ったオブジェクト。
 sub new{
 	my $class = shift;
@@ -105,18 +105,20 @@ sub newExist{
 		$result = DIR::User->new_guest();
 		if($id){
 			if(DIR::Misc::isIDFormat($id)){ $id = DIR::Misc::getNumIDFromStrID($id); }
-			my $info = DIR::DB->instance()->readUserFromID($id);
-			if(defined($info)){
-				$result->{id}			= $id;
-				$result->{password}		= $info->{PASSWD};
-				$result->{nickname}		= $info->{NICKNAME};
-				$result->{introduction}	= $info->{INTRODUCTION};
-				$result->{registed}		= $info->{REGIST_TIME};
-				$result->{last_renew}	= $info->{RENEW_TIME};
-				$result->{last_login}	= $info->{LOGIN_TIME};
-				$result->{login_count}	= $info->{LOGIN_COUNT};
-				$result->{notes}		= $info->{NOTES};
-				$result->{email}		= [DIR::User::EMail::listNewFromUID($result)];
+			if(DIR::Validate::isNum($id)){
+				my $info = DIR::DB->instance()->readUserFromID($id);
+				if(defined($info)){
+					$result->{id}			= $id;
+					$result->{password}		= $info->{PASSWD};
+					$result->{nickname}		= $info->{NICKNAME};
+					$result->{introduction}	= $info->{INTRODUCTION};
+					$result->{registed}		= $info->{REGIST_TIME};
+					$result->{last_renew}	= $info->{RENEW_TIME};
+					$result->{last_login}	= $info->{LOGIN_TIME};
+					$result->{login_count}	= $info->{LOGIN_COUNT};
+					$result->{notes}		= $info->{NOTES};
+					$result->{email}		= [DIR::User::EMail::listNewFromUID($result)];
+				}
 			}
 		}
 	}
@@ -156,27 +158,39 @@ sub newAllParams{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 #	このアカウントにログインします。
-# PARAM STRING パスワード(4～40字以内)
+# PARAM STRING 平文パスワード(4～40字以内)
 # RETURN BOOLEAN 成功した場合、真値。
 sub login{
 	my $self = shift;
 	my $result = 0;
 	my $password = shift;
-	if(!$self->temp() and DIR::Validate::isLengthInRange($password, 4, 40)){
+	if(not $self->temp() and $self->comparePassword($password)){
+		$result = DIR::DB->instance()->writeUserLogin($self->id());
+		if($result){
+			$self->{last_login}		= time;
+			$self->{login_count}	+= 1;
+			DIR::Input->instance()->session()->param(
+				-name => DIR::Const::SESSION_KEY_USER_ID,
+				-value => $self->id(),
+			);
+		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ログインせず、パスワード認証だけを行います。
+# PARAM STRING 平文パスワード(4～40字以内)
+# RETURN BOOLEAN パスワードが一致した場合、真値。
+sub comparePassword{
+	my $self = shift;
+	my $result = 0;
+	my $password = shift;
+	if(not $self->temp() and DIR::Validate::isLengthInRange($password, 4, 40)){
 		my $sha1 = Digest::SHA1->new();
 		$sha1->add($password);
 		$result = ($self->password() eq $sha1->b64digest());
-		if($result){
-			$result = DIR::DB->instance()->writeUserLogin($self->id());
-			if($result){
-				$self->{last_login}		= time;
-				$self->{login_count}	+= 1;
-				DIR::Input->instance()->session()->param(
-					-name => DIR::Const::SESSION_KEY_USER_ID,
-					-value => $self->id(),
-				);
-			}
-		}
 	}
 	return $result;
 }
@@ -194,8 +208,9 @@ sub commit{
 		my $i = 0;
 		do{ $id = DIR::Misc::createRandomID($i++ < 5); }
 		until(defined(DIR::User->newExist($id)));
-		$self->{id}			= $id;
-		$self->{nickname}	= Jcode->new(DIR::Misc::getStrIDFromNumID($id), 'utf8')->ucs2();
+		$self->{id}				= $id;
+		$self->{nickname}		= Jcode->new(DIR::Misc::getStrIDFromNumID($id), 'utf8')->ucs2();
+		$self->{introduction}	= '';
 		$result = $db->writeUserNew(
 			id				=> $id,
 			password		=> $self->password(),

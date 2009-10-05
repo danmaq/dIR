@@ -19,6 +19,7 @@ use DIR::User;
 $DIR::Output::Account::VERSION = 0.01;	# バージョン情報
 
 @DIR::Output::Account::ISA = qw(Exporter);
+
 @DIR::Output::Account::EXPORT = qw(
 	getAccountBarInfo
 	putAccountLogin
@@ -27,6 +28,8 @@ $DIR::Output::Account::VERSION = 0.01;	# バージョン情報
 	putAccountSignupSucceeded
 	putAccountCheckCookieRedirect
 	putAccountTopRedirect
+	putPassword
+	putNickname
 );
 
 #==========================================================
@@ -76,7 +79,7 @@ sub putAccountTop{
 		MODE_EMAIL		=> DIR::Const::MODE_ACCOUNT_ADD_EMAIL,
 		MODE_LOGOUT		=> DIR::Const::MODE_ACCOUNT_LOGOUT,
 		MODE_REMOVE		=> DIR::Const::MODE_ACCOUNT_REMOVE,
-	));
+		MESSAGE			=> $self->getAlertMessage()));
 }
 
 #----------------------------------------------------------
@@ -116,6 +119,31 @@ sub putAccountCheckCookieRedirect{
 sub putAccountTopRedirect{
 	my $self = shift;
 	$self->putRedirect(DIR::Const::MODE_ACCOUNT_TOP);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	パスワード入力画面を表示します。
+sub putPassword{
+	my $self = shift;
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_ACCOUNT_PASSWORD,
+		MODE_ACCOUNT	=> DIR::Const::MODE_ACCOUNT_TOP,
+		MODE_PASSWORD	=> DIR::Const::MODE_ACCOUNT_PASSWORD_MODIFY,
+		MESSAGE			=> $self->getAlertMessage()));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ニックネーム入力画面を表示します。
+# PARAM \% ユーザ マスター アカウント情報
+sub putNickname{
+	my $self = shift;
+	my $user = shift;
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_ACCOUNT_NICKNAME,
+		MODE_NICKNAME	=> DIR::Const::MODE_ACCOUNT_NICKNAME_MODIFY,
+		MODE_ACCOUNT	=> DIR::Const::MODE_ACCOUNT_TOP,
+		NICKNAME		=> Jcode->new($user->nickname(), 'ucs2')->utf8(),
+		MESSAGE			=> $self->getAlertMessage()));
 }
 
 1;

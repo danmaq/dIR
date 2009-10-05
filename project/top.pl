@@ -9,11 +9,9 @@ use strict;
 use warnings;
 use lib qw(. ./lib);
 use utf8;
-use CGI qw(-compile);
 use DIR;
 
 require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
-
 my $in = DIR::Input->instance();
 my $out = DIR::Output->instance();
 $out->putTop(DIR::Game::listNewAll());

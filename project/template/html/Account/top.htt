@@ -1,3 +1,6 @@
+<TMPL_IF NAME="MESSAGE">
+	<p><TMPL_VAR NAME="MESSAGE"></p>
+</TMPL_IF>
 <h2>アカウント設定</h2>
 <ul>
 	<li>ID: <TMPL_VAR NAME="USER_ID"></li>
