@@ -87,7 +87,10 @@ sub new_guest{ return bless({%s_fields}, shift); }
 sub newExistFromSession{
 	my $result = undef;
 	my $id = DIR::Input->instance()->session()->param(DIR::Const::SESSION_KEY_USER_ID);
-	if(defined($id) and $id){ $result = DIR::User->newExist($id); }
+	if(defined($id) and $id){
+		$result = DIR::User->newExist($id);
+		unless(defined($result)){ logout(); }
+	}
 	return $result;
 }
 
@@ -233,6 +236,24 @@ sub commit{
 		if($result){ $self->{last_renew} = time; }
 	}
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	このアカウントを破棄し、データベースへ反映します。
+sub remove{
+	my $self = shift;
+	unless($self->guest()){
+		my $db = DIR::DB->instance();
+		my $id = $self->id();
+		logout();
+		foreach my $gaccount (DIR::GameAccount::listNewFromUser($self)){ $gaccount->remove(); }
+		foreach my $game (DIR::Game::listNewFromPublisher($self)){ $game->remove(); }
+		$db->eraseEMailFromUserID($id);
+		$db->erasePublisher($id);
+		$db->eraseUser($id);
+		%$self = %s_fields;
+	}
 }
 
 #----------------------------------------------------------

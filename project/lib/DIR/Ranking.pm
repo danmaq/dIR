@@ -60,8 +60,7 @@ sub listNewFromGame{
 				order			=> [],
 				top_list		=> $info->{TOP_LIST});
 			if(defined($obj)){
-				$obj->{limit} = [DIR::Ranking::Limit::listNewFromRanking($obj)];
-				$obj->{order} = [DIR::Ranking::Order::listNewFromRanking($obj)];
+				$obj->renewLimitAndOrder();
 				push(@result, $obj);
 			}
 		}
@@ -111,9 +110,8 @@ sub newExist{
 			$result->{game_id}		= $info->{GAME_ID};
 			$result->{caption}		= $info->{CAPTION};
 			$result->{view}			= $info->{VIEW};
-			$result->{limit}		= [DIR::Ranking::Limit::listNewFromRanking($result)];
-			$result->{order}		= [DIR::Ranking::Order::listNewFromRanking($result)];
 			$result->{top_list}		= $info->{TOP_LIST};
+			$result->renewLimitAndOrder();
 		}
 	}
 	return $result;
@@ -168,6 +166,20 @@ sub commit{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	情報をデータベースから削除します。
+#	その際にオブジェクトも初期化されます。
+sub remove{
+	my $self = shift;
+	my $db = DIR::DB->instance();
+	my $id = $self->id();
+	$db->eraseRankingLimitFromRankID($id);
+	$db->eraseRankingOrderFromRankID($id);
+	$db->eraseRanking($id);
+	%$self = %s_fields;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
 # PARAM \% ゲーム情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。
@@ -199,6 +211,15 @@ sub isEquals{
 		}
 	}
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ランキング絞込・整列アイテムを再読み込みします。
+sub renewLimitAndOrder{
+	my $self = shift;
+	$self->{limit} = [DIR::Ranking::Limit::listNewFromRanking($self)];
+	$self->{order} = [DIR::Ranking::Order::listNewFromRanking($self)];
 }
 
 #----------------------------------------------------------

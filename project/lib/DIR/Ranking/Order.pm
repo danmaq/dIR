@@ -141,6 +141,18 @@ sub commit{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	情報をデータベースから削除します。
+#	その際にオブジェクトも初期化されます。
+# RETURN BOOLEAN オブジェクトを削除できた場合、真値。
+sub remove{
+	my $self = shift;
+	my $result = DIR::DB->instance()->eraseRankingOrder($self->id());
+	if($result){ %$self = %s_fields; }
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
 # PARAM \% スコア情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。

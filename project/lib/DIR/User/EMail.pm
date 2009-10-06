@@ -157,6 +157,16 @@ sub commit{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
+#	情報をデータベースから削除します。
+#	その際にオブジェクトも初期化されます。
+sub remove{
+	my $self = shift;
+	my $result = DIR::DB->instance()->eraseEMail($self->uri());
+	if($result){ %$self = %s_fields; }
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
 #	オブジェクトが同等のものかどうかを取得します。
 # PARAM \% 電子メール情報オブジェクト
 # RETURN BOOLEAN オブジェクトが同等である場合、真値。

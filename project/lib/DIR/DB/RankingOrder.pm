@@ -24,7 +24,7 @@ $DIR::DB::RankingOrder::VERSION = 0.01;	# バージョン情報
 	writeRankingOrderInsert
 	writeRankingOrderUpdate
 	eraseRankingOrder
-	eraseRankingOrderFromGameID
+	eraseRankingOrderFromRankID
 );
 
 #==========================================================
@@ -132,7 +132,7 @@ sub eraseRankingOrder{
 #	特定ランキングに属する並替アイテムをデータベースから抹消します。
 # PARAM NUM ランキングID
 # RETURN BOOLEAN 成功した場合、真値。
-sub eraseRankingOrderFromGameID{
+sub eraseRankingOrderFromRankID{
 	my $self = shift;
 	my $rid = shift;
 	my $result = undef;

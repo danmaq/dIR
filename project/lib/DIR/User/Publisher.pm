@@ -74,7 +74,10 @@ sub new{
 sub newExistFromSession{
 	my $result = undef;
 	my $id = DIR::Input->instance()->session()->param(DIR::Const::SESSION_KEY_USER_ID);
-	if(defined($id)){ $result = DIR::User::Publisher->newExist($id); }
+	if(defined($id)){
+		$result = DIR::User::Publisher->newExist($id);
+		unless(defined($result)){ logout(); }
+	}
 	return $result;
 }
 

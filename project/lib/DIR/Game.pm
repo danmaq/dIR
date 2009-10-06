@@ -57,6 +57,23 @@ sub listNewAll{
 	return @result;
 }
 
+#----------------------------------------------------------
+# PUBLIC STATIC
+#	指定パブリッシャーのゲーム情報を新規作成します。
+# PARAM \% パブリッシャー情報
+# RETURN @\% ゲーム情報の入ったオブジェクト一覧。
+sub listNewFromPublisher{
+	my $user = shift;
+	my @result = ();
+	if(defined($user) and ref($user) =~ /^DIR::User/){
+		foreach my $id (DIR::DB->instance()->readGameFromUID($user->id())){
+			my $obj = DIR::Game->newExistFromID($id);
+			if(defined($obj)){ push(@result, $obj); }
+		}
+	}
+	return @result;
+}
+
 #==========================================================
 #==========================================================
 
@@ -162,6 +179,20 @@ sub commit{
 			%args);
 	}
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	情報をデータベースから削除します。
+#	その際にオブジェクトも初期化されます。
+sub remove{
+	my $self = shift;
+	my $db = DIR::DB->instance();
+	my $id = $self->id();
+	$db->eraseScoreFromGameID($id);
+	foreach my $ranking(DIR::Ranking::listNewFromGame($self)){ $ranking->remove(); }
+	foreach my $gaccount(DIR::GameAccount::listNewFromGame($self)){ $gaccount->remove(); }
+	$db->eraseGame($id);
 }
 
 #----------------------------------------------------------

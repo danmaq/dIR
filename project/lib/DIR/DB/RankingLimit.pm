@@ -24,7 +24,7 @@ $DIR::DB::RankingLimit::VERSION = 0.01;	# バージョン情報
 	writeRankingLimitInsert
 	writeRankingLimitUpdate
 	eraseRankingLimit
-	eraseRankingLimitFromGameID
+	eraseRankingLimitFromRankID
 );
 
 #==========================================================
@@ -137,7 +137,7 @@ sub eraseRankingLimit{
 #	特定ランキングに属する絞込アイテムをデータベースから抹消します。
 # PARAM NUM ランキングID
 # RETURN BOOLEAN 成功した場合、真値。
-sub eraseRankingLimitFromGameID{
+sub eraseRankingLimitFromRankID{
 	my $self = shift;
 	my $rid = shift;
 	my $result = undef;

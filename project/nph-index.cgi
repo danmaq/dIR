@@ -9,12 +9,12 @@ use strict;
 use warnings;
 use utf8;
 use lib qw(. ./lib);
-#use CGI::Carp 'fatalsToBrowser';
+#	use CGI::Carp 'fatalsToBrowser';
 use Switch;
 use DIR;
 
-#use CGI qw(-nph);
-#print CGI->new()->header();
+#	use CGI qw(-nph);
+#	print CGI->new()->header();
 
 #	$DIR::Output::Misc::RETRY_AFTER = 3600 * 24;
 #	require 'maintenance.pl';
@@ -35,7 +35,7 @@ unless(exists(&DIR_MAINTENANCE)){
 		case DIR::Const::MODE_ACCOUNT_PASSWORD_MODIFY		{ require 'accountModifyPassword.pl';		}
 		case DIR::Const::MODE_ACCOUNT_NICKNAME_MODIFY		{ require 'accountModifyNickname.pl';		}
 		case DIR::Const::MODE_ACCOUNT_ADD_EMAIL				{ require 'maintenance.pl';					}
-		case DIR::Const::MODE_ACCOUNT_REMOVE				{ require 'maintenance.pl';					}
+		case DIR::Const::MODE_ACCOUNT_REMOVE				{ require 'accountRemove.pl';				}
 		case ''												{ require 'top.pl';							}
 		else												{ require 'maintenance.pl';					}
 	}

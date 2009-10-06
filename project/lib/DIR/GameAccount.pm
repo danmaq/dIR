@@ -41,6 +41,43 @@ my %s_fields = (	# フィールド
 #==========================================================
 
 #----------------------------------------------------------
+# PUBLIC STATIC
+#	ユーザ マスター アカウント情報からゲーム アカウント一覧を作成します。
+# PARAM \% ユーザ マスター アカウント情報
+# RETURN @\% ゲーム アカウント情報の入ったオブジェクト一覧。
+sub listNewFromUser{
+	my @result = ();
+	my $user = shift;
+	if(defined($user) and ref($user) =~ /^DIR::User/){
+		foreach my $id (DIR::DB->instance()->readGameAccountFromUserID($user->id())){
+			my $obj = DIR::GameAccount->newExistFromID($id);
+			if(defined($obj)){ push(@result, $obj); }
+		}
+	}
+	return @result;
+}
+
+#----------------------------------------------------------
+# PUBLIC STATIC
+#	ゲーム マスター情報からゲーム アカウント一覧を作成します。
+# PARAM \% ゲーム マスター情報
+# RETURN @\% ゲーム アカウント情報の入ったオブジェクト一覧。
+sub listNewFromGame{
+	my @result = ();
+	my $game = shift;
+	if(defined($game) and ref($game) eq 'DIR::Game'){
+		foreach my $id (DIR::DB->instance()->readGameAccountFromGameID($game->id())){
+			my $obj = DIR::GameAccount->newExistFromID($id);
+			if(defined($obj)){ push(@result, $obj); }
+		}
+	}
+	return @result;
+}
+
+#==========================================================
+#==========================================================
+
+#----------------------------------------------------------
 # PUBLIC NEW
 #	ゲーム アカウントを新規作成します。
 # PARAM %(user gamme password nickname)
@@ -206,6 +243,20 @@ sub commit{
 			%params);
 	}
 	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	情報をデータベースから削除します。
+#	その際にオブジェクトも初期化されます。
+sub remove{
+	my $self = shift;
+	my $db = DIR::DB->instance();
+	my $id = $self->id();
+	$db->eraseRivalFromGameAccountID($id);
+	$db->eraseScoreFromGameAccountID($id);
+	$db->eraseGameAccount($id);
+	%$self = %s_fields;
 }
 
 #----------------------------------------------------------

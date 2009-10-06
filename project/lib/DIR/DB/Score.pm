@@ -24,6 +24,9 @@ $DIR::DB::Score::VERSION = 0.01;	# バージョン情報
 	writeScoreInsert
 	writeScoreUpdate
 	eraseScore
+	eraseScoreFromGameAccountID
+	eraseScoreFromGameID
+	eraseScoreFromUserID
 );
 
 #==========================================================
@@ -126,6 +129,48 @@ sub eraseScore{
 	return (
 		defined($id) and $id and
 		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_DELETE), undef, $id)
+	);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	指定ゲームアカウントのスコア情報をデータベースから抹消します。
+# PARAM NUM ゲーム アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseScoreFromGameAccountID{
+	my $self = shift;
+	my $id = shift;
+	return (
+		defined($id) and $id and
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_DELETE_FROM_GAID), undef, $id)
+	);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	指定ゲームのスコア情報をデータベースから抹消します。
+# PARAM NUM ゲーム マスターID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseScoreFromGameID{
+	my $self = shift;
+	my $id = shift;
+	return (
+		defined($id) and $id and
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_DELETE_FROM_GID), undef, $id)
+	);
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	指定ユーザのスコア情報をデータベースから抹消します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN BOOLEAN 成功した場合、真値。
+sub eraseScoreFromUserID{
+	my $self = shift;
+	my $id = shift;
+	return (
+		defined($id) and $id and
+		$self->dbi()->do(DIR::Template::get(DIR::Const::FILE_SQL_SCORE_DELETE_FROM_UID), undef, $id)
 	);
 }
 

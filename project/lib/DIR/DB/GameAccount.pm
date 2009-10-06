@@ -21,6 +21,8 @@ $DIR::DB::GameAccount::VERSION = 0.01;	# バージョン情報
 @DIR::DB::GameAccount::ISA = qw(Exporter);
 @DIR::DB::GameAccount::EXPORT = qw(
 	readGameAccountFromID
+	readGameAccountFromUserID
+	readGameAccountFromGameID
 	readGameAccountIDFromGameAndUser
 	writeGameAccountNew
 	writeGameAccountRenew
@@ -66,6 +68,40 @@ sub readGameAccountFromID{
 			}
 			$sql->finish();
 		}
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ユーザ マスター アカウントIDからゲーム アカウントIDを検索します。
+# PARAM NUM ユーザ マスター アカウントID
+# RETURN \@ ゲーム アカウントID一覧
+sub readGameAccountFromUserID{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		my @idList = $self->selectAllSingleColumn(DIR::Const::FILE_SQL_GAMEACCOUNT_SELECT_FROM_UID,
+			'ID', $id);
+		$result = [@idList];
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	ゲーム マスターIDからゲーム アカウントIDを検索します。
+# PARAM NUM ゲーム マスターID
+# RETURN \@ ゲーム アカウントID一覧
+sub readGameAccountFromGameID{
+	my $self = shift;
+	my $id = shift;
+	my $result = undef;
+	if(defined($id) and $id){
+		my @idList = $self->selectAllSingleColumn(DIR::Const::FILE_SQL_GAMEACCOUNT_SELECT_FROM_GID,
+			'ID', $id);
+		$result = [@idList];
 	}
 	return $result;
 }
