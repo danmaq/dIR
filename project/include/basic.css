@@ -59,7 +59,14 @@
 }
 
 #basic table td, #basic table th{
-	background-color: #0099CC;
 	padding: 1ex;
 	border: 1px solid black;
+}
+
+#basic table td{
+	background-color: #0099CC;
+}
+
+#basic table th{
+	background-color: #0066CC;
 }

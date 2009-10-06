@@ -22,21 +22,49 @@
 				<img alt="dIR - danmaq Internet Ranking" height="60" src="./image/banner.png" width="468"/>
 			</a>
 		</h1>
-		<h2>ニックネーム変更</h2>
+		<h2>電子メール追加・変更・削除</h2>
 		<p>
-			ニックネームを1～40文字で入力してください。
+			電子メールを登録するとログイン時にIDの代わりにメールアドレスでログインすることができます。
+			また、将来ハイスコアを誰かに塗り替えられたらメール通知、などにも対応するつもりです。
 		</p>
+		<ol>
+			<li>
+				danmaq Internet Rankingサービス内における有用な情報の配信を希望する場合は<strong>(1)</strong>にチェックを入れてください。<br />
+				(サービス内にかかわる重要な通知は、チェックの有無にかかわらず配信されることがあります。)
+			</li>
+			<li>danmaq広告の配信を希望する場合は<strong>(2)</strong>にチェックを入れてください。</li>
+			<li>登録されたメールアドレスは、上記に挙げた用途でのみ使用され、法的な要請以外において、第三者に開示することはありません。</li>
+			<li>メールアドレスを複数個登録したい場合は、1個ずつ追加してください。</li>
+			<li>メールアドレスを削除したい場合は、空欄にすると削除できます。</li>
+			<li>メールアドレスを登録・変更すると確認メールが配達されます。確認メールの記載内容に従い、本登録を済ますまでご利用にはなれません。</li>
+		</ol>
+		<p class="alert">ほげー</p>
 		<form action="/" method="post">
-			<fieldset>
-				<input type="hidden" name="q" value="<TMPL_VAR NAME='MODE_NICKNAME'>" />
-				<ol>
-					<li>
-						<label for="name">ニックネーム</label><br />
-						<input type="text" id="name" name="name" value="<TMPL_VAR NAME='NICKNAME'>" maxlength="40" size="40" />
-					</li>
-					<li><input type="submit" value="このボタンを押して、ニックネームを変更します。" /></li>
-				</ol>
-			</fieldset>
+			<input type="hidden" name="q" value="<TMPL_VAR NAME='MODE_EMAIL'>" />
+			<table>
+				<tbody>
+					<tr>
+						<td><input type="text" name="mail" maxlength="255" size="40" /></td>
+						<td><input type="checkbox" name="nsrv" checked="checked" /></td>
+						<td><input type="checkbox" name="nads" /></td>
+					</tr>
+				</tbody>
+				<thead>
+					<tr>
+						<th>メールアドレス</th>
+						<th><span title="danmaq Internet Rankingサービス内における有用な情報の配信を希望する">(1)</span></th>
+						<th><span title="danmaq広告の配信を希望する">(2)</span></th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th><input type="text" name="mail" maxlength="255" size="40" /></th>
+						<th><input type="checkbox" name="nsrv" /></th>
+						<th><input type="checkbox" name="nads" /></th>
+					</tr>
+				</tfoot>
+			</table>
+			<input type="submit" value="入力が終わったら、このボタンを押して、変更内容を送信します。" />
 		</form>
 		<ul>
 			<li><a href="?q=">アカウント設定のページへ戻る</a></li>

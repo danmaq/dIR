@@ -40,6 +40,7 @@ use constant FILE_HTT_ACCOUNT_LOGIN		=> 'html/Account/login.htt';
 use constant FILE_HTT_ACCOUNT_NICKNAME	=> 'html/Account/nickname.htt';
 use constant FILE_HTT_ACCOUNT_PASSWORD	=> 'html/Account/password.htt';
 use constant FILE_HTT_ACCOUNT_SIGNUP	=> 'html/Account/signup.htt';
+use constant FILE_HTT_ACCOUNT_EMAIL		=> 'html/Account/email.htt';
 use constant FILE_HTT_RANK_TOP			=> 'html/Ranking/top.htt';
 use constant FILE_HTT_RANK_DESCRIPTION	=> 'html/Ranking/description.htt';
 

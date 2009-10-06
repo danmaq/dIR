@@ -17,6 +17,8 @@ use DIR::Validate;
 use constant PASSWORD_OVERRANGE		=> 0;
 use constant PASSWORD_MISMATCH		=> 1;
 
+use constant EMAIL_IGNORE			=> 0;
+
 $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
 @DIR::Input::Misc::ISA = qw(Exporter);
@@ -28,6 +30,7 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 	getParamAccountSignup
 	getParamAccountPassword
 	getParamAccountNickname
+	getParamAccountEMail
 );
 
 #==========================================================
@@ -67,8 +70,9 @@ sub getParamRedirectNextMode{
 sub getParamAccountLogin{
 	my $self = shift;
 	my $result = undef;
-	my $id = $self->cgi()->param('id');
-	my $password = $self->cgi()->param('pwd');
+	my $cgi = $self->cgi();
+	my $id = $cgi->param('id');
+	my $password = $cgi->param('pwd');
 	my $uid = (DIR::Misc::isIDFormat($id) ? $id : undef);
 	my $email = (DIR::Validate::isEMail($id) ? $id : undef);
 	if(DIR::Validate::isLengthInRange($password, 4, 40) and (defined($uid) or defined($email))){
@@ -99,9 +103,10 @@ sub getParamAccountSignup{
 sub getParamAccountPassword{
 	my $self = shift;
 	my $result = undef;
-	my $passwordOld = $self->cgi()->param('old');
-	my $passwordNew = $self->cgi()->param('new');
-	my $passwordNewRe = $self->cgi()->param('re');
+	my $cgi = $self->cgi();
+	my $passwordOld = $cgi->param('old');
+	my $passwordNew = $cgi->param('new');
+	my $passwordNewRe = $cgi->param('re');
 	if(defined($passwordOld) and defined($passwordNew) and defined($passwordNewRe)){
 		if(
 			DIR::Validate::isLengthInRange($passwordOld, 4, 40) and
@@ -131,6 +136,49 @@ sub getParamAccountNickname{
 	my $name = $self->cgi()->param('name');
 	if(DIR::Validate::isLengthInRange($name, 1, 255)){
 		$result = Jcode->new($name, 'utf8')->ucs2();
+	}
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	電子メール設定・変更・削除ページのクエリ情報を取得します。
+# RETURN \@ 電子メール情報。
+sub getParamAccountEMail{
+	my $self = shift;
+	my $result = undef;
+	my $cgi = $self->cgi();
+	my $uri = $cgi->param('uri');
+	my $notifyDIR = $cgi->param('ndir');
+	my $notifyAds = $cgi->param('nads');
+	if(defined($uri) and defined($notifyDIR) and defined($notifyAds)){
+		if(DIR::Validate::isEMail($uri)){
+			my $eoq = 0;
+			my $i = 0;
+			my @modlist = ();
+			do{
+				my %info = (
+					uri			=> $cgi->param(sprintf('uri_%s', $i)),
+					notify_dir	=> $cgi->param(sprintf('ndir_%s', $i)),
+					notify_ads	=> $cgi->param(sprintf('nads_%s', $i)));
+				$eoq = not (defined($info{uri}) and defined($info{notify_dir}) and defined($info{notify_ads}));
+				unless($eoq){
+					unless(DIR::Validate::isEMail($info{uri})){ $result = EMAIL_IGNORE; }
+					push(@modlist, {%info});
+				}
+				$i++;
+			}
+			until($eoq);
+			unless(defined($result)){
+				$result = {
+					uri			=> $uri,
+					notify_dir	=> $notifyDIR,
+					notify_ads	=> $notifyAds,
+					modlist		=> [@modlist],
+				};
+			}
+		}
+		else{ $result = EMAIL_IGNORE; }
 	}
 	return $result;
 }

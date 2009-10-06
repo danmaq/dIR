@@ -3,7 +3,7 @@
 #	dIR - danmaq Internet Ranking CGI
 #		(c)2009 danmaq All rights reserved.
 #===============================================================================
-#	ニックネーム変更ページ表示スクリプト。
+#	電子メール追加・変更・削除ページ表示スクリプト。
 use 5.006;
 use strict;
 use warnings;
@@ -15,25 +15,17 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 # !!! XXX !!! : マジック文字列がひどい。なんとか汁
 
-my $name = DIR::Input->instance()->getParamAccountNickname();
+my $info = DIR::Input->instance()->getParamAccountEMail();
 my $out = DIR::Output->instance();
 my $user = DIR::User->newExistFromSession();
-my $page = 'ACCOUNT_MODIFY_NICKNAME';
+my $page = 'ACCOUNT_MODIFY_EMAIL';
 if(defined($user) and not $user->guest()){
-	if(defined($name)){
-		$user->nickname($name);
-		if($user->commit()){
-			$page .= '_SUCCESS';
-			$out->setAlertMessage('ニックネーム変更完了。');
-			$out->putAccountCheckCookieRedirect(DIR::Const::MODE_ACCOUNT_TOP);
-		}
-		else{
-			$page .= '_FAILED';
-			$out->setAlertMessage('データベース格納時に予期しない不具合が発生したため、変更できません。');
-			$out->putNickname($user);
-		}
+	if(defined($info) and ref($info)){
 	}
-	else{ $out->putNickname($user); }
+	else{
+	}
+	$out->putNickname($user);
+	# ! TODO : ここから作る
 }
 else{
 	$page .= '_FAILED';
