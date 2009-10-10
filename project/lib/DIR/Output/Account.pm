@@ -28,8 +28,9 @@ $DIR::Output::Account::VERSION = 0.01;	# バージョン情報
 	putAccountSignupSucceeded
 	putAccountCheckCookieRedirect
 	putAccountTopRedirect
-	putPassword
-	putNickname
+	putAccountPassword
+	putAccountNickname
+	putAccountEMail
 );
 
 #==========================================================
@@ -124,7 +125,7 @@ sub putAccountTopRedirect{
 #----------------------------------------------------------
 # PUBLIC INSTANCE
 # 	パスワード入力画面を表示します。
-sub putPassword{
+sub putAccountPassword{
 	my $self = shift;
 	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_ACCOUNT_PASSWORD,
 		MODE_ACCOUNT	=> DIR::Const::MODE_ACCOUNT_TOP,
@@ -136,13 +137,39 @@ sub putPassword{
 # PUBLIC INSTANCE
 # 	ニックネーム入力画面を表示します。
 # PARAM \% ユーザ マスター アカウント情報
-sub putNickname{
+sub putAccountNickname{
 	my $self = shift;
 	my $user = shift;
 	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_ACCOUNT_NICKNAME,
 		MODE_NICKNAME	=> DIR::Const::MODE_ACCOUNT_NICKNAME_MODIFY,
 		MODE_ACCOUNT	=> DIR::Const::MODE_ACCOUNT_TOP,
 		NICKNAME		=> Jcode->new($user->nickname(), 'ucs2')->utf8(),
+		MESSAGE			=> $self->getAlertMessage()));
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	ニックネーム入力画面を表示します。
+# PARAM \% ユーザ マスター アカウント情報
+sub putAccountEMail{
+	my $self = shift;
+	my $user = shift;
+	my $emails = [];
+	my $i = 0;
+	foreach my $email (@{$user->email()}){
+		$i++;
+		push(@$emails, {
+			INDEX		=> $i,
+			URI			=> $email->uri(),
+			NOTIFY_DIR	=> $email->notifyService(),
+			NOTIFY_ADS	=> $email->notifyAds(),
+		});
+	}
+	$self->_put(DIR::Template::getHTT(DIR::Const::FILE_HTT_ACCOUNT_EMAIL,
+		EMAILS			=> $emails,
+		EMAIL_EXISTS	=> scalar(@$emails),
+		MODE_EMAIL		=> DIR::Const::MODE_ACCOUNT_ADD_EMAIL,
+		MODE_ACCOUNT	=> DIR::Const::MODE_ACCOUNT_TOP,
 		MESSAGE			=> $self->getAlertMessage()));
 }
 

@@ -23,6 +23,7 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
 @DIR::Input::Misc::ISA = qw(Exporter);
 @DIR::Input::Misc::EXPORT = qw(
+	getMode
 	getParamRankTop
 	getParamRankDescription
 	getParamRedirectNextMode
@@ -35,6 +36,17 @@ $DIR::Input::Misc::VERSION = 0.01;	# バージョン情報
 
 #==========================================================
 #==========================================================
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+# 	動作モードを取得します。
+# RETURN STRING 動作モード文字列
+sub getMode{
+	my $self = shift;
+	my $result = $self->cgi()->param('q');
+	unless(defined($result)){ $result = ''; }
+	return $result;
+}
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
@@ -148,38 +160,31 @@ sub getParamAccountEMail{
 	my $self = shift;
 	my $result = undef;
 	my $cgi = $self->cgi();
-	my $uri = $cgi->param('uri');
-	my $notifyDIR = $cgi->param('ndir');
-	my $notifyAds = $cgi->param('nads');
-	if(defined($uri) and defined($notifyDIR) and defined($notifyAds)){
-		if(DIR::Validate::isEMail($uri)){
-			my $eoq = 0;
-			my $i = 0;
-			my @modlist = ();
-			do{
-				my %info = (
-					uri			=> $cgi->param(sprintf('uri_%s', $i)),
-					notify_dir	=> $cgi->param(sprintf('ndir_%s', $i)),
-					notify_ads	=> $cgi->param(sprintf('nads_%s', $i)));
-				$eoq = not (defined($info{uri}) and defined($info{notify_dir}) and defined($info{notify_ads}));
-				unless($eoq){
-					unless(DIR::Validate::isEMail($info{uri})){ $result = EMAIL_IGNORE; }
-					push(@modlist, {%info});
-				}
-				$i++;
-			}
-			until($eoq);
-			unless(defined($result)){
-				$result = {
-					uri			=> $uri,
-					notify_dir	=> $notifyDIR,
-					notify_ads	=> $notifyAds,
-					modlist		=> [@modlist],
-				};
-			}
+	my $eoq = 0;
+	my $i = 0;
+	my @modlist = ();
+	do{
+		my $uri		= $cgi->param(sprintf('uri_%s',		$i));
+		my $ndir	= $cgi->param(sprintf('ndir_%s',	$i));
+		my $nads	= $cgi->param(sprintf('nads_%s',	$i));
+		$eoq = (not (
+			defined($uri)	and
+			defined($ndir)	and
+			defined($nads)));
+		$i++;
+		unless($eoq){
+			unless($uri){ next; }
+			$eoq = (not DIR::Validate::isEMail($uri));
+			if($eoq){ $result = EMAIL_IGNORE; }
+			push(@modlist, {
+				uri			=> $uri,
+				notify_dir	=> $ndir,
+				notify_ads	=> $nads,
+			});
 		}
-		else{ $result = EMAIL_IGNORE; }
 	}
+	until($eoq);
+	if(not defined($result) and scalar(@modlist)){ $result = [@modlist]; }
 	return $result;
 }
 

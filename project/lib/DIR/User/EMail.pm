@@ -35,22 +35,26 @@ my %s_fields = (	# フィールド
 # PUBLIC STATIC
 #	ユーザ マスター アカウントIDからメールアドレス情報オブジェクト一覧を生成します。
 # PARAM \% ユーザのマスター アカウント オブジェクト
+# PARAM BOOLEAN 認証済みメールアドレスのみ取得するかどうか
 # RETURN @\% メールアドレス情報の入ったオブジェクト一覧。
 sub listNewFromUID{
 	my $user = shift;
+	my $onlyValidated = shift;
 	my @result = ();
 	if(defined($user) and ref($user) eq 'DIR::User' and not $user->guest()){
-		foreach my $info (DIR::DB->instance()->readEMailFromUID($user)){
-			my $obj = DIR::User::EMail->newAllParams(
-				id				=> $user->id(),
-				email_url		=> $info->{EMAIL},
-				validate_code	=> $info->{EMAIL_VALID},
-				notify_service	=> $info->{NOTIFY_SERVICE},
-				notify_ads		=> $info->{NOTIFY_ADS},
-				undeliverable	=> $info->{UNDELIVERABLE},
-				registed		=> $info->{REGIST_TIME},
-				inserted		=> 1);
-			if(defined($obj)){ push(@result, $obj); }
+		foreach my $info (DIR::DB->instance()->readEMailFromUID($user->id())){
+			unless($onlyValidated and defined($info->{EMAIL_VALID})){
+				my $obj = DIR::User::EMail->newAllParams(
+					id				=> $user->id(),
+					email_url		=> $info->{EMAIL},
+					validate_code	=> $info->{EMAIL_VALID},
+					notify_service	=> $info->{NOTIFY_SERVICE},
+					notify_ads		=> $info->{NOTIFY_ADS},
+					undeliverable	=> $info->{UNDELIVERABLE},
+					registed		=> $info->{REGIST_TIME},
+					inserted		=> 1);
+				if(defined($obj)){ push(@result, $obj); }
+			}
 		}
 	}
 	return @result;
@@ -141,7 +145,7 @@ sub commit{
 	my %params = (
 		id		=> $self->userID(),
 		email	=> $self->uri(),
-		valid	=> $self->validateCode(),
+		valid	=> $self->{validate_code},
 		service	=> $self->notifyService(),
 		ads		=> $self->notifyAds());
 	if($self->isTemp()){
@@ -159,10 +163,12 @@ sub commit{
 # PUBLIC INSTANCE
 #	情報をデータベースから削除します。
 #	その際にオブジェクトも初期化されます。
+# RETURN BOOLEAN 削除に成功した場合、真値。
 sub remove{
 	my $self = shift;
 	my $result = DIR::DB->instance()->eraseEMail($self->uri());
 	if($result){ %$self = %s_fields; }
+	return $result;
 }
 
 #----------------------------------------------------------
@@ -177,12 +183,28 @@ sub isEquals{
 		ref($expr)				eq 'DIR::EMail'				and
 		$self->userID()			== $expr->userID()			and
 		$self->uri()			eq $expr->uri()				and
-		$self->validateCode()	eq $expr->validateCode()	and
 		$self->notifyService()	== $expr->notifyService()	and
 		$self->notifyAds()		== $expr->notifyAds()		and
 		$self->undeliverable()	== $expr->undeliverable()	and
 		$self->registed()		== $expr->registed()		and
+		$self->{validate_code}	eq $expr->{validate_code}	and
 		$self->{inserted}		== $expr->{inserted});
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	メールアドレスを認証します。
+# PARAM STRING 認証コード
+# RETURN BOOLEAN 認証に成功した場合、真値。
+sub validate{
+	my $self = shift;
+	my $expr = shift;
+	my $result = 0;
+	if(defined($expr) and $self->{validate_code} eq $expr){
+		$self->{validate_code} = undef;
+		$result = $self->commit();
+	}
+	return $result;
 }
 
 ############################################################
@@ -211,7 +233,7 @@ sub isTemp{
 # RETURN BOOL 実在する場合、真値。
 sub isExists{
 	my $self = shift;
-	return (not $self->isTemp() and defined($self->validateCode()));
+	return (not $self->isTemp() and defined($self->{validate_code}));
 }
 
 #----------------------------------------------------------
@@ -221,15 +243,6 @@ sub isExists{
 sub uri{
 	my $self = shift;
 	return $self->{email_url};
-}
-
-#----------------------------------------------------------
-# PUBLIC INSTANCE
-#	電子メールアドレス認証コードを取得します。
-# RETURN STRING 電子メールアドレス認証コード。
-sub validateCode{
-	my $self = shift;
-	return $self->{validate_code};
 }
 
 #----------------------------------------------------------

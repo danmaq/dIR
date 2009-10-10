@@ -33,13 +33,13 @@ if(defined($info)){
 			else{
 				$page .= '_FAILED';
 				$out->setAlertMessage('データベース格納時に予期しない不具合が発生したため、変更できません。');
-				$out->putPassword();
+				$out->putAccountPassword();
 			}
 		}
 		else{
 			$page .= '_FAILED';
 			$out->setAlertMessage('旧パスワードが違います。');
-			$out->putPassword();
+			$out->putAccountPassword();
 		}
 	}
 	else{
@@ -50,11 +50,11 @@ if(defined($info)){
 			case DIR::Input::Misc::PASSWORD_MISMATCH	{ $message = '再入力パスワードが間違っています。';					}
 		}
 		$out->setAlertMessage($message);
-		$out->putPassword();
+		$out->putAccountPassword();
 	}
 }
 else{
-	if(defined($user) and not $user->guest()){ $out->putPassword(); }
+	if(defined($user) and not $user->guest()){ $out->putAccountPassword(); }
 	else{ $out->putAccountFailed(); }
 }
 DIR::Access->new(account => $user, page_name => $page);

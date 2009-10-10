@@ -15,17 +15,21 @@ require 'ini.pl' unless(exists(&DIR_INI));	# 設定ファイル
 
 # !!! XXX !!! : マジック文字列がひどい。なんとか汁
 
-my $info = DIR::Input->instance()->getParamAccountEMail();
 my $out = DIR::Output->instance();
 my $user = DIR::User->newExistFromSession();
 my $page = 'ACCOUNT_MODIFY_EMAIL';
 if(defined($user) and not $user->guest()){
-	if(defined($info) and ref($info)){
+	my $info = DIR::Input->instance()->getParamAccountEMail();
+	if(defined($info)){
+		if(ref($info)){
+			$out->setAlertMessage(
+				$user->modifyEMail(@$info) ? 'メールアドレス設定および変更が完了しました。' :
+				'他のユーザが使用しているメールアドレスか、またはデータベース通信エラーが発生しました。'
+			);
+		}
+		else{ $out->setAlertMessage('メールアドレスが不正です。'); }
 	}
-	else{
-	}
-	$out->putNickname($user);
-	# ! TODO : ここから作る
+	$out->putAccountEMail($user);
 }
 else{
 	$page .= '_FAILED';

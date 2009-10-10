@@ -30,10 +30,10 @@ if(defined($user) and not $user->guest()){
 		else{
 			$page .= '_FAILED';
 			$out->setAlertMessage('データベース格納時に予期しない不具合が発生したため、変更できません。');
-			$out->putNickname($user);
+			$out->putAccountNickname($user);
 		}
 	}
-	else{ $out->putNickname($user); }
+	else{ $out->putAccountNickname($user); }
 }
 else{
 	$page .= '_FAILED';

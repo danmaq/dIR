@@ -120,7 +120,7 @@ sub newExist{
 					$result->{last_login}	= $info->{LOGIN_TIME};
 					$result->{login_count}	= $info->{LOGIN_COUNT};
 					$result->{notes}		= $info->{NOTES};
-					$result->{email}		= [DIR::User::EMail::listNewFromUID($result)];
+					$result->{email}		= [DIR::User::EMail::listNewFromUID($result, 1)];
 				}
 			}
 		}
@@ -288,7 +288,54 @@ sub isEquals{
 				$self->notes()			eq $expr->notes());
 		}
 	}
-	
+	return $result;
+}
+
+#----------------------------------------------------------
+# PUBLIC INSTANCE
+#	メールアドレスを追加・変更・削除します。
+# PARAM @\%{uri notify_dir notify_ads} メールアドレス、dIR通知フラグ、danmaq広告フラグ
+# RETURN BOOLEAN 成功した場合、真値。
+sub modifyEMail{
+	my $self = shift;
+	my @list = @_;
+	my $result = 1;
+	my $modded = 0;
+	foreach my $info (@list){
+		$result = (
+			ref($info) eq 'HASH'			and	defined($info->{notify_dir})	and
+			defined($info->{notify_ads})	and	DIR::Validate::isEMail($info->{uri}));
+		if($result){
+			my $email = DIR::User::EMail->newExistFromURI($info->{uri});
+			if(defined($email)){
+				$result = $self->id() == $email->userID();
+				if($result){
+					$email->notifyService($info->{notify_dir});
+					$email->notifyAds($info->{notify_dir});
+					$result = $email->commit();
+					$modded = ($modded or $result);
+				}
+			}
+			else{
+				my $email = DIR::User::EMail->new(
+					user	=> $self,					mail	=> $info->{uri},
+					service	=> $info->{notify_dir},		ads		=> $info->{notify_ads});
+				$result = $email->commit();
+				$modded = ($modded or $result);
+			}
+		}
+		unless($result){ last; }
+	}
+	foreach my $email (@{$self->email()}){
+		my $exist = 0;
+		foreach my $info (@list){
+			$exist = ($email->uri() eq $info->{uri});
+			if($exist){ last; }
+		}
+		$modded = ($modded or (not $exist));
+		unless($exist){ $email->remove(); }
+	}
+	if($modded){ $self->{email} = [DIR::User::EMail::listNewFromUID($self, 1)]; }
 	return $result;
 }
 

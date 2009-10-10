@@ -66,15 +66,6 @@ sub getRemoteEnvironment{
 
 #----------------------------------------------------------
 # PUBLIC INSTANCE
-# 	動作モードを取得します。
-# RETURN STRING 動作モード文字列
-sub getMode{
-	my $self = shift;
-	return $self->cgi()->param('q') or '';
-}
-
-#----------------------------------------------------------
-# PUBLIC INSTANCE
 # 	数値パラメータを取得します。
 # PARAM STRING キー文字列
 # RETURN NUM 数値パラメータ。

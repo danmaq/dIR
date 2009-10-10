@@ -26,7 +26,7 @@
 					<tr>
 						<td><input type="text" name="uri_<TMPL_VAR NAME='INDEX'>" value="<TMPL_VAR NAME='URI'>" maxlength="255" size="40" /></td>
 						<td><input type="checkbox" name="ndir_<TMPL_VAR NAME='INDEX'>" <TMPL_IF NAME="NOTIFY_DIR">checked="checked" </TMPL_IF>/></td>
-						<td><input type="checkbox" name="nads_<TMPL_VAR NAME='INDEX'>" <TMPL_IF NAME="NOTIFY_DIR">checked="checked" </TMPL_IF>/></td>
+						<td><input type="checkbox" name="nads_<TMPL_VAR NAME='INDEX'>" <TMPL_IF NAME="NOTIFY_ADS">checked="checked" </TMPL_IF>/></td>
 					</tr>
 				</TMPL_LOOP>
 			</tbody>
@@ -40,9 +40,9 @@
 		</thead>
 		<tfoot>
 			<tr>
-				<th><input type="text" name="uri" maxlength="255" size="40" /></th>
-				<th><input type="checkbox" name="ndir" value="1" /></th>
-				<th><input type="checkbox" name="nads" value="1" /></th>
+				<th><input type="text" name="uri_0" maxlength="255" size="40" /></th>
+				<th><input type="checkbox" name="ndir_0" value="1" /></th>
+				<th><input type="checkbox" name="nads_0" value="1" /></th>
 			</tr>
 		</tfoot>
 	</table>
